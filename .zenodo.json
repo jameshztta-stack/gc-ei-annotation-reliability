@@ -1,6 +1,6 @@
 {
   "title": "GC–EI Annotation Reliability Tool",
-  "description": "Interactive and reproducible implementation of an uncertainty-aware GC–EI–MS spectral-library annotation workflow using calibrated candidate sets and selective prediction.",
+  "description": "Interactive and reproducible implementation of an uncertainty-aware GC–EI–MS spectral-library annotation method using calibrated candidate sets and selective prediction.",
   "creators": [
     {
       "name": "Zothantluanga, James H."
