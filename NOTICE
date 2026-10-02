@@ -8,8 +8,8 @@ Source dataset:
 
 Tsugawa H. `msdial_eimslib_kovatsri`. Zenodo. DOI: 10.5281/zenodo.21910638.
 
-The publication file used by the workflow is `GCMS DB-Public-KovatsRI-VS3.msp`.
+The file used in the study is `GCMS DB-Public-KovatsRI-VS3.msp`.
 
-The tool obtains the source from the original Zenodo record or accepts a user-provided exact local copy, verifies the expected SHA-256 hash, and constructs transient local reference assets.
+The tool obtains the source from the original Zenodo record or accepts a user-provided exact local copy, verifies the expected SHA-256 hash, and constructs the required reference files locally.
 
 The MIT License in this repository applies to the software written for this project. It does not grant rights over third-party datasets.
