@@ -1,12 +1,12 @@
 # GC–EI Annotation Reliability Tool
 
-**Release candidate 0.2.0-rc1**
+**Version 0.2.0**
 
-An interactive implementation of the uncertainty-aware GC–EI–MS library-annotation workflow developed in our study. The tool is intended to help researchers decide whether a conventional GC–EI library-search result supports a single tentative candidate, a calibrated set of candidates, or no exact single-candidate annotation.
+An interactive implementation of the uncertainty-aware GC–EI–MS library-annotation method developed in our study. The tool is intended to help researchers decide whether a conventional GC–EI library-search result supports a single tentative candidate, a calibrated set of candidates, or no exact single-candidate annotation.
 
 ## What the tool returns
 
-For a user-supplied EI spectrum, the current release returns:
+For a user-supplied EI spectrum, the current version returns:
 
 - highest-ranked connectivity-level candidate;
 - top-10 candidate list;
@@ -19,19 +19,19 @@ For a user-supplied EI spectrum, the current release returns:
 
 The software does **not** claim authentic-standard identification. Low confidence or a broad candidate set also does **not** prove that a compound is absent from the reference library.
 
-## Scientific lock
+## Method implemented
 
-The public tool preserves the frozen decisions used in the validated v1.1 research workflow:
+The tool implements the methodological choices and calibration values used in the study:
 
 - identity = first 14 characters of InChIKey;
 - exact-spectrum duplication removed before benchmark development;
 - EI score = `m/z^1 × intensity^0.5` weighted cosine;
-- conformal margins fixed from the publication calibration identities;
-- confidence model fixed from the publication calibration split;
-- empirical selective-prediction thresholds fixed from the publication risk-calibration analysis;
+- conformal margins derived from the publication calibration identities;
+- confidence model derived from the publication calibration split;
+- empirical selective-prediction thresholds derived from the publication risk-calibration analysis;
 - optional RI fusion = `0.8 × EI + 0.2 × exp[-0.5 × (ΔRI/10)^2]`.
 
-The web interface does not retrain the publication model when a user submits a spectrum.
+The web application applies these published parameters directly to user-supplied spectra.
 
 ## Reference library
 
@@ -41,7 +41,7 @@ The study used the public MS-DIAL EI/Kovats-RI spectral library:
 
 File used in the study: `GCMS DB-Public-KovatsRI-VS3.msp`.
 
-The upstream MSP and the derived reference matrix are **not stored in this repository**. At first launch, the program obtains the exact publication file from the original Zenodo record, verifies its SHA-256 checksum, and constructs local runtime assets. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
+The upstream MSP and the derived reference matrix are **not stored in this repository**. At first launch, the program obtains the source file from the original Zenodo record, verifies its SHA-256 checksum, and constructs the required reference files locally. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
 
 ## Quick start
 
@@ -56,7 +56,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-The first launch prepares the reference library. To use an already downloaded exact MSP instead of downloading it again, define `GCEI_MSP_PATH` before launching the app.
+The first launch prepares the reference-library files. To use an already downloaded exact MSP instead of downloading it again, define `GCEI_MSP_PATH` before launching the app.
 
 ## Input format
 
@@ -84,23 +84,17 @@ Peak_2,71,100,
 
 The `ri` column is optional and must contain **Kovats retention index**, not raw retention time.
 
-## Validate the release
+## Reproducibility
 
-With an exact local copy of the publication MSP:
-
-```bash
-python scripts/validate_release.py --msp "/path/GCMS DB-Public-KovatsRI-VS3.msp"
-```
-
-Without `--msp`, the validation script obtains the source from the original Zenodo record. The release validation rebuilds the non-redistributed reference assets and checks the 12 independent botanical challenge spectra against the frozen v1.1 expected outputs.
+The repository contains automated checks for the reference-library construction and the 12 botanical example spectra used in the study. See [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
 ## Deployment
 
-See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the GitHub → Streamlit Community Cloud → Zenodo release workflow.
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the GitHub, Streamlit Community Cloud, and Zenodo publication steps.
 
 ## Reuse with a different EI library
 
-The software code can be adapted to another EI reference library, but the publication conformal margins and confidence thresholds **must not be copied blindly to a different library**. A new library requires a new leakage audit, independent query/reference construction, calibration of conformal nonconformity scores, and refitting/validation of the confidence model.
+The software can be adapted to another EI reference library, but the publication conformal margins and confidence thresholds should not be transferred directly to a different library. A new library requires screening for exact duplicates and identity leakage, construction of independent query/reference spectra, calibration of conformal nonconformity scores, and refitting and validation of the confidence model.
 
 ## License
 
@@ -108,4 +102,4 @@ The project software is released under the MIT License. Third-party spectral dat
 
 ## Citation
 
-The final manuscript citation and Zenodo software DOI will be inserted at the v1.0.0 publication release. `CITATION.cff` is already included so GitHub can expose the preferred software citation metadata after publication.
+The final manuscript citation and Zenodo software DOI will be added when the software is archived for publication. `CITATION.cff` is included so GitHub can expose the preferred software citation metadata.
