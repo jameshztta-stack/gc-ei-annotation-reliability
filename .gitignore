@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+.DS_Store
+.pytest_cache/
+.streamlit/secrets.toml
+runtime_assets/
+reference_assets/
+*.msp
+*.MSP
+GCMS DB-Public-KovatsRI-VS3.msp

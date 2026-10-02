@@ -1,0 +1,22 @@
+{
+  "title": "GC–EI Annotation Reliability Tool",
+  "description": "Interactive and reproducible implementation of an uncertainty-aware GC–EI–MS spectral-library annotation workflow using calibrated candidate sets and selective prediction.",
+  "creators": [
+    {
+      "name": "Zothantluanga, James H."
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "GC-MS",
+    "electron ionization",
+    "spectral library",
+    "conformal prediction",
+    "selective prediction",
+    "uncertainty quantification",
+    "retention index",
+    "chemometrics"
+  ],
+  "upload_type": "software",
+  "access_right": "open"
+}

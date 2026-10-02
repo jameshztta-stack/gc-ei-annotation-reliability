@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated manuscript and archived software release."
+title: "GC–EI Annotation Reliability Tool"
+type: software
+authors:
+  - family-names: Zothantluanga
+    given-names: James H.
+version: 0.2.0-rc1
+license: MIT
+repository-code: "https://github.com/jameshztta-stack/gc-ei-annotation-reliability"
+keywords:
+  - GC-MS
+  - electron ionization
+  - spectral library
+  - conformal prediction
+  - selective prediction
+  - uncertainty quantification
