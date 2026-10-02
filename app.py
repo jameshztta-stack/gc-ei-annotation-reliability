@@ -98,7 +98,7 @@ st.caption("A reliability layer for conventional GC–EI–MS spectral-library a
 with st.expander("What this tool does and does not do", expanded=False):
     st.markdown(
         """
-This research tool reproduces the frozen publication workflow. It ranks reference identities,
+This research tool applies the method described in the associated study. It ranks reference identities,
 constructs a calibrated 90% candidate set, estimates the probability that the top-ranked identity
 is correct, and can abstain at empirical calibration-derived operating points.
 
@@ -213,4 +213,4 @@ else:
             )
 
 st.divider()
-st.caption("Publication release candidate 0.2.0-rc1 · Source code and scientific documentation are provided with the repository.")
+st.caption("Version 0.2.0 · Source code and scientific documentation are provided with the repository.")
