@@ -1,87 +1,74 @@
 from __future__ import annotations
 
-import hashlib
 import os
+import shutil
 import tempfile
+import urllib.parse
 import urllib.request
-from dataclasses import dataclass
 from pathlib import Path
 
-from .reference_builder import build_reference_assets
+from .reference_builder import EXPECTED_SHA256, build_reference_assets, sha256
 
-
-ZENODO_RECORD_URL = "https://zenodo.org/records/21910638"
-ZENODO_DOWNLOAD_URL = "https://zenodo.org/records/21910638/files/GCMS%20DB-Public-KovatsRI-VS3.msp?download=1"
+ROOT = Path(__file__).resolve().parent.parent
+MODELS = ROOT / "models"
+DEFAULT_RUNTIME = ROOT / ".runtime_assets_v11"
 SOURCE_FILENAME = "GCMS DB-Public-KovatsRI-VS3.msp"
-EXPECTED_SHA256 = "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70"
+SOURCE_RECORD = "https://zenodo.org/records/21910638"
+SOURCE_DOWNLOAD = "https://zenodo.org/records/21910638/files/" + urllib.parse.quote(SOURCE_FILENAME) + "?download=1"
+REQUIRED_REFERENCE = ("reference_matrix.npz", "reference_metadata.csv", "reference_ri.npy")
+REQUIRED_MODELS = ("calibration.json", "model_ei.json", "model_ri.json")
 
 
-@dataclass(frozen=True)
-class ReferenceAssets:
-    reference_npz: Path
-    metadata_csv: Path
+def _complete(asset_dir: Path) -> bool:
+    return all((asset_dir / x).exists() for x in REQUIRED_REFERENCE + REQUIRED_MODELS)
 
 
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            h.update(block)
-    return h.hexdigest()
+def _copy_models(asset_dir: Path):
+    for name in REQUIRED_MODELS:
+        shutil.copy2(MODELS / name, asset_dir / name)
 
 
-def _verify_source(path: Path) -> None:
-    observed = sha256_file(path)
-    if observed != EXPECTED_SHA256:
-        raise RuntimeError(
-            "The MSP source does not match the expected source file. "
-            f"Expected SHA-256 {EXPECTED_SHA256}, observed {observed}."
-        )
-
-
-def _download_source(destination: Path) -> Path:
-    request = urllib.request.Request(
-        ZENODO_DOWNLOAD_URL,
-        headers={"User-Agent": "GC-EI-Annotation-Reliability-Tool/0.2.0"},
+def _download_source(dest: Path):
+    req = urllib.request.Request(
+        SOURCE_DOWNLOAD,
+        headers={"User-Agent": "GC-EI-Annotation-Reliability-Tool/0.2-v1.1"},
     )
-    with urllib.request.urlopen(request, timeout=180) as response, destination.open("wb") as output:
-        while True:
-            chunk = response.read(1024 * 1024)
-            if not chunk:
-                break
-            output.write(chunk)
-    return destination
+    with urllib.request.urlopen(req, timeout=180) as response, dest.open("wb") as out:
+        shutil.copyfileobj(response, out)
 
 
-def ensure_reference_assets(runtime_dir: Path, source_msp: Path | None = None) -> ReferenceAssets:
-    runtime_dir = Path(runtime_dir)
-    runtime_dir.mkdir(parents=True, exist_ok=True)
-    reference_npz = runtime_dir / "publication_reference.npz"
-    metadata_csv = runtime_dir / "publication_reference_metadata.csv"
+def ensure_runtime_assets(asset_dir: str | Path | None = None) -> Path:
+    """Create the frozen v1.1 runtime assets without redistributing the upstream MSP."""
+    asset_dir = Path(asset_dir or os.environ.get("GCEI_ASSET_DIR", DEFAULT_RUNTIME))
+    asset_dir.mkdir(parents=True, exist_ok=True)
+    if _complete(asset_dir):
+        return asset_dir
 
-    if reference_npz.exists() and metadata_csv.exists():
-        return ReferenceAssets(reference_npz, metadata_csv)
+    local = os.environ.get("GCEI_MSP_PATH")
+    temp_file = None
+    try:
+        if local:
+            msp = Path(local).expanduser().resolve()
+            if not msp.exists():
+                raise FileNotFoundError(f"GCEI_MSP_PATH does not exist: {msp}")
+        else:
+            fd, name = tempfile.mkstemp(prefix="gcei_source_", suffix=".msp")
+            os.close(fd)
+            temp_file = Path(name)
+            _download_source(temp_file)
+            msp = temp_file
 
-    if source_msp is not None:
-        source_msp = Path(source_msp)
-        if not source_msp.exists():
-            raise FileNotFoundError(f"MSP file does not exist: {source_msp}")
-        _verify_source(source_msp)
-        build_reference_assets(source_msp, reference_npz, metadata_csv)
-        return ReferenceAssets(reference_npz, metadata_csv)
+        observed = sha256(msp)
+        if observed != EXPECTED_SHA256:
+            raise RuntimeError(
+                "The downloaded/provided MSP does not match the publication input. "
+                f"Expected {EXPECTED_SHA256}; observed {observed}. "
+                f"Obtain the exact source from {SOURCE_RECORD}."
+            )
 
-    env_path = os.environ.get("GCEI_MSP_PATH")
-    if env_path:
-        candidate = Path(env_path)
-        if candidate.exists():
-            _verify_source(candidate)
-            build_reference_assets(candidate, reference_npz, metadata_csv)
-            return ReferenceAssets(reference_npz, metadata_csv)
-
-    with tempfile.TemporaryDirectory(prefix="gcei_msp_") as temp_dir:
-        local_msp = Path(temp_dir) / SOURCE_FILENAME
-        _download_source(local_msp)
-        _verify_source(local_msp)
-        build_reference_assets(local_msp, reference_npz, metadata_csv)
-
-    return ReferenceAssets(reference_npz, metadata_csv)
+        build_reference_assets(msp, asset_dir)
+        _copy_models(asset_dir)
+        return asset_dir
+    finally:
+        if temp_file is not None:
+            temp_file.unlink(missing_ok=True)
