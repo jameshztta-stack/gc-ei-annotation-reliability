@@ -13,7 +13,7 @@ from .reference_builder import build_reference_assets
 ZENODO_RECORD_URL = "https://zenodo.org/records/21910638"
 ZENODO_DOWNLOAD_URL = "https://zenodo.org/records/21910638/files/GCMS%20DB-Public-KovatsRI-VS3.msp?download=1"
 SOURCE_FILENAME = "GCMS DB-Public-KovatsRI-VS3.msp"
-EXPECTED_SHA256 = "6bc2c7dfcf5a2a80227674229e6bd93e0af0880cbc3f87586f36ef9b31fd9132"
+EXPECTED_SHA256 = "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70"
 
 
 @dataclass(frozen=True)
@@ -34,7 +34,7 @@ def _verify_source(path: Path) -> None:
     observed = sha256_file(path)
     if observed != EXPECTED_SHA256:
         raise RuntimeError(
-            "The MSP source does not match the publication file. "
+            "The MSP source does not match the expected source file. "
             f"Expected SHA-256 {EXPECTED_SHA256}, observed {observed}."
         )
 
@@ -42,7 +42,7 @@ def _verify_source(path: Path) -> None:
 def _download_source(destination: Path) -> Path:
     request = urllib.request.Request(
         ZENODO_DOWNLOAD_URL,
-        headers={"User-Agent": "GC-EI-Annotation-Reliability-Tool/0.2.0-rc1"},
+        headers={"User-Agent": "GC-EI-Annotation-Reliability-Tool/0.2.0"},
     )
     with urllib.request.urlopen(request, timeout=180) as response, destination.open("wb") as output:
         while True:
