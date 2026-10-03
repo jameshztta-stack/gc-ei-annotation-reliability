@@ -1,34 +1,27 @@
 {
-  "ei": {
-    "conformal_q90": 0.2470682263371311,
-    "conformal_q95": 0.5658204555511475,
-    "risk_thresholds": {
-      "target_error_10pct": 0.7990711152195018,
-      "target_error_05pct": 0.8709850600076729
-    }
+  "prototype_version": "0.1.0",
+  "source_study_package": "GC_EI_CILS_Reproducibility_Package_v1.1",
+  "source_msp_sha256": "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70",
+  "max_mz": 6420,
+  "n_reference_identities": 8543,
+  "mass_power": 1.0,
+  "intensity_power": 0.5,
+  "ei_conformal_margin_90": 0.24706825613975525,
+  "ei_conformal_margin_95": 0.5658206939697266,
+  "ri_conformal_margin_90_ideal": 0.18085098266601562,
+  "ri_conformal_margin_95_ideal": 0.4222719669342041,
+  "ri_weight": 0.2,
+  "ri_sigma": 10.0,
+  "audit": {
+    "raw_records": 28220,
+    "unique_exact_spectra": 14146,
+    "exact_duplicate_records": 14074,
+    "conflicting_exact_spectrum_groups": 1,
+    "excluded_NA_or_Z_artifact": 16,
+    "clean_distinct_spectra": 14129,
+    "clean_connectivity_identities": 8543,
+    "multi_spectrum_identities": 2047,
+    "singleton_identities": 6496
   },
-  "ri": {
-    "conformal_q90": 0.1808508038520813,
-    "conformal_q95": 0.4222717881202698,
-    "risk_thresholds": {
-      "target_error_10pct": 0.7722959434904106,
-      "target_error_05pct": 0.8583148018586828
-    }
-  },
-  "identity_level": "first 14 characters of InChIKey",
-  "spectral_weighting": {
-    "mass_exponent": 1.0,
-    "intensity_exponent": 0.5
-  },
-  "ri_fusion": {
-    "ei_weight": 0.8,
-    "ri_weight": 0.2,
-    "ri_sigma": 10.0
-  },
-  "source_msp": {
-    "filename": "GCMS DB-Public-KovatsRI-VS3.msp",
-    "sha256": "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70",
-    "zenodo_record": "https://zenodo.org/records/21910638",
-    "doi": "10.5281/zenodo.21910638"
-  }
+  "warning_ri": "RI calibration is based on the ideal same-database condition from the study. Use only for compatible Kovats RI values and interpret with the manuscript sensitivity analysis."
 }
