@@ -7,8 +7,15 @@ venv/
 .DS_Store
 .pytest_cache/
 .streamlit/secrets.toml
+
+# Runtime-generated third-party reference assets
+.runtime_assets/
+.runtime_assets_v11/
 runtime_assets/
 reference_assets/
+assets/
+
+# Upstream MSP is obtained from the original Zenodo record and is not redistributed
 *.msp
 *.MSP
 GCMS DB-Public-KovatsRI-VS3.msp
