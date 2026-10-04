@@ -1,15 +1,15 @@
 # Third-party data notice
 
-This repository contains software developed for the GC–EI Annotation Reliability Tool.
+This repository contains the software for the GC–EI Annotation Reliability Tool.
 
-The original public EI/Kovats-RI spectral library used in the associated study is not redistributed in this repository.
+The public EI/Kovats-RI spectral library used for method development and validation is not redistributed here.
 
 Source dataset:
 
 Tsugawa H. `msdial_eimslib_kovatsri`. Zenodo. DOI: 10.5281/zenodo.21910638.
 
-The file used in the study is `GCMS DB-Public-KovatsRI-VS3.msp`.
+Source file: `GCMS DB-Public-KovatsRI-VS3.msp`.
 
-The tool obtains the source from the original Zenodo record or accepts a user-provided exact local copy, verifies the expected SHA-256 hash, and constructs the required reference files locally.
+At runtime, the software obtains the source file from the original Zenodo record, or uses an exact local copy supplied by the user. The file is checked against the expected SHA-256 value before the reference files are constructed locally.
 
-The MIT License in this repository applies to the software written for this project. It does not grant rights over third-party datasets.
+The MIT License applies only to the software in this repository. It does not grant rights over third-party datasets.
