@@ -125,9 +125,9 @@ def validate_ri_warning_behavior(asset_dir: Path):
 
 
 def main():
-    p = argparse.ArgumentParser(description="Rebuild the publication reference library and validate frozen v1.1 outputs.")
-    p.add_argument("--msp", type=Path, help="Optional exact local publication MSP. If omitted, use official Zenodo runtime bootstrap.")
-    p.add_argument("--keep-assets", type=Path, help="Optional directory in which to keep built runtime assets.")
+    p = argparse.ArgumentParser(description="Rebuild the validated v1.1 reference library and verify the published regression outputs.")
+    p.add_argument("--msp", type=Path, help="Optional exact local MSP. If omitted, the source is obtained from the Zenodo record.")
+    p.add_argument("--keep-assets", type=Path, help="Optional directory in which to retain the reconstructed runtime assets.")
     a = p.parse_args()
 
     if a.keep_assets:
@@ -143,7 +143,7 @@ def main():
             n = validate_botanical(asset_dir)
             ri_warning = validate_ri_warning_behavior(asset_dir)
 
-    print("PASS: v1.1 scientific reproducibility validation")
+    print("PASS: v1.1 reproducibility validation")
     print(json.dumps({
         "reference_fingerprints": fingerprints,
         "botanical_spectra_checked": n,
