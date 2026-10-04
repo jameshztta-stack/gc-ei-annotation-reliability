@@ -1,60 +1,60 @@
 # Deployment guide
 
-## 1. GitHub
+## GitHub repository
 
-Create a public repository and upload the project files.
+The public repository is:
 
-Suggested repository name:
+`jameshztta-stack/gc-ei-annotation-reliability`
 
-`gc-ei-annotation-reliability`
+Before a formal software release, verify the repository URL, author metadata, manuscript citation, software version and Zenodo DOI metadata.
 
-Before publication, update:
+## Streamlit Community Cloud
 
-- repository URL in `CITATION.cff` if needed;
-- author metadata;
-- manuscript citation;
-- Zenodo DOI;
-- software version to `1.0.0` when the public web application is ready.
+The application is deployed from the `main` branch with `app.py` as the entry point.
 
-## 2. Streamlit Community Cloud
+For a new deployment:
 
-1. Sign in to Streamlit Community Cloud using GitHub.
-2. Select **Create app** / **Deploy an app**.
-3. Select this GitHub repository.
-4. Branch: `main`.
-5. Main file path: `app.py`.
-6. In Advanced settings, select Python 3.13 if available.
-7. Deploy.
+1. Sign in to Streamlit Community Cloud with GitHub.
+2. Select **Create app** or **Deploy an app**.
+3. Select this repository.
+4. Use branch `main`.
+5. Set the main file path to `app.py`.
+6. Use Python 3.13 when available.
+7. Deploy the application.
 
 No secret is required for the default public-source configuration.
 
 ### First startup
 
-The first application startup needs internet access because the server obtains the public MSP directly from the original Zenodo record. The source file is SHA-256 verified before use.
+The first startup requires internet access because the application obtains the public MSP from the original Zenodo record. The source file is checked against the expected SHA-256 value before use.
 
-The application then constructs the reference matrix and metadata. `load_engine()` is cached by Streamlit so the prepared engine can be reused during the process lifetime.
+The application then constructs the reference matrix and metadata locally. Streamlit caches the prepared engine for reuse during the process lifetime.
 
-## 3. Public application checks
+## Public application checks
 
-After deployment, test at minimum:
+Before release, verify at minimum:
 
 - one EI-only botanical example from `examples/example_single_CdeL_P02.csv`;
-- the 12-spectrum batch example;
-- a manually entered short spectrum;
-- one spectrum with optional RI;
+- the 12-spectrum botanical batch example;
+- one manually entered spectrum;
+- one RI-assisted spectrum;
+- the 10% and 5% empirical operating points;
 - CSV downloads;
-- mobile and desktop rendering.
+- invalid-input handling;
+- RI disagreement warnings;
+- desktop and mobile rendering.
 
-The botanical examples should reproduce the expected values stored in `tests/botanical_expected.csv` within the stated numerical tolerance.
+The 12 botanical examples must reproduce the values in `tests/botanical_expected.csv` within the stated numerical tolerances.
 
-## 4. Publication version
+## Release procedure
 
-After the public application has been checked:
+After the application and repository checks have passed:
 
-1. change the software version to `1.0.0`;
-2. update the changelog;
-3. create GitHub tag/version `v1.0.0`;
-4. archive the software in Zenodo;
-5. obtain the software DOI;
-6. update the manuscript Data and Code Availability statement and citation metadata;
-7. create or update the Jazer Research Lab page with the live app, GitHub, and DOI links.
+1. confirm version `1.0.0` in the application and citation metadata;
+2. confirm `CHANGELOG.md`;
+3. run the final CI and reproducibility workflows;
+4. create the GitHub tag `v1.0.0` and the corresponding release;
+5. archive the release in Zenodo and obtain the software DOI;
+6. add the DOI to `CITATION.cff`, README and the application;
+7. update the manuscript Data and Code Availability statement;
+8. add the live application, GitHub and DOI links to the Jazer Research Lab page.
