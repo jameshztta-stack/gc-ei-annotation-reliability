@@ -232,4 +232,4 @@ st.caption(
     "Developed and maintained by Dr. James H. Zothantluanga, Research Director, Jazer Research Lab, "
     "Aizawl, Mizoram 796005, India."
 )
-st.caption("Version 1.0.0 · Frozen v1.1 scientific parameters.")
+st.caption("Version 1.0.0 · Based on the validated v1.1 workflow.")
