@@ -223,9 +223,11 @@ st.markdown(
 )
 
 st.markdown("**Citation**")
-st.write(
-    "If results from this tool contribute to a publication, cite the associated article and the archived software release. "
-    "The article citation and software DOI will be added here when available."
+st.markdown(
+    "If results from this tool contribute to a publication, cite the associated research article and the archived software release.  \n"
+    "**Software release:** Zothantluanga JH. *GC–EI Annotation Reliability Tool*, version 1.0.0. Zenodo. 2026. "
+    "DOI: [10.5281/zenodo.23143113](https://doi.org/10.5281/zenodo.23143113).  \n"
+    "**Associated article:** citation will be added after publication."
 )
 
 st.caption(
