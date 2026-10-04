@@ -23,5 +23,5 @@
     "multi_spectrum_identities": 2047,
     "singleton_identities": 6496
   },
-  "warning_ri": "RI calibration is based on the ideal same-database condition from the study. Use only for compatible Kovats RI values and interpret with the manuscript sensitivity analysis."
+  "warning_ri": "RI calibration was derived from same-database query/reference comparisons. Use only when experimental Kovats RI values are chromatographically comparable with the reference system; see the manuscript sensitivity analysis."
 }
