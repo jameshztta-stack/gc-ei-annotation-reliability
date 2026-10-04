@@ -14,6 +14,7 @@
 - Documented the independent coriander, cumin, fennel and *Ilex umbellulata* challenge analyses.
 - Refined interface and documentation language for concise scientific presentation.
 - Verified desktop and mobile rendering of the public Streamlit application.
+- Archived the v1.0.0 software release on Zenodo: DOI 10.5281/zenodo.23143113.
 
 ## 0.2.0 — 2026-10-02
 
