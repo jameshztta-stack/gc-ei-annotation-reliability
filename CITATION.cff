@@ -1,10 +1,11 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the associated manuscript and the archived software version."
+message: "Please cite the associated research article and the archived software release when this software contributes to published work."
 title: "GC–EI Annotation Reliability Tool"
 type: software
 authors:
   - family-names: Zothantluanga
     given-names: James H.
+    affiliation: "Jazer Research Lab, Aizawl, Mizoram, India"
 version: 1.0.0
 license: MIT
 repository-code: "https://github.com/jameshztta-stack/gc-ei-annotation-reliability"
@@ -15,3 +16,4 @@ keywords:
   - conformal prediction
   - selective prediction
   - uncertainty quantification
+  - retention index
