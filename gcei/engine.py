@@ -133,7 +133,9 @@ class GCEIEngine:
             q90 = float(self.cal["ri_conformal_margin_90_ideal"])
             model = self.model_ri
             mode = "EI+RI"
-            warnings.append("RI-assisted output uses the study's ideal same-database RI calibration. Interpret only when the experimental Kovats RI is chromatographically compatible with the reference system.")
+            warnings.append(
+                "RI-assisted calibration was derived under same-database conditions. Use only when the experimental Kovats RI is chromatographically comparable with the reference RI system."
+            )
         else:
             S = ei
             q90 = float(self.cal["ei_conformal_margin_90"])
@@ -171,8 +173,8 @@ class GCEIEngine:
                 ei_name = self._display_name(self.meta.iloc[ei_top_idx].get("name", ""))
                 ri_name = self._display_name(self.meta.iloc[top_idx].get("name", ""))
                 warnings.append(
-                    f"RI-assisted ranking changed the EI-only top candidate from {ei_name} to {ri_name}. "
-                    "RI evidence materially changed the ranking; verify chromatographic comparability before relying on the RI-assisted top hit."
+                    f"RI changed the top-ranked candidate from {ei_name} (EI-only) to {ri_name} (EI+RI). "
+                    "Confirm chromatographic comparability before interpreting the RI-assisted ranking."
                 )
                 try:
                     ei_rr = float(self.ref_ri[ei_top_idx])
@@ -180,13 +182,13 @@ class GCEIEngine:
                         ei_delta = abs(float(kovats_ri) - ei_rr)
                         if ei_delta > 50:
                             warnings.append(
-                                f"The EI-only top candidate ({ei_name}) has ΔRI > 50 relative to the supplied RI. "
-                                "In the study, large RI disagreement could reduce retrieval accuracy."
+                                f"The EI-only top candidate ({ei_name}) differs from the supplied RI by >50 RI units; "
+                                "large RI disagreement reduced retrieval accuracy in the study."
                             )
                         elif ei_delta > 20:
                             warnings.append(
-                                f"The EI-only top candidate ({ei_name}) has ΔRI > 20 relative to the supplied RI. "
-                                "The study showed that RI benefit diminished around this level of disagreement."
+                                f"The EI-only top candidate ({ei_name}) differs from the supplied RI by >20 RI units; "
+                                "the RI benefit diminished around this level of disagreement in the study."
                             )
                 except Exception:
                     pass
@@ -195,16 +197,26 @@ class GCEIEngine:
                 if np.isfinite(rr) and rr > 0:
                     ri_delta = abs(float(kovats_ri) - rr)
                     if ri_delta > 50:
-                        warnings.append("Top candidate has ΔRI > 50. In the study, large RI disagreement could reduce retrieval accuracy.")
+                        warnings.append(
+                            "The top candidate differs from the supplied RI by >50 RI units; large RI disagreement reduced retrieval accuracy in the study."
+                        )
                     elif ri_delta > 20:
-                        warnings.append("Top candidate has ΔRI > 20. The study showed that RI benefit diminished around this level of disagreement.")
+                        warnings.append(
+                            "The top candidate differs from the supplied RI by >20 RI units; the RI benefit diminished around this level of disagreement in the study."
+                        )
             except Exception:
                 pass
 
         if prob >= threshold:
-            decision = f"Top candidate passes the empirical {int(risk_target*100)}% target-error operating point for {mode}. Report only as a library-based tentative annotation unless stronger orthogonal confirmation is available."
+            decision = (
+                f"Meets the empirical {int(risk_target*100)}% target-error operating point for {mode}. "
+                "Report as a tentative library annotation; definitive identification requires orthogonal confirmation."
+            )
         else:
-            decision = f"Do not accept the top hit as a single-candidate annotation under the empirical {int(risk_target*100)}% target-error operating point. Review/report the calibrated candidate set or obtain additional evidence."
+            decision = (
+                f"Does not meet the empirical {int(risk_target*100)}% target-error operating point. "
+                "Do not assign a single candidate; retain the calibrated candidate set or obtain additional evidence."
+            )
 
         return AnalysisResult(
             mode=mode,
