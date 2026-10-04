@@ -1,6 +1,6 @@
 {
   "title": "GC–EI Annotation Reliability Tool",
-  "description": "Reference software for uncertainty-aware GC–EI–MS spectral-library annotation using calibrated candidate sets, predicted top-1 correctness and empirical selective-prediction operating points.",
+  "description": "Software for uncertainty-aware GC–EI–MS library annotation. The tool reports connectivity-level candidates, predicted top-1 correctness, 90% conformal candidate sets, empirical 5% and 10% target-error decisions, and optional Kovats RI-assisted scoring.",
   "creators": [
     {
       "name": "Zothantluanga, James H.",
