@@ -19,16 +19,16 @@ For a user-supplied EI spectrum, the software returns:
 
 Outputs are tentative spectral-library annotations. Definitive identification requires an authentic standard or suitable orthogonal confirmation. Low confidence or a broad candidate set is not evidence that a compound is absent from the reference library.
 
-## Frozen scientific workflow
+## Validated scientific workflow
 
-Version 1.0.0 preserves the validated v1.1 scientific settings:
+Version 1.0.0 implements the validated v1.1 scientific settings:
 
 - connectivity identity = first 14 characters of InChIKey;
 - exact-spectrum duplicates removed before benchmark development;
 - EI score = `m/z^1 × intensity^0.5` weighted cosine;
-- fixed conformal margins from the publication calibration identities;
-- fixed confidence models from the publication calibration split;
-- fixed empirical selective-prediction thresholds;
+- conformal margins derived from the publication calibration identities;
+- confidence models derived from the publication calibration split;
+- empirical selective-prediction thresholds derived from the publication risk-calibration analysis;
 - RI fusion = `0.8 × EI + 0.2 × exp[-0.5 × (ΔRI/10)^2]`.
 
 No model fitting or recalibration occurs when a user submits a spectrum.
@@ -77,7 +77,15 @@ The study used the public MS-DIAL EI/Kovats-RI spectral library deposited by Hir
 
 Source file: `GCMS DB-Public-KovatsRI-VS3.msp`.
 
-The upstream MSP and derived reference matrix are not redistributed in this repository. At runtime, the software obtains the exact source file from the Zenodo record, verifies its SHA-256 checksum, and reconstructs the frozen v1.1 reference assets locally. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
+The upstream MSP and derived reference matrix are not redistributed in this repository. At runtime, the software obtains the exact source file from the Zenodo record, verifies its SHA-256 checksum, and reconstructs the validated v1.1 reference assets locally. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
+
+## Independent botanical challenge data
+
+Botanical spectra were kept separate from model development and calibration.
+
+The public regression set contains 12 spectra from coriander, cumin and fennel. Historical annotations were used only for descriptive comparison, not as authenticated ground truth. A separate *Ilex umbellulata* case set was used to examine annotation ambiguity and abstention behavior rather than to calculate accuracy.
+
+See [`docs/BOTANICAL_CHALLENGE_SETS.md`](docs/BOTANICAL_CHALLENGE_SETS.md) for the full interpretation.
 
 ## Reproducibility
 
@@ -87,7 +95,7 @@ Run:
 python scripts/check_reproducibility.py
 ```
 
-The validation rebuilds the reference assets, verifies the frozen SHA-256 fingerprints of the spectral matrix, RI vector and metadata, and reruns the 12 independent botanical challenge spectra against the locked v1.1 outputs.
+The validation rebuilds the reference assets, verifies the reference SHA-256 fingerprints of the spectral matrix, RI vector and metadata, and reruns the 12 independent botanical challenge spectra against the validated v1.1 outputs.
 
 To use a local copy of the exact MSP:
 
