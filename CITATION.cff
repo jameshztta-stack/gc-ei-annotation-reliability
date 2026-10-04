@@ -7,8 +7,13 @@ authors:
     given-names: James H.
     affiliation: "Jazer Research Lab, Aizawl, Mizoram, India"
 version: 1.0.0
+date-released: 2026-10-04
 license: MIT
 repository-code: "https://github.com/jameshztta-stack/gc-ei-annotation-reliability"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23143113"
+    description: "Zenodo archive for version 1.0.0"
 keywords:
   - GC-MS
   - electron ionization
