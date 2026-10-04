@@ -116,6 +116,8 @@ class GCEIEngine:
             raise ValueError("risk_target must be 0.10 or 0.05")
         X, ignored = self._query_vector(peaks)
         ei = (X @ self.R.T).toarray().astype(np.float32)
+        ei_order = np.argsort(-ei[0], kind="stable")
+        ei_top_idx = int(ei_order[0])
         warnings = []
         if ignored:
             warnings.append(f"{ignored} peak(s) outside the reference m/z range were ignored.")
@@ -165,6 +167,29 @@ class GCEIEngine:
 
         ri_delta = None
         if use_ri:
+            if top_idx != ei_top_idx:
+                ei_name = self._display_name(self.meta.iloc[ei_top_idx].get("name", ""))
+                ri_name = self._display_name(self.meta.iloc[top_idx].get("name", ""))
+                warnings.append(
+                    f"RI-assisted ranking changed the EI-only top candidate from {ei_name} to {ri_name}. "
+                    "RI evidence materially changed the ranking; verify chromatographic comparability before relying on the RI-assisted top hit."
+                )
+                try:
+                    ei_rr = float(self.ref_ri[ei_top_idx])
+                    if np.isfinite(ei_rr) and ei_rr > 0:
+                        ei_delta = abs(float(kovats_ri) - ei_rr)
+                        if ei_delta > 50:
+                            warnings.append(
+                                f"The EI-only top candidate ({ei_name}) has ΔRI > 50 relative to the supplied RI. "
+                                "In the study, large RI disagreement could reduce retrieval accuracy."
+                            )
+                        elif ei_delta > 20:
+                            warnings.append(
+                                f"The EI-only top candidate ({ei_name}) has ΔRI > 20 relative to the supplied RI. "
+                                "The study showed that RI benefit diminished around this level of disagreement."
+                            )
+                except Exception:
+                    pass
             try:
                 rr = float(self.ref_ri[top_idx])
                 if np.isfinite(rr) and rr > 0:
