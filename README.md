@@ -1,6 +1,6 @@
 # GC–EI Annotation Reliability Tool
 
-**Version 0.2.0 — scientific-reproducibility repair candidate**
+**Version 1.0.0**
 
 An interactive implementation of the uncertainty-aware GC–EI–MS library-annotation workflow developed in our study. The tool is intended to help researchers decide whether a conventional GC–EI library-search result supports a single tentative candidate, a calibrated set of candidates, or no exact single-candidate annotation.
 
@@ -100,7 +100,7 @@ An exact local source can instead be supplied with:
 python scripts/check_reproducibility.py --msp "/path/GCMS DB-Public-KovatsRI-VS3.msp"
 ```
 
-The full reproducibility workflow runs automatically on the repair branch, pull requests and `main`.
+The full reproducibility workflow runs automatically on pull requests and `main`.
 
 ## Deployment
 
@@ -116,4 +116,4 @@ The project software is released under the MIT License. Third-party spectral dat
 
 ## Citation
 
-The final manuscript citation and Zenodo software DOI will be added when the software is frozen and archived as `v1.0.0`. `CITATION.cff` is included so GitHub can expose the preferred software citation metadata.
+This repository is frozen as software version `v1.0.0`. The associated manuscript citation and Zenodo software DOI should be added once the archive record is created. `CITATION.cff` exposes the preferred software citation metadata to GitHub.
