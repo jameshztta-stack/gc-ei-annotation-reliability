@@ -46,7 +46,7 @@ def load_engine():
 
 
 st.title("GC–EI Annotation Reliability Tool")
-st.caption("Uncertainty-aware GC–EI–MS library annotation · validated v1.1 scientific workflow")
+st.caption("Uncertainty-aware GC–EI–MS library annotation with calibrated uncertainty estimates")
 
 with st.expander("Scope and interpretation", expanded=False):
     st.markdown(
@@ -232,4 +232,4 @@ st.caption(
     "Developed and maintained by Dr. James H. Zothantluanga, Research Director, Jazer Research Lab, "
     "Aizawl, Mizoram 796005, India."
 )
-st.caption("Version 1.0.0 · Based on the validated v1.1 workflow.")
+st.caption("Version 1.0.0")
