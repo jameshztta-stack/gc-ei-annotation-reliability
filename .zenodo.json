@@ -1,9 +1,10 @@
 {
   "title": "GC–EI Annotation Reliability Tool",
-  "description": "Interactive and reproducible implementation of an uncertainty-aware GC–EI–MS spectral-library annotation method using calibrated candidate sets and selective prediction.",
+  "description": "Reference software for uncertainty-aware GC–EI–MS spectral-library annotation using calibrated candidate sets, predicted top-1 correctness and empirical selective-prediction operating points.",
   "creators": [
     {
-      "name": "Zothantluanga, James H."
+      "name": "Zothantluanga, James H.",
+      "affiliation": "Jazer Research Lab, Aizawl, Mizoram, India"
     }
   ],
   "license": "MIT",
