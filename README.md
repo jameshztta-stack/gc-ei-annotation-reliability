@@ -2,6 +2,8 @@
 
 **Version 1.0.0**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23143113.svg)](https://doi.org/10.5281/zenodo.23143113)
+
 Reference implementation of the validated v1.1 uncertainty-aware GC–EI–MS library-annotation workflow.
 
 ## Scope
@@ -125,7 +127,7 @@ If results from this software contribute to a publication, cite both the associa
 
 **Associated article:** citation to be inserted after publication.
 
-**Software release:** DOI to be inserted after the v1.0.0 Zenodo archive is created.
+**Software release:** Zothantluanga JH. *GC–EI Annotation Reliability Tool*, version 1.0.0. Zenodo. 2026. DOI: [10.5281/zenodo.23143113](https://doi.org/10.5281/zenodo.23143113).
 
 ## Developer and maintainer
 
