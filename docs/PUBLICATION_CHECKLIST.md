@@ -42,10 +42,11 @@
 - [x] Version changed to `1.0.0`.
 - [x] `CHANGELOG.md` updated.
 - [x] Final CI and reproducibility workflows passed after the documentation and interface review.
-- [ ] GitHub tag `v1.0.0` created.
-- [ ] GitHub release created.
-- [ ] Zenodo archive created.
-- [ ] Software DOI inserted into `CITATION.cff`, README, app and manuscript.
+- [x] GitHub tag `v1.0.0` created.
+- [x] GitHub release created.
+- [x] Zenodo archive created.
+- [x] Software DOI inserted into `CITATION.cff`, README and app.
+- [ ] Software DOI inserted into manuscript.
 - [ ] Associated publication citation inserted into README/app after publication details are available.
 - [ ] Live app URL inserted into manuscript.
 - [ ] Jazer Research Lab page linked.
