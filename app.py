@@ -181,4 +181,4 @@ st.markdown(
     f"Reference library source: [MS-DIAL public EI/Kovats-RI dataset on Zenodo]({SOURCE_RECORD}). "
     "The upstream MSP is downloaded from the original record at runtime and is not redistributed in this repository."
 )
-st.caption("Version 0.2.0 scientific-reproducibility repair candidate · Frozen v1.1 scientific parameters.")
+st.caption("Version 1.0.0 · Frozen v1.1 scientific parameters.")
