@@ -49,9 +49,8 @@ compound is absent from the reference library.
 try:
     with st.spinner("Preparing the validated publication reference library. First launch may take a little longer..."):
         engine = load_engine()
-except Exception as exc:
-    st.error("The validated reference library could not be prepared automatically.")
-    st.exception(exc)
+except Exception:
+    st.error("The validated reference library could not be prepared automatically. Please refresh the app and try again.")
     st.stop()
 
 mode = st.radio("Analysis mode", ["Single spectrum", "Batch spectra"], horizontal=True)
@@ -73,15 +72,19 @@ if mode == "Single spectrum":
         )
         try:
             peaks = parse_single_spectrum_text(text)
-        except Exception as exc:
+        except ValueError as exc:
             st.error(str(exc))
+        except Exception:
+            st.error("The pasted spectrum could not be parsed. Please verify the input format and try again.")
     else:
         uploaded = st.file_uploader("Upload CSV with columns mz,intensity", type=["csv"])
         if uploaded is not None:
             try:
                 peaks = read_spectrum_csv(uploaded.getvalue())
-            except Exception as exc:
+            except ValueError as exc:
                 st.error(str(exc))
+            except Exception:
+                st.error("The uploaded spectrum CSV could not be read. Please verify the file format and try again.")
 
     use_ri = st.checkbox("I have a Kovats retention index measured under conditions considered comparable with the reference RI system")
     query_ri = None
@@ -146,8 +149,10 @@ if mode == "Single spectrum":
                     file_name="gcei_candidate_set_90.csv",
                     mime="text/csv",
                 )
-            except Exception as exc:
-                st.exception(exc)
+            except ValueError as exc:
+                st.error(str(exc))
+            except Exception:
+                st.error("The spectrum could not be analyzed. Please verify the input and try again.")
 
 else:
     st.write("Upload a long-format CSV. Required columns: `spectrum_id`, `mz`, `intensity`. Optional column: `ri`.")
@@ -166,8 +171,10 @@ else:
                     file_name="gcei_batch_results.csv",
                     mime="text/csv",
                 )
-        except Exception as exc:
-            st.exception(exc)
+        except ValueError as exc:
+            st.error(str(exc))
+        except Exception:
+            st.error("The batch file could not be analyzed. Please verify the CSV format and try again.")
 
 st.divider()
 st.markdown(
