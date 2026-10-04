@@ -29,7 +29,7 @@ class AnalysisResult:
 
 
 class GCEIEngine:
-    """Frozen inference engine derived from the publication v1.1 workflow."""
+    """Inference engine implementing the validated v1.1 workflow."""
 
     @staticmethod
     def _display_name(name: str) -> str:
