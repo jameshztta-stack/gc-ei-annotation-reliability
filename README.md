@@ -2,67 +2,44 @@
 
 **Version 1.0.0**
 
-An interactive implementation of the uncertainty-aware GC–EI–MS library-annotation workflow developed in our study. The tool is intended to help researchers decide whether a conventional GC–EI library-search result supports a single tentative candidate, a calibrated set of candidates, or no exact single-candidate annotation.
+Reference implementation of the validated v1.1 uncertainty-aware GC–EI–MS library-annotation workflow.
 
-## What the tool returns
+## Scope
 
-For a user-supplied EI spectrum, the current version returns:
+For a user-supplied EI spectrum, the software returns:
 
-- highest-ranked connectivity-level candidate;
-- top-10 candidate list;
-- calibrated `m/z^1 × intensity^0.5` EI similarity;
-- predicted probability that the highest-ranked candidate is correct;
-- 90% split-conformal candidate set and candidate-set size;
-- empirical 10% or 5% target-error selective-prediction decision;
-- optional RI-assisted scoring when a **Kovats RI** is supplied;
+- the highest-ranked connectivity-level library candidate;
+- the top 10 ranked candidates;
+- `m/z^1 × intensity^0.5` weighted-cosine similarity;
+- predicted top-1 correctness;
+- a 90% split-conformal candidate set;
+- an empirical 10% or 5% target-error decision;
+- optional Kovats-RI-assisted scoring;
 - downloadable single-spectrum and batch results.
 
-The software does **not** claim authentic-standard identification. Low confidence or a broad candidate set also does **not** prove that a compound is absent from the reference library.
+Outputs are tentative spectral-library annotations. Definitive identification requires an authentic standard or suitable orthogonal confirmation. Low confidence or a broad candidate set is not evidence that a compound is absent from the reference library.
 
-## Scientific lock
+## Frozen scientific workflow
 
-The public tool preserves the frozen decisions used in the validated v1.1 research workflow:
+Version 1.0.0 preserves the validated v1.1 scientific settings:
 
-- identity = first 14 characters of InChIKey;
-- exact-spectrum duplication removed before benchmark development;
+- connectivity identity = first 14 characters of InChIKey;
+- exact-spectrum duplicates removed before benchmark development;
 - EI score = `m/z^1 × intensity^0.5` weighted cosine;
-- conformal margins fixed from the publication calibration identities;
-- confidence model fixed from the publication calibration split;
-- empirical selective-prediction thresholds fixed from the publication risk-calibration analysis;
-- optional RI fusion = `0.8 × EI + 0.2 × exp[-0.5 × (ΔRI/10)^2]`.
+- fixed conformal margins from the publication calibration identities;
+- fixed confidence models from the publication calibration split;
+- fixed empirical selective-prediction thresholds;
+- RI fusion = `0.8 × EI + 0.2 × exp[-0.5 × (ΔRI/10)^2]`.
 
-The web interface does not retrain the publication model when a user submits a spectrum.
-
-## Reference library
-
-The study used the public MS-DIAL EI/Kovats-RI spectral library:
-
-**Tsugawa H. `msdial_eimslib_kovatsri`. Zenodo. DOI: 10.5281/zenodo.21910638.**
-
-File used in the study: `GCMS DB-Public-KovatsRI-VS3.msp`.
-
-The upstream MSP and the derived reference matrix are **not stored in this repository**. At first launch, the program obtains the exact source file from the original Zenodo record, verifies its SHA-256 checksum, and constructs the frozen v1.1 runtime assets locally. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
-
-## Quick start
-
-```bash
-python -m venv .venv
-```
-
-Activate the environment and then:
-
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-The first launch prepares the reference-library files. To use an already downloaded exact MSP instead of downloading it again, define `GCEI_MSP_PATH` before launching the app.
+No model fitting or recalibration occurs when a user submits a spectrum.
 
 ## Input format
 
 ### Single spectrum
 
-```text
+Use two columns, one ion peak per row:
+
+```csv
 mz,intensity
 41,82.1
 43,44.6
@@ -72,19 +49,37 @@ mz,intensity
 136,14.2
 ```
 
+Template: [`examples/template_single_spectrum.csv`](examples/template_single_spectrum.csv)
+
 ### Batch spectra
 
-```text
+Use one row per ion peak. Repeat `spectrum_id` for all peaks belonging to the same spectrum.
+
+```csv
 spectrum_id,mz,intensity,ri
-Peak_1,41,82.1,939
-Peak_1,93,100,939
-Peak_2,43,65.2,
-Peak_2,71,100,
+Peak_1,41,82.1,
+Peak_1,93,100,
+Peak_2,43,65.2,939
+Peak_2,71,100,939
 ```
 
-The `ri` column is optional and must contain **Kovats retention index**, not raw retention time.
+The `ri` column is optional. When RI is available, enter the Kovats RI and repeat the same value for all rows belonging to that spectrum. Do not enter raw retention time.
 
-## Reproducibility validation
+Template: [`examples/template_batch_spectra.csv`](examples/template_batch_spectra.csv)
+
+The Streamlit interface also provides direct CSV-template downloads.
+
+## Reference library
+
+The study used the public MS-DIAL EI/Kovats-RI spectral library deposited by Hiroshi Tsugawa:
+
+**Tsugawa H. `msdial_eimslib_kovatsri`. Zenodo. DOI: 10.5281/zenodo.21910638.**
+
+Source file: `GCMS DB-Public-KovatsRI-VS3.msp`.
+
+The upstream MSP and derived reference matrix are not redistributed in this repository. At runtime, the software obtains the exact source file from the Zenodo record, verifies its SHA-256 checksum, and reconstructs the frozen v1.1 reference assets locally. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
+
+## Reproducibility
 
 Run:
 
@@ -92,28 +87,44 @@ Run:
 python scripts/check_reproducibility.py
 ```
 
-The validation obtains the exact upstream MSP from the original Zenodo record, rebuilds the non-redistributed reference assets, verifies frozen scientific SHA-256 fingerprints for the sparse reference matrix, RI vector and canonical metadata, and then reruns all 12 independent botanical challenge spectra against the frozen v1.1 expected outputs.
+The validation rebuilds the reference assets, verifies the frozen SHA-256 fingerprints of the spectral matrix, RI vector and metadata, and reruns the 12 independent botanical challenge spectra against the locked v1.1 outputs.
 
-An exact local source can instead be supplied with:
+To use a local copy of the exact MSP:
 
 ```bash
 python scripts/check_reproducibility.py --msp "/path/GCMS DB-Public-KovatsRI-VS3.msp"
 ```
 
-The full reproducibility workflow runs automatically on pull requests and `main`.
+The complete reproducibility workflow runs automatically on pull requests and `main`.
 
-## Deployment
+## Local use
 
-See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the GitHub → Streamlit Community Cloud → Zenodo publication workflow.
+```bash
+python -m venv .venv
+pip install -r requirements.txt
+streamlit run app.py
+```
 
-## Reuse with a different EI library
+To use an existing local MSP instead of downloading it at runtime, define `GCEI_MSP_PATH` before launch.
 
-The software can be adapted to another EI reference library, but the publication conformal margins and confidence thresholds **must not be transferred directly to a different library**. A new library requires screening for exact duplicates and identity leakage, construction of independent query/reference spectra, calibration of conformal nonconformity scores, and refitting and validation of the confidence model.
+## Use with another EI library
 
-## License
-
-The project software is released under the MIT License. Third-party spectral data are not included under that license. See [`NOTICE`](NOTICE) and [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
+The supplied conformal margins, confidence models and empirical thresholds are specific to the reference distribution used in the study. They must not be transferred directly to another library. A different reference library requires independent duplicate screening, query/reference construction, calibration, model fitting and validation.
 
 ## Citation
 
-This repository is frozen as software version `v1.0.0`. The associated manuscript citation and Zenodo software DOI should be added once the archive record is created. `CITATION.cff` exposes the preferred software citation metadata to GitHub.
+If results from this software contribute to a publication, cite both the associated research article and the archived software release.
+
+**Associated article:** citation to be inserted after publication.
+
+**Software release:** DOI to be inserted after the v1.0.0 Zenodo archive is created.
+
+## Developer and maintainer
+
+**Dr. James H. Zothantluanga**  
+Research Director, Jazer Research Lab  
+Aizawl, Mizoram 796005, India
+
+## License
+
+Software: MIT License. Third-party spectral data are not covered by the software license. See [`NOTICE`](NOTICE) and [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
