@@ -49,7 +49,11 @@ The final CI and reproducibility workflows passed before release preparation.
 
 ## Citation
 
-If results from this software contribute to published work, cite both the associated research article and the archived software release. The article citation and software DOI will be added to the repository after they become available.
+If results from this software contribute to published work, cite both the associated research article and the archived software release.
+
+**Software release:** Zothantluanga JH. *GC–EI Annotation Reliability Tool*, version 1.0.0. Zenodo. 2026. DOI: [10.5281/zenodo.23143113](https://doi.org/10.5281/zenodo.23143113).
+
+**Associated article:** citation will be added after publication.
 
 ## Developer and maintainer
 
