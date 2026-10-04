@@ -20,6 +20,8 @@
 - [x] Single-spectrum and batch CSV templates included.
 - [x] Citation guidance included.
 - [x] Developer and maintainer information included.
+- [x] Botanical challenge datasets documented.
+- [x] Public-facing documentation reviewed for concise scientific language.
 
 ## Streamlit
 
@@ -39,8 +41,8 @@
 
 - [x] Version changed to `1.0.0`.
 - [x] `CHANGELOG.md` updated.
-- [ ] Final CI and reproducibility workflows pass after the documentation/interface freeze.
-- [ ] GitHub tag/version `v1.0.0` created.
+- [ ] Final CI and reproducibility workflows pass after the documentation and interface review.
+- [ ] GitHub tag `v1.0.0` created.
 - [ ] GitHub release created.
 - [ ] Zenodo archive created.
 - [ ] Software DOI inserted into `CITATION.cff`, README, app and manuscript.
