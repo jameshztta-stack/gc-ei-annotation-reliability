@@ -111,9 +111,9 @@ def validate_ri_warning_behavior(asset_dir: Path):
     warnings = "\n".join(r.warnings)
     if r.top1.get("display_name", "").strip().lower() != "sabinene hydrate acetate (cis-)":
         raise AssertionError(f"Unexpected RI-assisted top candidate in warning regression: {r.top1.get('display_name')}")
-    if "RI-assisted ranking changed the EI-only top candidate from ALPHA-PINENE" not in warnings:
+    if "RI changed the top-ranked candidate from ALPHA-PINENE (EI-only)" not in warnings:
         raise AssertionError("Missing warning that RI changed the EI-only top candidate.")
-    if "EI-only top candidate (ALPHA-PINENE) has ΔRI > 50" not in warnings:
+    if "EI-only top candidate (ALPHA-PINENE) differs from the supplied RI by >50 RI units" not in warnings:
         raise AssertionError("Missing large-ΔRI warning for the EI-only top candidate.")
     if abs(float(r.ri_delta_top1) - 6.0) > 1e-9:
         raise AssertionError(f"Unexpected RI-assisted top-candidate ΔRI: {r.ri_delta_top1}")
