@@ -7,8 +7,8 @@ from gcei.bootstrap import ensure_reference_assets
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Prepare the frozen publication reference assets.")
-    parser.add_argument("--msp", type=Path, default=None, help="Exact local publication MSP; otherwise fetched from original Zenodo record.")
+    parser = argparse.ArgumentParser(description="Prepare the validated reference assets used by the GC–EI annotation workflow.")
+    parser.add_argument("--msp", type=Path, default=None, help="Exact local source MSP. If omitted, the file is obtained from the original Zenodo record.")
     parser.add_argument("--output", type=Path, default=Path("runtime_assets"))
     args = parser.parse_args()
 
