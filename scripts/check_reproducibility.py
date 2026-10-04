@@ -103,6 +103,27 @@ def validate_botanical(asset_dir: Path):
     return len(expected)
 
 
+def validate_ri_warning_behavior(asset_dir: Path):
+    eng = GCEIEngine(asset_dir)
+    batch = pd.read_csv(BATCH)
+    g = batch.loc[batch["spectrum_id"] == "CdeL_P02"]
+    r = eng.analyze(zip(g["mz"], g["intensity"]), kovats_ri=1200.0, risk_target=0.10)
+    warnings = "\n".join(r.warnings)
+    if r.top1.get("display_name", "").strip().lower() != "sabinene hydrate acetate (cis-)":
+        raise AssertionError(f"Unexpected RI-assisted top candidate in warning regression: {r.top1.get('display_name')}")
+    if "RI-assisted ranking changed the EI-only top candidate from ALPHA-PINENE" not in warnings:
+        raise AssertionError("Missing warning that RI changed the EI-only top candidate.")
+    if "EI-only top candidate (ALPHA-PINENE) has ΔRI > 50" not in warnings:
+        raise AssertionError("Missing large-ΔRI warning for the EI-only top candidate.")
+    if abs(float(r.ri_delta_top1) - 6.0) > 1e-9:
+        raise AssertionError(f"Unexpected RI-assisted top-candidate ΔRI: {r.ri_delta_top1}")
+    return {
+        "ri_test_top1": r.top1.get("display_name", ""),
+        "ri_test_top1_delta": r.ri_delta_top1,
+        "warning_count": len(r.warnings),
+    }
+
+
 def main():
     p = argparse.ArgumentParser(description="Rebuild the publication reference library and validate frozen v1.1 outputs.")
     p.add_argument("--msp", type=Path, help="Optional exact local publication MSP. If omitted, use official Zenodo runtime bootstrap.")
@@ -114,14 +135,20 @@ def main():
         asset_dir = prepare_assets(a.msp, a.keep_assets)
         fingerprints = validate_fingerprints(asset_dir)
         n = validate_botanical(asset_dir)
+        ri_warning = validate_ri_warning_behavior(asset_dir)
     else:
         with tempfile.TemporaryDirectory(prefix="gcei_release_validation_") as td:
             asset_dir = prepare_assets(a.msp, Path(td))
             fingerprints = validate_fingerprints(asset_dir)
             n = validate_botanical(asset_dir)
+            ri_warning = validate_ri_warning_behavior(asset_dir)
 
     print("PASS: v1.1 scientific reproducibility validation")
-    print(json.dumps({"reference_fingerprints": fingerprints, "botanical_spectra_checked": n}, indent=2))
+    print(json.dumps({
+        "reference_fingerprints": fingerprints,
+        "botanical_spectra_checked": n,
+        "ri_warning_regression": ri_warning,
+    }, indent=2))
 
 
 if __name__ == "__main__":
