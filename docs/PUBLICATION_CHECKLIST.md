@@ -41,7 +41,7 @@
 
 - [x] Version changed to `1.0.0`.
 - [x] `CHANGELOG.md` updated.
-- [ ] Final CI and reproducibility workflows pass after the documentation and interface review.
+- [x] Final CI and reproducibility workflows passed after the documentation and interface review.
 - [ ] GitHub tag `v1.0.0` created.
 - [ ] GitHub release created.
 - [ ] Zenodo archive created.
