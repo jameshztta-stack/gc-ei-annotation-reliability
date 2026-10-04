@@ -10,6 +10,22 @@ from gcei.engine import GCEIEngine, parse_single_spectrum_text, read_spectrum_cs
 
 ROOT = Path(__file__).resolve().parent
 
+SINGLE_TEMPLATE = """mz,intensity
+41,82.1
+43,44.6
+69,71.5
+93,100
+121,18.3
+136,14.2
+"""
+
+BATCH_TEMPLATE = """spectrum_id,mz,intensity,ri
+Peak_1,41,82.1,
+Peak_1,93,100,
+Peak_2,43,65.2,939
+Peak_2,71,100,939
+"""
+
 st.set_page_config(page_title="GC–EI Annotation Reliability Tool", page_icon="🧪", layout="wide")
 st.markdown(
     """
@@ -17,7 +33,6 @@ st.markdown(
 html, body, [class*="css"] { font-family: Inter, Arial, sans-serif; }
 .block-container { max-width: 1180px; padding-top: 2rem; }
 .small-note { color: #5f6b6d; font-size: 0.92rem; }
-.result-box { border: 1px solid #dfe7e7; border-radius: 12px; padding: 1rem 1.1rem; background: #fbfdfd; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -31,26 +46,52 @@ def load_engine():
 
 
 st.title("GC–EI Annotation Reliability Tool")
-st.caption("A reliability layer for conventional GC–EI–MS spectral-library annotation • publication workflow v1.1")
+st.caption("Uncertainty-aware GC–EI–MS library annotation · validated v1.1 scientific workflow")
 
-with st.expander("What this tool does and does not do", expanded=False):
+with st.expander("Scope and interpretation", expanded=False):
     st.markdown(
         """
-This research tool applies the frozen method described in the associated study. It ranks reference identities,
-constructs a calibrated 90% candidate set, estimates the probability that the top-ranked identity is correct,
-and can abstain at calibration-derived empirical operating points.
+The tool ranks connectivity-level library candidates from EI spectra, returns a calibrated 90% candidate set,
+estimates top-1 correctness, and applies fixed empirical 10% or 5% target-error operating points.
+Kovats RI can be included when the experimental chromatographic system is comparable with the reference RI system.
 
-**Important:** the output is a *library-based tentative annotation*. It does not replace an authentic reference
-standard or suitable orthogonal confirmation. Low confidence or a broad candidate set is also not proof that the
-compound is absent from the reference library.
+Results are **tentative library annotations**. Definitive identification requires an authentic standard or suitable
+orthogonal confirmation. Low confidence or a broad candidate set is not evidence that a compound is absent from the reference library.
         """
     )
 
+with st.expander("Input format and CSV templates", expanded=False):
+    st.markdown(
+        """
+**Single spectrum** — use two columns: `mz,intensity`. Enter one ion peak per row.
+
+**Batch spectra** — use `spectrum_id,mz,intensity,ri`. Repeat the same `spectrum_id` for every peak belonging to that spectrum.
+The `ri` column is optional; leave it blank when Kovats RI is unavailable. If RI is supplied, use the same RI value for all rows of that spectrum.
+        """
+    )
+    c1, c2 = st.columns(2)
+    with c1:
+        st.code(SINGLE_TEMPLATE, language="text")
+        st.download_button(
+            "Download single-spectrum CSV template",
+            SINGLE_TEMPLATE.encode(),
+            file_name="gcei_single_spectrum_template.csv",
+            mime="text/csv",
+        )
+    with c2:
+        st.code(BATCH_TEMPLATE, language="text")
+        st.download_button(
+            "Download batch CSV template",
+            BATCH_TEMPLATE.encode(),
+            file_name="gcei_batch_template.csv",
+            mime="text/csv",
+        )
+
 try:
-    with st.spinner("Preparing the validated publication reference library. First launch may take a little longer..."):
+    with st.spinner("Preparing the validated reference library..."):
         engine = load_engine()
 except Exception:
-    st.error("The validated reference library could not be prepared automatically. Please refresh the app and try again.")
+    st.error("Reference-library initialization failed. Reload the app and try again.")
     st.stop()
 
 mode = st.radio("Analysis mode", ["Single spectrum", "Batch spectra"], horizontal=True)
@@ -59,7 +100,7 @@ risk_label = st.selectbox(
     ["10% target error (more coverage)", "5% target error (stricter)"],
 )
 risk_target = 0.10 if risk_label.startswith("10%") else 0.05
-st.caption("These are calibration-derived empirical operating points, not formal future-error guarantees.")
+st.caption("Calibration-derived empirical operating points; they are not formal future-error guarantees.")
 
 if mode == "Single spectrum":
     source = st.radio("Spectrum input", ["Paste peaks", "Upload CSV"], horizontal=True)
@@ -67,7 +108,7 @@ if mode == "Single spectrum":
     if source == "Paste peaks":
         text = st.text_area(
             "Paste m/z and intensity values",
-            value="mz,intensity\n41,82.1\n43,44.6\n69,71.5\n93,100\n121,18.3\n136,14.2",
+            value=SINGLE_TEMPLATE,
             height=190,
         )
         try:
@@ -75,7 +116,7 @@ if mode == "Single spectrum":
         except ValueError as exc:
             st.error(str(exc))
         except Exception:
-            st.error("The pasted spectrum could not be parsed. Please verify the input format and try again.")
+            st.error("Spectrum parsing failed. Check the input format and values.")
     else:
         uploaded = st.file_uploader("Upload CSV with columns mz,intensity", type=["csv"])
         if uploaded is not None:
@@ -84,20 +125,19 @@ if mode == "Single spectrum":
             except ValueError as exc:
                 st.error(str(exc))
             except Exception:
-                st.error("The uploaded spectrum CSV could not be read. Please verify the file format and try again.")
+                st.error("CSV parsing failed. Check the file structure and values.")
 
-    use_ri = st.checkbox("I have a Kovats retention index measured under conditions considered comparable with the reference RI system")
+    use_ri = st.checkbox("Use a Kovats retention index measured under conditions comparable with the reference RI system")
     query_ri = None
     if use_ri:
         query_ri = st.number_input("Experimental Kovats RI", min_value=1.0, value=1000.0, step=1.0)
         st.warning(
-            "Enter Kovats RI, not raw retention time. RI-assisted scoring should only be used when the experimental "
-            "RI is reasonably comparable with the reference system; the study showed that benefit decreased as RI disagreement increased."
+            "Enter Kovats RI, not raw retention time. RI-assisted scoring is valid only when the experimental and reference chromatographic systems are reasonably comparable."
         )
 
     if st.button("Analyze spectrum", type="primary"):
         if peaks is None or len(peaks) == 0:
-            st.error("Provide a valid spectrum first.")
+            st.error("No valid spectrum was provided.")
         else:
             try:
                 r = engine.analyze(peaks, kovats_ri=query_ri if use_ri else None, risk_target=risk_target)
@@ -122,7 +162,7 @@ if mode == "Single spectrum":
 
                 st.subheader("90% conformal candidate set")
                 st.dataframe(r.conformal90.head(100), use_container_width=True, hide_index=True)
-                st.caption("The complete candidate set is available in the CSV download even when more than 100 rows are retained.")
+                st.caption("The complete candidate set is included in the CSV download when more than 100 rows are retained.")
 
                 summary = pd.DataFrame([{
                     "mode": r.mode,
@@ -152,10 +192,10 @@ if mode == "Single spectrum":
             except ValueError as exc:
                 st.error(str(exc))
             except Exception:
-                st.error("The spectrum could not be analyzed. Please verify the input and try again.")
+                st.error("Spectrum analysis failed. Check the input and try again.")
 
 else:
-    st.write("Upload a long-format CSV. Required columns: `spectrum_id`, `mz`, `intensity`. Optional column: `ri`.")
+    st.write("Upload a long-format CSV with `spectrum_id`, `mz`, and `intensity`. The optional `ri` column contains Kovats RI.")
     uploaded = st.file_uploader("Batch CSV", type=["csv"], key="batch")
     if uploaded is not None:
         try:
@@ -174,11 +214,22 @@ else:
         except ValueError as exc:
             st.error(str(exc))
         except Exception:
-            st.error("The batch file could not be analyzed. Please verify the CSV format and try again.")
+            st.error("Batch analysis failed. Check the CSV structure and values.")
 
 st.divider()
 st.markdown(
-    f"Reference library source: [MS-DIAL public EI/Kovats-RI dataset on Zenodo]({SOURCE_RECORD}). "
-    "The upstream MSP is downloaded from the original record at runtime and is not redistributed in this repository."
+    f"**Reference library:** [MS-DIAL public EI/Kovats-RI dataset on Zenodo]({SOURCE_RECORD}). "
+    "The source MSP is obtained from the original record at runtime and is not redistributed in this repository."
+)
+
+st.markdown("**Citation**")
+st.write(
+    "If results from this tool contribute to a publication, cite the associated article and the archived software release. "
+    "The article citation and software DOI will be added here when available."
+)
+
+st.caption(
+    "Developed and maintained by Dr. James H. Zothantluanga, Research Director, Jazer Research Lab, "
+    "Aizawl, Mizoram 796005, India."
 )
 st.caption("Version 1.0.0 · Frozen v1.1 scientific parameters.")
