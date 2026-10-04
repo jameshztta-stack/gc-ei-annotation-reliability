@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Zothantluanga
     given-names: James H.
-version: 0.2.0
+version: 1.0.0
 license: MIT
 repository-code: "https://github.com/jameshztta-stack/gc-ei-annotation-reliability"
 keywords:
