@@ -31,14 +31,14 @@ def _copy_models(asset_dir: Path):
 def _download_source(dest: Path):
     req = urllib.request.Request(
         SOURCE_DOWNLOAD,
-        headers={"User-Agent": "GC-EI-Annotation-Reliability-Tool/0.2-v1.1"},
+        headers={"User-Agent": "GC-EI-Annotation-Reliability-Tool/1.0.0"},
     )
     with urllib.request.urlopen(req, timeout=180) as response, dest.open("wb") as out:
         shutil.copyfileobj(response, out)
 
 
 def ensure_runtime_assets(asset_dir: str | Path | None = None) -> Path:
-    """Create the frozen v1.1 runtime assets without redistributing the upstream MSP."""
+    """Create the validated v1.1 runtime assets without redistributing the source MSP."""
     asset_dir = Path(asset_dir or os.environ.get("GCEI_ASSET_DIR", DEFAULT_RUNTIME))
     asset_dir.mkdir(parents=True, exist_ok=True)
     if _complete(asset_dir):
@@ -61,7 +61,7 @@ def ensure_runtime_assets(asset_dir: str | Path | None = None) -> Path:
         observed = sha256(msp)
         if observed != EXPECTED_SHA256:
             raise RuntimeError(
-                "The downloaded/provided MSP does not match the publication input. "
+                "The downloaded or supplied MSP does not match the validated source file. "
                 f"Expected {EXPECTED_SHA256}; observed {observed}. "
                 f"Obtain the exact source from {SOURCE_RECORD}."
             )
