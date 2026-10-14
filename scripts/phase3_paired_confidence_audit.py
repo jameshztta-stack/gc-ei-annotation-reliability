@@ -100,6 +100,6 @@ def main():
  assert evaluations["609"]["matched_acceptance_wrong_counts"]["38"]=={"HGB":0,"margin":1,"similarity":10}
  evaluations["scope"]="RETROSPECTIVE; original 609 spent; first14 source-label agreement; no formal risk guarantee"
  evaluations["SHA256"]=CHECKSUMS
- (out/"summary.json").write_text(json.dumps(evaluations,indent=2)+"\\n",encoding="utf-8")
+ (out/"summary.json").write_text(json.dumps(evaluations,indent=2)+"\n",encoding="utf-8")
  print(json.dumps({role:evaluations[role] for role in ("609","1410","466")},indent=2))
 if __name__=="__main__":main()
