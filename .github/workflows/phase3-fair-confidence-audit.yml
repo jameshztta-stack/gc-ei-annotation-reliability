@@ -42,10 +42,10 @@ jobs:
       - name: Recompute all case-level measures INDEPENDENTLY with Python
         run: |
           set -euo pipefail
-          python scripts/phase3_paired_confidence_audit.py \\
-            --input-609 .cache/phase3/test609.csv \\
-            --input-1410 .cache/phase3/dev1410.csv \\
-            --input-466 .cache/phase3/retrospective466.csv \\
+          python scripts/phase3_paired_confidence_audit.py \
+            --input-609 .cache/phase3/test609.csv \
+            --input-1410 .cache/phase3/dev1410.csv \
+            --input-466 .cache/phase3/retrospective466.csv \
             --out .cache/phase3/recalculated > .cache/phase3/recalculated_stdout.json
       - name: Cross-audit JS archival computations against Python recalculation
         run: |
