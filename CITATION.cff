@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Please cite the version-specific Zenodo DOI for v2.0.1 when available, and cite the original MS-DIAL reference source. The previous 10.5281/zenodo.23143113 DOI belongs to frozen v1.0.0."
+message: "Please cite the v2.0.1 software DOI 10.5281/zenodo.23372495 and the original MS-DIAL source. The former 10.5281/zenodo.23143113 DOI belongs only to v1.0.0."
 title: "GC–EI Annotation Reliability Tool"
 type: software
 authors:
@@ -12,6 +12,10 @@ license: MIT
 repository-code: "https://github.com/jameshztta-stack/gc-ei-annotation-reliability"
 url: "https://gc-ei-annotation.streamlit.app/"
 abstract: "Streamlit software for tentative connectivity-level GC–EI–MS library annotation, with a frozen 8,455-identity research v2 HGB configuration and separately retained legacy v1. Source-dependent uncertainty estimates and uncertified historical error targets must not be interpreted as authenticated chemical identification."
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23372495"
+    description: "Zenodo archive of exact software version 2.0.1"
 keywords:
   - GC-MS
   - electron ionization
