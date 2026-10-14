@@ -1,6 +1,7 @@
 {
   "title": "GC–EI Annotation Reliability Tool",
-  "description": "Software for uncertainty-aware GC–EI–MS library annotation. The tool reports connectivity-level candidates, predicted top-1 correctness, 90% conformal candidate sets, empirical 5% and 10% target-error decisions, and optional Kovats RI-assisted scoring.",
+  "version": "2.0.1",
+  "description": "Version 2.0.1 of the GC–EI–MS spectral annotation software. Provides a streamlined Streamlit interface with two separate, source-locked configurations: frozen research v2 (8,455 first14 connectivity reference identities, m/z-weighted cosine and an HGB confidence model trained on 1,410 development records) and retained legacy v1 (8,543 identities, optional RI-based search and source-dependent nominal conformal sets). Reports tentative database-connectivity candidates, original historical decision rules and complete version/provenance exports. The 609-case v2 within-MS-DIAL closed-library test observed 394/609 top-one publisher-label matches. No independent experimental authentication, prospective 5%/10% selected-error guarantee or cross-laboratory 90% set-coverage guarantee is claimed. Original publisher EI source spectra are not redistributed.",
   "creators": [
     {
       "name": "Zothantluanga, James H.",
@@ -9,14 +10,14 @@
   ],
   "license": "MIT",
   "keywords": [
-    "GC-MS",
+    "GC–EI–MS",
     "electron ionization",
-    "spectral library",
-    "conformal prediction",
-    "selective prediction",
-    "uncertainty quantification",
-    "retention index",
-    "chemometrics"
+    "spectral annotation",
+    "library search",
+    "HistGradientBoosting",
+    "cheminformatics",
+    "software reproducibility",
+    "uncertainty quantification"
   ],
   "upload_type": "software",
   "access_right": "open"
