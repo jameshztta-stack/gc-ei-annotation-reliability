@@ -1,0 +1,31 @@
+name: Phase 4 synthetic-only frozen-v2 software fault injection
+on:
+  push:
+    branches:
+      - analysis/phase3-fair-confidence-benchmarks-20261014
+    paths:
+      - tests/test_phase4_v2_software_fault_injection.py
+      - .github/workflows/phase4-synthetic-software-fault-gate.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source_integrity_and_input_faults:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: '.'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Use frozen v2 numerical dependencies with deterministic tests
+        run: |
+          python -m pip install -r requirements.txt
+      - name: Run only predeclared synthetic engineering stress tests (NO dataset input or risk retuning)
+        run: |
+          set -euo pipefail
+          pytest -q tests/test_phase4_v2_software_fault_injection.py
