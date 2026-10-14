@@ -340,10 +340,11 @@ with st.expander("Methods, limitations & provenance"):
     st.markdown(
         f"[Original MS-DIAL source]({SOURCE_RECORD}) · "
         "[Software source](https://github.com/jameshztta-stack/gc-ei-annotation-reliability) · "
+        "[Current v2.0.1 Zenodo archive](https://doi.org/10.5281/zenodo.23372495) · "
         "[Previous v1.0.0 archive](https://doi.org/10.5281/zenodo.23143113)"
     )
     st.caption(
-        "The v1.0.0 DOI refers to the previous software release, not to this v2.0.1 version."
+        "The current DOI identifies v2.0.1; the original v1.0.0 DOI and archive remain unchanged."
     )
 
 st.caption(f"v{APP_VERSION} · Jazer Research Lab · Research use; tentative annotations only")
