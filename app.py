@@ -324,13 +324,24 @@ st.markdown(
     "The source MSP is obtained from the original publisher record (or its byte-identical historical copy), checked against the frozen SHA-256 and never redistributed here."
 )
 
-st.markdown("**Citation**")
-st.markdown(
-    "If results from this tool contribute to a publication, cite the associated research article and the archived software release.  \n"
-    "**Software release:** Zothantluanga JH. *GC–EI Annotation Reliability Tool*, version 1.0.0. Zenodo. 2026. "
-    "DOI: [10.5281/zenodo.23143113](https://doi.org/10.5281/zenodo.23143113).  \n"
-    "**Associated article:** citation will be added after publication."
-)
+st.markdown("**Citation and source provenance**")
+if use_v2:
+    st.markdown(
+        "For frozen research v2 output, cite the "
+        "[GC–EI–MS Annotation Tool source repository]"
+        "(https://github.com/jameshztta-stack/gc-ei-annotation-reliability), "
+        "the underlying original MS-DIAL EI source and the future associated v2 "
+        "research manuscript once published. "
+        "The archived [v1.0.0 software DOI](https://doi.org/10.5281/zenodo.23143113) "
+        "refers to the **older 8,543-reference software**, not the frozen v2 HGB model."
+    )
+else:
+    st.markdown(
+        "For legacy v1 output: Zothantluanga JH. *GC–EI Annotation Reliability Tool*, "
+        "v1.0.0, Zenodo (2026), "
+        "[DOI 10.5281/zenodo.23143113](https://doi.org/10.5281/zenodo.23143113). "
+        "Cite the original MS-DIAL EI dataset when relevant."
+    )
 
 st.caption(
     "Developed and maintained by Dr. James H. Zothantluanga, Research Director, Jazer Research Lab, "
