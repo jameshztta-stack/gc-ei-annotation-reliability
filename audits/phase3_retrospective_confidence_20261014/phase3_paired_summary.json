@@ -33,12 +33,10 @@
         "Brier": 0.14064475004139237
       },
       "margin": {
-        "AUROC": 0.812678550348247,
-        "Brier": 0.5029913488865061
+        "AUROC": 0.812678550348247
       },
       "similarity": {
-        "AUROC": 0.7066816196434895,
-        "Brier": 0.25648746402125455
+        "AUROC": 0.7066816196434895
       }
     },
     "dev1410": {
@@ -55,12 +53,10 @@
         "Brier": 0.148353675505932
       },
       "margin": {
-        "AUROC": 0.808643092481831,
-        "Brier": 0.49428490241155454
+        "AUROC": 0.808643092481831
       },
       "similarity": {
-        "AUROC": 0.7136296932681216,
-        "Brier": 0.26667172061676225
+        "AUROC": 0.7136296932681216
       }
     },
     "retrospective466": {
@@ -69,12 +65,10 @@
         "Brier": 0.12499722558155135
       },
       "margin": {
-        "AUROC": 0.8310651424423879,
-        "Brier": 0.5496003872289433
+        "AUROC": 0.8310651424423879
       },
       "similarity": {
-        "AUROC": 0.6987615677735438,
-        "Brier": 0.2153819634611848
+        "AUROC": 0.6987615677735438
       }
     }
   },
@@ -426,5 +420,6 @@
     "top6to10": 20,
     "below10": 100
   },
-  "source_lineage_warning": "In-source/retrospective source-label agreement only; the 609 split is permanently spent, cannot be used again as independent untouched test."
+  "source_lineage_warning": "In-source/retrospective source-label agreement only; the 609 split is permanently spent, cannot be used again as independent untouched test.",
+  "statistical_scope_note": "Brier/log-loss are evaluated ONLY for probability-model outputs (HGB/OOF logistic). Raw cosine similarity and uncalibrated margins are not calibrated correctness probabilities; comparing their raw Brier would be invalid."
 }
