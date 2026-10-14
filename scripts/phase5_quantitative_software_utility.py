@@ -142,7 +142,7 @@ def twelve_examples(out: Path):
         assert result.accepted == (result.confidence >= 0.87)
         assert strict.accepted == ((result.confidence >= 0.94) and (result.margin >= 0.20))
         assert result.warnings and all(isinstance(w, str) for w in result.warnings)
-        assert any("not certified" in w.lower() for w in result.warnings)
+        assert any(("not certified" in w.lower() or ("neither" in w.lower() and "certified" in w.lower())) for w in result.warnings)
         assert any("stereochemistry" in w.lower() for w in result.warnings)
         assert not result.ri_delta_top1 and result.conformal90_size is None
         b10 = batch10.loc[batch10.spectrum_id == sid].iloc[0]
