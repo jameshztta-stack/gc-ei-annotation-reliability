@@ -59,20 +59,24 @@ def test_batch_repeated_consistent_ri_is_accepted():
 def test_app_source_and_version_claims_do_not_overpromise():
     source=(ROOT/"app.py").read_text(encoding="utf-8")
     ast.parse(source)
-    assert "APP_VERSION = '2.0.0'" in source
-    assert "REFERENCE_IDENTITY_COUNT = 8543" in source
-    assert "V2_N_REFERENCE" in source
-    assert "V2_REFERENCE_SHA256" in source
+    assert 'APP_VERSION = "2.0.1"' in source
+    assert "V2_N_REFERENCE" in source and "V2_REFERENCE_SHA256" in source
     assert "V2_HGB_SHA256" in source
-    assert "GCEIV2Engine" in source
-    assert "GCEIEngine" in source
-    assert "5% and 10% target-error rules are not certified" in source
-    assert "not independently certified" in source or "not certified" in source
-    assert "Legacy v1 nominal 90% candidate set" in source
+    assert "GCEIV2Engine" in source and "GCEIEngine" in source
+    assert "5% and 10% historical acceptance targets" in source or "5% and 10% historical" in source
+    assert "not certified future-error guarantees" in source
+    assert "result.accepted if use_v2" in source
     assert "if not use_v2:" in source
-    assert "Top1–top2 EI margin" in source
-    assert "historical_rule_met" in source
-    assert "st.success(r.decision)" not in source
+    assert "Top-two margin" in source
+    assert "historical_acceptance_rule_met" in source
+    assert "st.success(" not in source
+    assert 'with st.expander("Methods, limitations & provenance"):' in source
+    assert 'with st.expander("Input examples"):' in source
+    assert 'with st.expander("Download results"):' in source
+    assert "st.spinner" in source  # source init should be done only on user action
+    assert 'st.radio("Analysis", ["Single spectrum", "Batch"], horizontal=True)' in source
+    assert "load_engine(model_name).analyze(" in source
+    assert "load_engine(model_name).analyze_batch(" in source
 
 def test_engine_threshold_math_and_scoring_untouched():
     source=(ROOT/"gcei/engine.py").read_text(encoding="utf-8")
