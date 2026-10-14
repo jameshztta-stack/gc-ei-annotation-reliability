@@ -29,6 +29,7 @@ jobs:
       - name: Retrieve upstream original MSP exact source SHA and replay published example input peaks
         run: |
           set -euo pipefail
+          mkdir -p .cache
           python scripts/phase3_v2_existing_example_demo.py > .cache/phase3_v2_botanical_demo_stdout.json
       - name: Independently guard provenance/denominators and reject risk guarantees
         run: |
