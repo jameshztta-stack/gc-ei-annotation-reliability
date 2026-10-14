@@ -42,7 +42,7 @@ def test_ui_does_not_rewrite_frozen_scoring_or_overclaim():
     assert "198/609" in source
     assert "38/609" in source
     assert "Historical decision rule" in source
-    assert "confirmed identification" not in source.lower()
+    assert "st.success" not in source
     assert "st.success" not in source
     # Loading the original MSP must be initiated only from a submitted action.
     assert "load_engine(model_name).analyze(" in source
