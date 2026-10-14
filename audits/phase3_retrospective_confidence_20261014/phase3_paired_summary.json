@@ -1,0 +1,430 @@
+{
+  "stage": "PHASE3_RETROSPECTIVE_NO_RETUNING",
+  "generated_on": "2026-10-14",
+  "data_ref_commit": "9d5c57a44e57d3eed94c82930c2868e451573676",
+  "source_CSV_sha256": {
+    "test609": "62899a9be61118299e730558fe097e61e7423411d6ea33ea678245f282b41dd7",
+    "dev1410": "67a209e835279852a91e92abad7a3598fd38f6fd6978082b75c46d6eb4a745ce",
+    "retrospective466": "09a228acbf93fb307b9150ff47024c253e4e94ea4223f8cc309fc8083afdc11b"
+  },
+  "claims": [
+    "609 = previously used one-shot MS-DIAL in-reference first14 source labels",
+    "466 = retrospectively exposed SWGDRUG/RECETOX source-selected rows; 419 unique source first14, acquisition provenance not verified",
+    "1410 = exposed original development (nested OOF)",
+    "m1 retrieval fixed, HGB cannot change retrieval top1",
+    "matched acceptance rates descriptive only; neither risk rule certified"
+  ],
+  "n": {
+    "test609": 609,
+    "dev1410": 1410,
+    "retrospective466": 466,
+    "prior466overlap_in_609": 69,
+    "distinct_466_first14": 419
+  },
+  "correct": {
+    "test609": 394,
+    "retrospective466": 334,
+    "dev1410": 901
+  },
+  "comparison": {
+    "test609": {
+      "HGB": {
+        "AUROC": 0.8633042143784677,
+        "Brier": 0.14064475004139237
+      },
+      "margin": {
+        "AUROC": 0.812678550348247,
+        "Brier": 0.5029913488865061
+      },
+      "similarity": {
+        "AUROC": 0.7066816196434895,
+        "Brier": 0.25648746402125455
+      }
+    },
+    "dev1410": {
+      "HGB": {
+        "AUROC": 0.8552764991528732,
+        "Brier": 0.14416287701277125
+      },
+      "logit12": {
+        "AUROC": 0.8555959433853239,
+        "Brier": 0.14674723316813795
+      },
+      "logit5": {
+        "AUROC": 0.8514726052039973,
+        "Brier": 0.148353675505932
+      },
+      "margin": {
+        "AUROC": 0.808643092481831,
+        "Brier": 0.49428490241155454
+      },
+      "similarity": {
+        "AUROC": 0.7136296932681216,
+        "Brier": 0.26667172061676225
+      }
+    },
+    "retrospective466": {
+      "HGB": {
+        "AUROC": 0.8700893667211033,
+        "Brier": 0.12499722558155135
+      },
+      "margin": {
+        "AUROC": 0.8310651424423879,
+        "Brier": 0.5496003872289433
+      },
+      "similarity": {
+        "AUROC": 0.6987615677735438,
+        "Brier": 0.2153819634611848
+      }
+    }
+  },
+  "calibration": {
+    "test609": {
+      "ECE10": 0.04493789489416912,
+      "binCounts": [
+        {
+          "low": 0,
+          "high": 0.1,
+          "n": 0,
+          "correct": 0,
+          "meanPred": null,
+          "rate": null
+        },
+        {
+          "low": 0.1,
+          "high": 0.2,
+          "n": 64,
+          "correct": 11,
+          "meanPred": 0.16088709694399342,
+          "rate": 0.171875
+        },
+        {
+          "low": 0.2,
+          "high": 0.3,
+          "n": 67,
+          "correct": 10,
+          "meanPred": 0.24765914406244477,
+          "rate": 0.14925373134328357
+        },
+        {
+          "low": 0.3,
+          "high": 0.4,
+          "n": 42,
+          "correct": 21,
+          "meanPred": 0.34581492512615974,
+          "rate": 0.5
+        },
+        {
+          "low": 0.4,
+          "high": 0.5,
+          "n": 43,
+          "correct": 21,
+          "meanPred": 0.44598999722930177,
+          "rate": 0.4883720930232558
+        },
+        {
+          "low": 0.5,
+          "high": 0.6,
+          "n": 38,
+          "correct": 23,
+          "meanPred": 0.5521609429556559,
+          "rate": 0.6052631578947368
+        },
+        {
+          "low": 0.6,
+          "high": 0.7,
+          "n": 47,
+          "correct": 31,
+          "meanPred": 0.6525431825164255,
+          "rate": 0.6595744680851063
+        },
+        {
+          "low": 0.7,
+          "high": 0.8,
+          "n": 52,
+          "correct": 38,
+          "meanPred": 0.7504445328787926,
+          "rate": 0.7307692307692307
+        },
+        {
+          "low": 0.8,
+          "high": 0.9,
+          "n": 98,
+          "correct": 89,
+          "meanPred": 0.8563109259135944,
+          "rate": 0.9081632653061225
+        },
+        {
+          "low": 0.9,
+          "high": 1,
+          "n": 158,
+          "correct": 150,
+          "meanPred": 0.928357046079991,
+          "rate": 0.9493670886075949
+        }
+      ]
+    },
+    "retrospective466": {
+      "ECE10": 0.05352267116160814,
+      "binCounts": [
+        {
+          "low": 0,
+          "high": 0.1,
+          "n": 0,
+          "correct": 0,
+          "meanPred": null,
+          "rate": null
+        },
+        {
+          "low": 0.1,
+          "high": 0.2,
+          "n": 27,
+          "correct": 2,
+          "meanPred": 0.16155410448069446,
+          "rate": 0.07407407407407407
+        },
+        {
+          "low": 0.2,
+          "high": 0.3,
+          "n": 45,
+          "correct": 10,
+          "meanPred": 0.24034875770716393,
+          "rate": 0.2222222222222222
+        },
+        {
+          "low": 0.3,
+          "high": 0.4,
+          "n": 30,
+          "correct": 14,
+          "meanPred": 0.3470388962855504,
+          "rate": 0.4666666666666667
+        },
+        {
+          "low": 0.4,
+          "high": 0.5,
+          "n": 22,
+          "correct": 9,
+          "meanPred": 0.4511925407742959,
+          "rate": 0.4090909090909091
+        },
+        {
+          "low": 0.5,
+          "high": 0.6,
+          "n": 30,
+          "correct": 17,
+          "meanPred": 0.5534186190292519,
+          "rate": 0.5666666666666667
+        },
+        {
+          "low": 0.6,
+          "high": 0.7,
+          "n": 41,
+          "correct": 35,
+          "meanPred": 0.653381709349699,
+          "rate": 0.8536585365853658
+        },
+        {
+          "low": 0.7,
+          "high": 0.8,
+          "n": 36,
+          "correct": 27,
+          "meanPred": 0.7417198560449906,
+          "rate": 0.75
+        },
+        {
+          "low": 0.8,
+          "high": 0.9,
+          "n": 101,
+          "correct": 91,
+          "meanPred": 0.8635345126143602,
+          "rate": 0.900990099009901
+        },
+        {
+          "low": 0.9,
+          "high": 1,
+          "n": 134,
+          "correct": 129,
+          "meanPred": 0.9286645516348842,
+          "rate": 0.9626865671641791
+        }
+      ]
+    }
+  },
+  "matched_coverage": {
+    "test609": {
+      "38": {
+        "HGB": {
+          "accepted": 38,
+          "wrong": 0
+        },
+        "margin": {
+          "accepted": 38,
+          "wrong": 1
+        },
+        "similarity": {
+          "accepted": 38,
+          "wrong": 10
+        }
+      },
+      "198": {
+        "HGB": {
+          "accepted": 198,
+          "wrong": 12
+        },
+        "margin": {
+          "accepted": 198,
+          "wrong": 11
+        },
+        "similarity": {
+          "accepted": 198,
+          "wrong": 45
+        }
+      },
+      "305": {
+        "HGB": {
+          "accepted": 305,
+          "wrong": 31
+        },
+        "margin": {
+          "accepted": 305,
+          "wrong": 41
+        },
+        "similarity": {
+          "accepted": 305,
+          "wrong": 68
+        }
+      },
+      "457": {
+        "HGB": {
+          "accepted": 457,
+          "wrong": 92
+        },
+        "margin": {
+          "accepted": 457,
+          "wrong": 108
+        },
+        "similarity": {
+          "accepted": 457,
+          "wrong": 120
+        }
+      },
+      "609": {
+        "HGB": {
+          "accepted": 609,
+          "wrong": 215
+        },
+        "margin": {
+          "accepted": 609,
+          "wrong": 215
+        },
+        "similarity": {
+          "accepted": 609,
+          "wrong": 215
+        }
+      }
+    },
+    "retrospective466": {
+      "25": {
+        "HGB": {
+          "accepted": 25,
+          "wrong": 1
+        },
+        "margin": {
+          "accepted": 25,
+          "wrong": 0
+        },
+        "similarity": {
+          "accepted": 25,
+          "wrong": 1
+        }
+      },
+      "185": {
+        "HGB": {
+          "accepted": 185,
+          "wrong": 12
+        },
+        "margin": {
+          "accepted": 185,
+          "wrong": 9
+        },
+        "similarity": {
+          "accepted": 185,
+          "wrong": 30
+        }
+      },
+      "233": {
+        "HGB": {
+          "accepted": 233,
+          "wrong": 15
+        },
+        "margin": {
+          "accepted": 233,
+          "wrong": 18
+        },
+        "similarity": {
+          "accepted": 233,
+          "wrong": 40
+        }
+      },
+      "349": {
+        "HGB": {
+          "accepted": 349,
+          "wrong": 47
+        },
+        "margin": {
+          "accepted": 349,
+          "wrong": 59
+        },
+        "similarity": {
+          "accepted": 349,
+          "wrong": 68
+        }
+      },
+      "466": {
+        "HGB": {
+          "accepted": 466,
+          "wrong": 132
+        },
+        "margin": {
+          "accepted": 466,
+          "wrong": 132
+        },
+        "similarity": {
+          "accepted": 466,
+          "wrong": 132
+        }
+      }
+    }
+  },
+  "fixed_historical_rule": {
+    "test609_10": {
+      "accepted": 198,
+      "wrong": 12,
+      "certified": false
+    },
+    "test609_05": {
+      "accepted": 38,
+      "wrong": 0,
+      "certified": false,
+      "additional_margin_ge_0p20": true
+    },
+    "retrospective466_10": {
+      "accepted": 185,
+      "wrong": 12,
+      "certified": false
+    },
+    "retrospective466_05": {
+      "accepted": 25,
+      "wrong": 0,
+      "certified": false,
+      "additional_margin_ge_0p20": true
+    }
+  },
+  "error_taxonomy_test609": {
+    "top1_correct": 394,
+    "top2to5": 95,
+    "top6to10": 20,
+    "below10": 100
+  },
+  "source_lineage_warning": "In-source/retrospective source-label agreement only; the 609 split is permanently spent, cannot be used again as independent untouched test."
+}
