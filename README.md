@@ -2,7 +2,7 @@
 
 **Version 2.0.2 — researcher-facing EI mass-spectrum library annotation**
 
-[Open the app](https://gc-ei-annotation.streamlit.app/) · [Zenodo version history](https://doi.org/10.5281/zenodo.23143112)
+[Open the app](https://gc-ei-annotation.streamlit.app/) · [Current Zenodo software DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447) · [Previous software versions](https://doi.org/10.5281/zenodo.23143112)
 
 ## What this tool does
 
@@ -61,7 +61,7 @@ Local installation:
 
 ## How to cite
 
-**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*, version 2.0.2. Jazer Research Lab, 2026. Use the **v2.0.2 version-specific Zenodo DOI when published**; do not cite [v2.0.1](https://doi.org/10.5281/zenodo.23372495) as a replacement. [All-version concept DOI](https://doi.org/10.5281/zenodo.23143112).
+**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*, version 2.0.2. Jazer Research Lab, 2026. Cite the **verified v2.0.2 version-specific Zenodo DOI [10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447)**. The earlier [v2.0.1 DOI](https://doi.org/10.5281/zenodo.23372495) describes only the previous release. [All-version concept DOI](https://doi.org/10.5281/zenodo.23143112).
 
 **Research article:** The related evaluation manuscript is not yet a published paper. Cite it separately only after publication.
 
