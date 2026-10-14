@@ -61,6 +61,60 @@ def reliability(d,yname,col):
          for row in bins.itertuples() if row.n)/len(d)
  return bins,float(ece)
 
+
+def make_figures(out, a, c, evaluations):
+ """Publication-ready source-label DESCRIPTIVE plots; not independent validation."""
+ import matplotlib
+ matplotlib.use("Agg")
+ import matplotlib.pyplot as plt
+ # All signals rank THE SAME frozen m1 top-one candidate for correctness.
+ fig,ax=plt.subplots(figsize=(7,4.3))
+ names=["Top cosine","Top-two margin","Frozen HGB"]
+ values=[evaluations["609"][k]["AUROC"] for k in ("similarity","margin","HGB")]
+ bars=ax.bar(names,values)
+ ax.set_ylim(0,1)
+ ax.set_ylabel("AUROC for publisher first14 top-1 agreement")
+ ax.set_title("609 previously evaluated within-source EI cases")
+ for bar,value in zip(bars,values):
+  ax.text(bar.get_x()+bar.get_width()/2,value+.015,f"{value:.3f}",ha="center")
+ fig.tight_layout()
+ fig.savefig(out/"Figure_1_609_AUROC_baselines.png",dpi=200)
+ plt.close(fig)
+
+ for frame,role,ycol,pcol in [(a,"609","m1_top1_correct","HGB_probability"),
+                              (c,"466","m1_top1_correct","HGB_probability_devfit")]:
+  bins,_=reliability(frame,ycol,pcol)
+  keep=bins.loc[bins.n>0]
+  fig,ax=plt.subplots(figsize=(6,5.6))
+  ax.plot([0,1],[0,1],linestyle="--",label="Perfect agreement")
+  ax.plot(keep.mean_probability,keep.correct_fraction,"o-",label="Observed bin fraction")
+  for row in keep.itertuples():
+   ax.annotate("n="+str(row.n),(row.mean_probability,row.correct_fraction),
+               textcoords="offset points",xytext=(5,8),fontsize=8)
+  ax.set(xlim=(0,1),ylim=(0,1),
+         xlabel="Mean HGB score per fixed-width bin",
+         ylabel="Source first14 correctness fraction",
+         title=role+" retrospective source-labelled cases")
+  ax.legend()
+  fig.tight_layout()
+  fig.savefig(out/("Figure_2_"+role+"_HGB_reliability.png"),dpi=200)
+  plt.close(fig)
+
+  cr=risk_curve(frame,ycol,{"HGB":pcol,
+       "margin":"feature_top1_minus_top2" if role=="609" else "m1_top1_minus_top2",
+       "similarity":"m1_top1_cosine"})
+  fig,ax=plt.subplots(figsize=(7,5))
+  for label in ("HGB","margin","similarity"):
+   ax.plot(cr.coverage*100,cr[label+"_error_rate"]*100,label=label)
+  ax.set(xlim=(0,100),ylim=(0,100),
+         xlabel="Accepted fraction of archived observations (%)",
+         ylabel="Observed errors / accepted observations (%)",
+         title=role+" matched-coverage retrospective risk curves")
+  ax.legend(title="Fixed ranking signal")
+  fig.tight_layout()
+  fig.savefig(out/("Figure_3_"+role+"_acceptance_error.png"),dpi=200)
+  plt.close(fig)
+
 def main():
  ap=argparse.ArgumentParser()
  for x in ("609","1410","466"):ap.add_argument("--input-"+x,required=True)
@@ -99,6 +153,7 @@ def main():
  assert evaluations["609"]["matched_acceptance_wrong_counts"]["198"]=={"HGB":12,"margin":11,"similarity":45}
  assert evaluations["609"]["matched_acceptance_wrong_counts"]["38"]=={"HGB":0,"margin":1,"similarity":10}
  evaluations["scope"]="RETROSPECTIVE; original 609 spent; first14 source-label agreement; no formal risk guarantee"
+ make_figures(out,a,c,evaluations)
  evaluations["SHA256"]=CHECKSUMS
  (out/"summary.json").write_text(json.dumps(evaluations,indent=2)+"\n",encoding="utf-8")
  print(json.dumps({role:evaluations[role] for role in ("609","1410","466")},indent=2))
