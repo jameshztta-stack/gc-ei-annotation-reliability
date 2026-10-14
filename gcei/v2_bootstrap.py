@@ -107,11 +107,8 @@ def build_v2_reference(msp_path: str | Path,out_dir: str | Path):
     rawbins=sparse.csr_matrix(
         (np.array(vv,dtype=np.float64),(ii,jj)),
         shape=(V2_N_REFERENCE,V2_MAX_MZ+1),dtype=np.float64)
-    if R.shape!=rawbins.shape or R.nnz!=rawbins.nnz-(rawbins[:,0].getnnz()):
-        # Mass m/z=0 contributes positive raw intensity but has zero weight.
-        # scipy may preserve explicitly zero weighted values so this condition
-        # is not stable across numerical libraries; check more robustly below.
-        pass
+    if R.shape != rawbins.shape:
+        raise RuntimeError("Weighted and raw frozen v2 matrix dimensions do not match.")
     if not np.isfinite(R.data).all() or not np.isfinite(rawbins.data).all():
         raise RuntimeError("Nonfinite source matrix data.")
     if np.any(np.sqrt(np.asarray(R.multiply(R).sum(axis=1)).ravel())<=0):
