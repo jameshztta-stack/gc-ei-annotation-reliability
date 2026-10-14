@@ -153,19 +153,20 @@ The `ri` column is optional; leave it blank when Kovats RI is unavailable. If RI
             mime="text/csv",
         )
     with c2:
-        st.code(BATCH_TEMPLATE, language="text")
+        batch_template = BATCH_TEMPLATE if not use_v2 else BATCH_TEMPLATE.replace(',ri', '').replace(',,', ',').replace(',939', '')
+        st.code(batch_template, language="text")
         st.download_button(
             "Download batch CSV template",
-            BATCH_TEMPLATE.encode(),
+            batch_template.encode(),
             file_name="gcei_batch_template.csv",
             mime="text/csv",
         )
 
 try:
     with st.spinner("Preparing the checksum-verified reference library..."):
-        engine = load_engine()
+        engine = load_engine(selection)
 except Exception:
-    st.error("Reference-library initialization failed. The app will not accept a source MSP with the wrong SHA-256. See the original publisher record below and retry when its source is accessible.")
+    st.error("Reference/model initialization was blocked: the exact original source or SHA-256-locked artifacts are unavailable. No alternative dataset or model was accepted.")
     st.stop()
 
 mode = st.radio("Analysis mode", ["Single spectrum", "Batch spectra"], horizontal=True)
@@ -201,7 +202,7 @@ if mode == "Single spectrum":
             except Exception:
                 st.error("CSV parsing failed. Check the file structure and values.")
 
-    use_ri = st.checkbox("Use a Kovats retention index measured under conditions comparable with the reference RI system")
+    use_ri = False if use_v2 else st.checkbox("Use comparable Kovats RI (legacy v1 only)")
     query_ri = None
     if use_ri:
         query_ri = st.number_input("Experimental Kovats RI", min_value=1.0, value=1000.0, step=1.0)
@@ -215,7 +216,7 @@ if mode == "Single spectrum":
         else:
             try:
                 r = engine.analyze(peaks, kovats_ri=query_ri if use_ri else None, risk_target=risk_target)
-                if r.confidence >= r.risk_threshold:
+                if (r.accepted if use_v2 else r.confidence >= r.risk_threshold):
                     st.info(r.decision)
                     st.caption("The score passes a historical threshold, not a confirmed chemical identity or error-rate guarantee.")
                 else:
@@ -225,7 +226,10 @@ if mode == "Single spectrum":
                 c1.metric("Top candidate", str(r.top1.get("display_name", r.top1.get("name", ""))))
                 c2.metric("Similarity", f"{r.top1.get('similarity', 0):.4f}")
                 c3.metric("Historical model score", f"{100*r.confidence:.1f}%", help="Source-dependent model estimate, not an authenticated compound identity probability.")
-                c4.metric("Nominal 90% set size", f"{r.conformal90_size}", help="90% prospective coverage is not independently established for new laboratories.")
+                if use_v2:
+                    c4.metric("Top1–top2 EI margin", f"{r.margin:.4f}")
+                else:
+                    c4.metric("Nominal 90% set size", f"{r.conformal90_size}", help="External coverage not established.")
 
                 if r.ri_delta_top1 is not None:
                     st.write(f"**Top-candidate |ΔRI|:** {r.ri_delta_top1:.1f} RI units")
@@ -235,14 +239,22 @@ if mode == "Single spectrum":
                 st.subheader("Top 10 candidates")
                 st.dataframe(r.top10, use_container_width=True, hide_index=True)
 
-                st.subheader("Research-derived candidate set (nominal 90%)")
-                st.dataframe(r.conformal90.head(100), use_container_width=True, hide_index=True)
-                st.caption("Nominal calibration is source-dependent; no general 90% coverage guarantee. The full set is in the CSV download if more than 100 candidates are returned.")
+                if not use_v2:
+                    st.subheader("Legacy v1 nominal 90% candidate set")
+                    st.dataframe(r.conformal90.head(100), use_container_width=True, hide_index=True)
+                    st.caption("External 90% coverage not established; download full original set if needed.")
+                else:
+                    st.caption("v2 top 10 is a ranked list, NOT a conformal confidence set.")
 
                 summary = pd.DataFrame([{
                     "mode": r.mode,
+                    "configuration": "research-v2" if use_v2 else "legacy-v1",
+                    "reference_index_sha256": V2_REFERENCE_SHA256 if use_v2 else "",
+                    "frozen_HGB_sha256": V2_HGB_SHA256 if use_v2 else "",
+                    "top1_top2_cosine_margin": r.margin if use_v2 else "",
+                    "historical_rule_met": r.accepted if use_v2 else r.confidence >= r.risk_threshold,
                     "software_version": APP_VERSION,
-                    "reference_first14_count": REFERENCE_IDENTITY_COUNT,
+                    "reference_first14_count": V2_N_REFERENCE if use_v2 else REFERENCE_IDENTITY_COUNT,
                     "source_msp_sha256": EXPECTED_SHA256,
                     "source_independent_error_guarantee": False,
                     "top1_name": r.top1.get("display_name", r.top1.get("name", "")),
@@ -250,7 +262,7 @@ if mode == "Single spectrum":
                     "top1_connectivity_id": r.top1.get("connectivity_id", ""),
                     "top_similarity": r.top1.get("similarity", ""),
                     "predicted_top1_correctness": r.confidence,
-                    "conformal90_set_size": r.conformal90_size,
+                    "conformal90_set_size": "" if use_v2 else r.conformal90_size,
                     "conformal90_external_coverage_certified": False,
                     "risk_target": r.risk_target,
                     "risk_threshold": r.risk_threshold,
@@ -263,12 +275,11 @@ if mode == "Single spectrum":
                     file_name="gcei_annotation_summary.csv",
                     mime="text/csv",
                 )
-                st.download_button(
-                    "Download full research candidate set (CSV)",
-                    r.conformal90.to_csv(index=False).encode(),
-                    file_name="gcei_candidate_set_90.csv",
-                    mime="text/csv",
-                )
+                st.download_button("Download top-10 candidates (CSV)",
+                    r.top10.to_csv(index=False).encode(), file_name="gcei_top10_candidates.csv", mime="text/csv")
+                if not use_v2:
+                    st.download_button("Download complete nominal 90% legacy v1 set (CSV)",
+                        r.conformal90.to_csv(index=False).encode(), file_name="gcei_legacy_nominal_set.csv", mime="text/csv")
             except ValueError as exc:
                 st.error(str(exc))
             except Exception:
@@ -285,7 +296,8 @@ else:
                 out = engine.analyze_batch(df, risk_target=risk_target)
                 st.info(f"Analyzed {len(out)} spectra; all reported identities are tentative.")
                 out.insert(0, "software_version", APP_VERSION)
-                out["reference_first14_count"] = REFERENCE_IDENTITY_COUNT
+                out["reference_first14_count"] = V2_N_REFERENCE if use_v2 else REFERENCE_IDENTITY_COUNT
+                out["configuration"] = "research-v2" if use_v2 else "legacy-v1"
                 out["source_msp_sha256"] = EXPECTED_SHA256
                 out["source_independent_error_guarantee"] = False
                 st.dataframe(out, use_container_width=True, hide_index=True)
@@ -318,4 +330,4 @@ st.caption(
     "Developed and maintained by Dr. James H. Zothantluanga, Research Director, Jazer Research Lab, "
     "Aizawl, Mizoram 796005, India."
 )
-st.caption(f"Interface v{APP_VERSION} | Frozen v1 model/reference; historical score and set coverage are not independent chemical validation.")
+st.caption(f"Interface v{APP_VERSION} | {selection} | No independent source-wide identity or risk certification.")
