@@ -26,7 +26,7 @@ jobs:
           python-version: '3.13'
       - name: Install locked numerical environment
         run: |
-          python -m pip install numpy==2.3.5 scipy==1.17.0 pandas==2.2.3 scikit-learn==1.8.0
+          python -m pip install numpy==2.3.5 scipy==1.17.0 pandas==2.2.3 scikit-learn==1.8.0 matplotlib==3.10.8
       - name: Retrieve ORIGINAL archived per-case evidence (already spent; NO refitting)
         run: |
           set -euo pipefail
