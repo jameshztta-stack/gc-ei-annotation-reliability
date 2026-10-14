@@ -1,0 +1,44 @@
+{
+  "research_model_status": "source-locked development fitted HGB; 5/10 targets not certified",
+  "original_MS_DIAL_SHA256": "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70",
+  "research_v2_reference_index_SHA256": "2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01",
+  "reference_first14_n": 8455,
+  "development_original_1410_SHA256": "67a209e835279852a91e92abad7a3598fd38f6fd6978082b75c46d6eb4a745ce",
+  "development_n": 1410,
+  "exact_model_sha256": "a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13",
+  "model_object_type": "HistGradientBoostingClassifier",
+  "library_versions": {
+    "numpy": "2.3.5",
+    "sklearn": "1.8.0"
+  },
+  "features": [
+    "top_score",
+    "top1_minus_top2",
+    "top1_minus_top5",
+    "log1p_near_0p01",
+    "log1p_near_0p05",
+    "top1_minus_top10",
+    "mean_top5",
+    "std_top10",
+    "log1p_near_0p10",
+    "log1p_query_peaks",
+    "query_peak_overlap_with_top1_fraction",
+    "query_intensity_share_matched_top1"
+  ],
+  "algorithm": "nominal EI m/z^1 sqrt(I), float64 weighted cosine",
+  "10pct_rule": {
+    "HGB_min_probability": 0.87,
+    "certified": false
+  },
+  "5pct_rule": {
+    "HGB_min_probability": 0.94,
+    "top1_minus_top2_min": 0.2,
+    "certified": false
+  },
+  "v1_conformal_or_RI_reused": false,
+  "609_final_test_data_used_for_training": false,
+  "466_external_source_used_for_training": false,
+  "model_fitted_from_original_1410_exposed_development_only": true,
+  "research_609_test_status": "permanently spent as heldout; within-source 394/609",
+  "deployment_scope": "experimental source-dependent connectivity library annotation only"
+}
