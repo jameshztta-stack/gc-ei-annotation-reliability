@@ -32,6 +32,12 @@ Peak_1,93,100,
 Peak_2,43,65.2,939
 Peak_2,71,100,939
 """
+V2_BATCH_TEMPLATE = """spectrum_id,mz,intensity
+Peak_1,41,82.1
+Peak_1,93,100
+Peak_2,43,65.2
+Peak_2,71,100
+"""
 
 st.set_page_config(page_title="GC–EI Annotation Reliability Tool", page_icon="🧪", layout="wide")
 st.markdown(
@@ -153,7 +159,7 @@ The `ri` column is optional; leave it blank when Kovats RI is unavailable. If RI
             mime="text/csv",
         )
     with c2:
-        batch_template = BATCH_TEMPLATE if not use_v2 else BATCH_TEMPLATE.replace(',ri', '').replace(',,', ',').replace(',939', '')
+        batch_template = V2_BATCH_TEMPLATE if use_v2 else BATCH_TEMPLATE
         st.code(batch_template, language="text")
         st.download_button(
             "Download batch CSV template",
