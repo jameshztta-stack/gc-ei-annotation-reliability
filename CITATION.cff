@@ -1,24 +1,22 @@
 cff-version: 1.2.0
-message: "Please cite the associated research article and the archived software release when this software contributes to published work."
+message: "Please cite the version-specific Zenodo DOI for v2.0.1 when available, and cite the original MS-DIAL reference source. The previous 10.5281/zenodo.23143113 DOI belongs to frozen v1.0.0."
 title: "GC–EI Annotation Reliability Tool"
 type: software
 authors:
   - family-names: Zothantluanga
     given-names: James H.
     affiliation: "Jazer Research Lab, Aizawl, Mizoram, India"
-version: 1.0.0
-date-released: 2026-10-04
+version: 2.0.1
+date-released: 2026-10-14
 license: MIT
 repository-code: "https://github.com/jameshztta-stack/gc-ei-annotation-reliability"
-identifiers:
-  - type: doi
-    value: "10.5281/zenodo.23143113"
-    description: "Zenodo archive for version 1.0.0"
+url: "https://gc-ei-annotation.streamlit.app/"
+abstract: "Streamlit software for tentative connectivity-level GC–EI–MS library annotation, with a frozen 8,455-identity research v2 HGB configuration and separately retained legacy v1. Source-dependent uncertainty estimates and uncertified historical error targets must not be interpreted as authenticated chemical identification."
 keywords:
   - GC-MS
   - electron ionization
-  - spectral library
-  - conformal prediction
-  - selective prediction
+  - library annotation
+  - confidence estimation
   - uncertainty quantification
-  - retention index
+  - reproducibility
+  - cheminformatics
