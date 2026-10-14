@@ -166,6 +166,7 @@ class GCEIV2Engine:
         if type(self.model).__name__ != "HistGradientBoostingClassifier":
             raise ValueError("Unexpected model class.")
         self.original_source_SHA256 = EXPECTED_SHA256
+        self.set_raw_reference(asset_dir)
 
     def analyze(self, peaks, kovats_ri=None, risk_target=0.10, top_n=10):
         if risk_target not in (0.10, 0.05):
@@ -181,13 +182,8 @@ class GCEIV2Engine:
             raise ValueError("Frozen v2 query score computation failed.")
         order = np.argsort(-S, kind="stable")
         winner = int(order[0])
-        # Reconstruct original raw ion fractions from the frozen normalized
-        # reference only. For overlap proportions, support is invariant to EI
-        # mass/sqrt-intensity; zero-mass bins are omitted after m^1 weighting.
-        # The original study *includes* nominal m/z=0 as a positive raw bin;
-        # store frozen unweighted reference bins in a second NPZ instead.
-        if not hasattr(self, "raw_reference"):
-            raise RuntimeError("v2 raw source-bin matrix is unavailable; cannot compute audited features.")
+        # Reconstruct the exact 12 frozen features from original unweighted
+        # source bins (including nominal m/z=0) and the weighted EI scores.
         refrow = self.raw_reference.getrow(winner)
         rawbin = {int(i):float(v) for i,v in zip(refrow.indices,refrow.data)}
         features = frozen_features(S, bins, rawbin)
