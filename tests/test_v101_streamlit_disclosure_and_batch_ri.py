@@ -21,11 +21,13 @@ def _batch_engine():
             top1={"display_name":"synthetic","formula":"C2H6","connectivity_id":"SYNTHETIC"}
             confidence=.42
             conformal90_size=12
-            risk_target=risk_target
+            risk_target=.10
             risk_threshold=.87
             ri_delta_top1=None
             decision="Synthetic tentative annotation"
-        return Result()
+        result=Result()
+        result.risk_target=risk_target
+        return result
     obj.analyze=MethodType(analyze,obj)
     return obj
 
