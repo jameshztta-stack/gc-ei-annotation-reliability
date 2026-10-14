@@ -1,0 +1,73 @@
+name: Phase 3 retrospective fair-confidence manuscript audit
+on:
+  push:
+    branches:
+      - analysis/phase3-fair-confidence-benchmarks-20261014
+    paths:
+      - scripts/phase3_paired_confidence_audit.py
+      - .github/workflows/phase3-fair-confidence-audit.yml
+      - audits/phase3_retrospective_confidence_20261014/**
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install locked numerical environment
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0 pandas==2.2.3 scikit-learn==1.8.0
+      - name: Retrieve ORIGINAL archived per-case evidence (already spent; NO refitting)
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/phase3
+          git fetch --no-tags origin research/v2-methodology-redesign-20261013
+          COMMIT=9d5c57a44e57d3eed94c82930c2868e451573676
+          git show "$COMMIT":audits/v2_609_one_shot_within_msdial_20261014/v2_609_single_use_within_msdial_per_query.csv > .cache/phase3/test609.csv
+          git show "$COMMIT":audits/v2_m1_development/v2_m1_development_only_nested_cv_predictions.csv > .cache/phase3/dev1410.csv
+          git show "$COMMIT":audits/v2_retrospective_cross_library_20261014/v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv > .cache/phase3/retrospective466.csv
+          echo '62899a9be61118299e730558fe097e61e7423411d6ea33ea678245f282b41dd7  .cache/phase3/test609.csv' | sha256sum --check
+          echo '67a209e835279852a91e92abad7a3598fd38f6fd6978082b75c46d6eb4a745ce  .cache/phase3/dev1410.csv' | sha256sum --check
+          echo '09a228acbf93fb307b9150ff47024c253e4e94ea4223f8cc309fc8083afdc11b  .cache/phase3/retrospective466.csv' | sha256sum --check
+      - name: Recompute all case-level measures INDEPENDENTLY with Python
+        run: |
+          set -euo pipefail
+          python scripts/phase3_paired_confidence_audit.py \\
+            --input-609 .cache/phase3/test609.csv \\
+            --input-1410 .cache/phase3/dev1410.csv \\
+            --input-466 .cache/phase3/retrospective466.csv \\
+            --out .cache/phase3/recalculated > .cache/phase3/recalculated_stdout.json
+      - name: Cross-audit JS archival computations against Python recalculation
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pandas as pd
+          from pathlib import Path
+          published=json.loads(Path('audits/phase3_retrospective_confidence_20261014/phase3_paired_summary.json').read_text())
+          recomputed=json.loads(Path('.cache/phase3/recalculated/summary.json').read_text())
+          for role,existing in [('609','test609'),('1410','dev1410'),('466','retrospective466')]:
+              for key,expected in published['comparison'][existing].items():
+                  for stat,val in expected.items():
+                      assert abs(recomputed[role][key][stat]-val)<1e-12,(role,key,stat)
+          for role in ['609','466']:
+              old=pd.read_csv('audits/phase3_retrospective_confidence_20261014/'+role+'_paired_risk_coverage.csv')
+              new=pd.read_csv('.cache/phase3/recalculated/risk_'+role+'.csv')
+              assert len(old)==len(new)==int(role)
+              for key in ['HGB','margin','similarity']:
+                  assert old[key+'_wrong'].tolist()==new[key+'_wrong_n'].tolist(),(role,key)
+          print('PASS: independent dual-algorithm counts, AUROC, Brier and EVERY accepted-case denominator')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase3-independent-retrospective-Python-audit
+          path: .cache/phase3/recalculated/
