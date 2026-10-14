@@ -1,51 +1,47 @@
+"""Minimal researcher interface for frozen GC–EI–MS v2 and isolated legacy v1.
+
+Software v2.0.1 changes PRESENTATION only. Numerical models, source-reference
+identity, model hashes and historical acceptance masks are unchanged.
+"""
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 from gcei.bootstrap import SOURCE_RECORD, ensure_runtime_assets
-from gcei.reference_builder import EXPECTED_SHA256
 from gcei.engine import GCEIEngine, parse_single_spectrum_text, read_spectrum_csv
-from gcei.v2_bootstrap import ensure_v2_assets, V2_HGB
-from gcei.v2_engine import GCEIV2Engine, V2_N_REFERENCE, V2_REFERENCE_SHA256, V2_HGB_SHA256
+from gcei.reference_builder import EXPECTED_SHA256
+from gcei.v2_bootstrap import V2_HGB, ensure_v2_assets
+from gcei.v2_engine import GCEIV2Engine, V2_HGB_SHA256, V2_N_REFERENCE, V2_REFERENCE_SHA256
 
-ROOT = Path(__file__).resolve().parent
-APP_VERSION = '2.0.0'
-REFERENCE_IDENTITY_COUNT = 8543
-V2_MODE = 'Research v2: frozen EI/HGB, 8,455 identities'
-V1_MODE = 'Legacy v1: 8,543 identities, historical RI and conformal'
+APP_VERSION = "2.0.1"
+V2_MODE = "v2 · EI + HGB"
+V1_MODE = "v1 · Legacy EI / RI"
+SINGLE_EXAMPLE = "mz,intensity\n41,82.1\n43,44.6\n69,71.5\n93,100\n"
+V2_BATCH_EXAMPLE = "spectrum_id,mz,intensity\nA,41,82.1\nA,93,100\nB,43,65.2\nB,71,100\n"
+V1_BATCH_EXAMPLE = (
+    "spectrum_id,mz,intensity,ri\nA,41,82.1,\nA,93,100,\n"
+    "B,43,65.2,939\nB,71,100,939\n"
+)
 
-SINGLE_TEMPLATE = """mz,intensity
-41,82.1
-43,44.6
-69,71.5
-93,100
-121,18.3
-136,14.2
-"""
-
-BATCH_TEMPLATE = """spectrum_id,mz,intensity,ri
-Peak_1,41,82.1,
-Peak_1,93,100,
-Peak_2,43,65.2,939
-Peak_2,71,100,939
-"""
-V2_BATCH_TEMPLATE = """spectrum_id,mz,intensity
-Peak_1,41,82.1
-Peak_1,93,100
-Peak_2,43,65.2
-Peak_2,71,100
-"""
-
-st.set_page_config(page_title="GC–EI Annotation Reliability Tool", page_icon="🧪", layout="wide")
+st.set_page_config(
+    page_title="GC–EI–MS Annotation",
+    page_icon="🧪",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+)
 st.markdown(
     """
 <style>
-html, body, [class*="css"] { font-family: Inter, Arial, sans-serif; }
-.block-container { max-width: 1180px; padding-top: 2rem; }
-.small-note { color: #5f6b6d; font-size: 0.92rem; }
+.block-container {max-width: 930px; padding-top: 2.2rem; padding-bottom: 3.5rem;}
+h1 {letter-spacing: -0.045em; font-weight: 700; margin-bottom: 0.15rem;}
+h2, h3 {letter-spacing: -0.02em;}
+[data-testid="stMetric"] {padding: 0.25rem 0;}
+[data-testid="stMetricLabel"] {font-size: .82rem;}
+div[data-testid="stVerticalBlock"] {gap: .6rem;}
 </style>
 """,
     unsafe_allow_html=True,
@@ -53,298 +49,301 @@ html, body, [class*="css"] { font-family: Inter, Arial, sans-serif; }
 
 
 @st.cache_resource(show_spinner=False)
-def load_engine(selection):
-    if selection == V2_MODE:
+def load_engine(model_name: str):
+    if model_name == V2_MODE:
         return GCEIV2Engine(ensure_v2_assets(), V2_HGB)
-    return GCEIEngine(ensure_runtime_assets())
+    if model_name == V1_MODE:
+        return GCEIEngine(ensure_runtime_assets())
+    raise ValueError("Unknown reference/model configuration.")
 
 
-st.title("GC–EI Annotation Reliability Tool")
-st.caption("Connectivity-level GC–EI–MS research annotation and source-dependent uncertainty")
-with st.sidebar:
-    st.markdown("### Select annotation configuration")
-    selection = st.radio("Reference and model", [V2_MODE, V1_MODE], index=0)
-    use_v2 = selection == V2_MODE
-    st.write(f"**Interface version:** {APP_VERSION}")
-    st.write(f"**Reference identities:** {V2_N_REFERENCE if use_v2 else REFERENCE_IDENTITY_COUNT:,}")
-    st.caption("MS-DIAL original source SHA-256:")
-    st.code(EXPECTED_SHA256, language="text")
+def request_fingerprint(*parts) -> str:
+    h = hashlib.sha256()
+    for part in parts:
+        data = part if isinstance(part, bytes) else repr(part).encode("utf-8")
+        h.update(len(data).to_bytes(8, "big"))
+        h.update(data)
+    return h.hexdigest()
+
+
+def result_summary(result, use_v2: bool, accepted: bool) -> pd.DataFrame:
+    return pd.DataFrame([{
+        "software_version": APP_VERSION,
+        "model_configuration": "frozen-v2" if use_v2 else "legacy-v1",
+        "reference_first14_count": V2_N_REFERENCE if use_v2 else 8543,
+        "original_source_sha256": EXPECTED_SHA256,
+        "v2_reference_index_sha256": V2_REFERENCE_SHA256 if use_v2 else "",
+        "v2_hgb_model_sha256": V2_HGB_SHA256 if use_v2 else "",
+        "top1_name": result.top1.get("display_name", result.top1.get("name", "")),
+        "top1_formula": result.top1.get("formula", ""),
+        "top1_connectivity_id": result.top1.get("connectivity_id", ""),
+        "top1_similarity": result.top1.get("similarity"),
+        "historical_model_score": result.confidence,
+        "top1_top2_cosine_margin": result.margin if use_v2 else "",
+        "historical_acceptance_rule_met": accepted,
+        "selected_error_target": result.risk_target,
+        "selected_error_rate_certified": False,
+        "independent_chemical_identity_authenticated": False,
+        "v1_nominal_set_size": "" if use_v2 else result.conformal90_size,
+        "external_set_coverage_certified": False,
+        "ri_delta_top1": result.ri_delta_top1,
+        "interpretation": "Tentative first14 connectivity-level library annotation",
+    }])
+
+
+def small_candidates(frame: pd.DataFrame) -> pd.DataFrame:
+    columns = ["rank", "display_name", "formula", "similarity", "connectivity_id"]
+    shown = frame[[c for c in columns if c in frame.columns]].copy()
+    return shown.rename(columns={
+        "rank": "Rank", "display_name": "Candidate",
+        "formula": "Formula", "similarity": "Similarity",
+        "connectivity_id": "Connectivity",
+    })
+
+
+def render_single(result, use_v2: bool) -> None:
+    st.divider()
+    st.subheader("Annotation results")
+    accepted = result.accepted if use_v2 else result.confidence >= result.risk_threshold
+    status = "Meets historical acceptance rule" if accepted else "Below historical acceptance rule"
+    st.caption(status + " · All compound assignments remain tentative.")
+
+    name = result.top1.get("display_name", result.top1.get("name", "Unlabelled candidate"))
+    st.markdown("**Top-ranked library candidate**")
+    st.write(name)
+
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Similarity", f"{float(result.top1['similarity']):.3f}")
+    m2.metric("Model score", f"{result.confidence:.1%}",
+              help="Historical estimate of correct database connectivity label; not an authenticated identification probability.")
     if use_v2:
-        st.caption("Frozen v2 reference index SHA-256:")
-        st.code(V2_REFERENCE_SHA256, language="text")
-        st.caption("Frozen development-trained HGB SHA-256:")
-        st.code(V2_HGB_SHA256, language="text")
-        st.warning("The historical 5% and 10% target-error rules are not certified.")
+        m3.metric("Top-two margin", f"{result.margin:.3f}")
     else:
-        st.info("This retains original v1 reference/model and separate historical RI/conformal settings.")
+        m3.metric("Nominal set size", str(result.conformal90_size))
 
-if use_v2:
-    st.info(
-        "**Active: research v2, EI-only.** The frozen model matched 394/609 "
-        "publisher-reported first14 labels in its within-MS-DIAL closed-library "
-        "test (64.70%). No independent laboratory validation, authentic chemical "
-        "identity confirmation, or certified 5%/10% risk guarantee exists. "
-        "v2 RI fusion and conformal sets are NOT provided."
-    )
-else:
-    st.info(
-        "**Active: legacy v1.** Historical confidence/RI estimates and nominal "
-        "conformal candidate sets are source-dependent. The separate v2 results "
-        "do not apply to this legacy reference/model."
-    )
+    st.markdown("**Ranked candidates**")
+    st.dataframe(small_candidates(result.top10), use_container_width=True, hide_index=True)
 
-with st.expander("Scope and interpretation", expanded=False):
-    if use_v2:
-        st.markdown("""
-**v2 model:** frozen 8,455 first14 InChIKey connectivity reference, original
-float64 nominal EI m/z^1 × sqrt(intensity) full-library cosine, and exact
-original 12-feature development-fitted HGB confidence score.
-
-**One-time 609 within-source test:** 394/609 first14 labels matched at top1,
-489/609 within top5, and 509/609 within top10. Reference compounds were
-present in the search library by design. Physical chemical standards,
-separate laboratory acquisitions and future unknown-sample identification
-have not been verified.
-
-Original 10%-target threshold: HGB >= 0.87 (198 accepted, 12 mismatches).
-Original 5%-target threshold: HGB >= 0.94 AND top1–top2 cosine gap >= 0.20
-(38 accepted, 0 observed mismatches). **NEITHER is a certified bound on
-future error**. The 609 is now permanently spent as an untouched test.
-
-**No v2 RI fusion, conformal candidate set or out-of-library detector**
-was calibrated in this research. Do not borrow any of those from v1.
-All hit labels represent source-reported chemical connectivity, NOT
-experimentally authenticated compound identity or stereoisomer truth.
-Confirm important findings with authentic standards or orthogonal methods.
-""")
-    else:
-        st.markdown(
-        """
-The tool ranks library compounds by **first14 InChIKey connectivity** using nominal electron-ionization
-spectra. Its top-hit correctness score and **nominal 90%** candidate set are estimates derived from
-the historical source distribution, not verified real-world chemical identification probabilities.
-
-The 5% and 10% target-error thresholds were selected empirically and **are not independent
-statistical certificates**. The candidate-set coverage and model calibration have not been
-verified on independently acquired laboratory samples, other instruments, other reference
-libraries, or compounds missing from the reference. This tool does not resolve exact
-stereoisomers or authenticate the measured chemical material.
-
-Optional Kovats RI should only be supplied when chromatographic systems are comparable;
-its benefit is not independently established for other instruments.
-
-All matches are **tentative annotations**. Confirm compound identity with an authentic
-standard or orthogonal evidence. Low confidence or a large set does not prove
-that a compound is absent from the library. The newer 8,455-identity v2 research
-evaluation does not describe performance of this separate 8,543-identity app.
-        """
-    )
-
-with st.expander("Input format and CSV templates", expanded=False):
-    st.markdown(
-        """
-**Single spectrum** — use two columns: `mz,intensity`. Enter one ion peak per row.
-
-**Batch spectra** — use `spectrum_id,mz,intensity,ri`. Repeat the same `spectrum_id` for every peak belonging to that spectrum.
-The `ri` column is optional; leave it blank when Kovats RI is unavailable. If RI is supplied, use the same RI value for all rows of that spectrum.
-        """
-    )
-    c1, c2 = st.columns(2)
-    with c1:
-        st.code(SINGLE_TEMPLATE, language="text")
-        st.download_button(
-            "Download single-spectrum CSV template",
-            SINGLE_TEMPLATE.encode(),
-            file_name="gcei_single_spectrum_template.csv",
-            mime="text/csv",
+    with st.expander("Download results"):
+        d1, d2 = st.columns(2)
+        d1.download_button(
+            "Annotation summary (CSV)",
+            data=result_summary(result, use_v2, accepted).to_csv(index=False).encode(),
+            file_name="gcei_annotation_summary.csv",
+            mime="text/csv", use_container_width=True,
         )
-    with c2:
-        batch_template = V2_BATCH_TEMPLATE if use_v2 else BATCH_TEMPLATE
-        st.code(batch_template, language="text")
-        st.download_button(
-            "Download batch CSV template",
-            batch_template.encode(),
-            file_name="gcei_batch_template.csv",
-            mime="text/csv",
+        d2.download_button(
+            "All candidate details (CSV)",
+            data=result.top10.to_csv(index=False).encode(),
+            file_name="gcei_top10_candidates.csv",
+            mime="text/csv", use_container_width=True,
         )
+        if not use_v2:
+            st.download_button(
+                "Legacy nominal candidate set (CSV)",
+                data=result.conformal90.to_csv(index=False).encode(),
+                file_name="gcei_legacy_nominal_90_set.csv",
+                mime="text/csv",
+            )
 
-try:
-    with st.spinner("Preparing the checksum-verified reference library..."):
-        engine = load_engine(selection)
-except Exception:
-    st.error("Reference/model initialization was blocked: the exact original source or SHA-256-locked artifacts are unavailable. No alternative dataset or model was accepted.")
-    st.stop()
-
-mode = st.radio("Analysis mode", ["Single spectrum", "Batch spectra"], horizontal=True)
-risk_label = st.selectbox(
-    "Historical decision threshold (not certified error control)",
-    ["10% target error (more coverage)", "5% target error (stricter)"],
-)
-risk_target = 0.10 if risk_label.startswith("10%") else 0.05
-st.caption("Historical empirical thresholds only. **Neither target error level is independently certified** for future samples.")
-
-if mode == "Single spectrum":
-    source = st.radio("Spectrum input", ["Paste peaks", "Upload CSV"], horizontal=True)
-    peaks = None
-    if source == "Paste peaks":
-        text = st.text_area(
-            "Paste m/z and intensity values",
-            value=SINGLE_TEMPLATE,
-            height=190,
-        )
-        try:
-            peaks = parse_single_spectrum_text(text)
-        except ValueError as exc:
-            st.error(str(exc))
-        except Exception:
-            st.error("Spectrum parsing failed. Check the input format and values.")
-    else:
-        uploaded = st.file_uploader("Upload CSV with columns mz,intensity", type=["csv"])
-        if uploaded is not None:
-            try:
-                peaks = read_spectrum_csv(uploaded.getvalue())
-            except ValueError as exc:
-                st.error(str(exc))
-            except Exception:
-                st.error("CSV parsing failed. Check the file structure and values.")
-
-    use_ri = False if use_v2 else st.checkbox("Use comparable Kovats RI (legacy v1 only)")
-    query_ri = None
-    if use_ri:
-        query_ri = st.number_input("Experimental Kovats RI", min_value=1.0, value=1000.0, step=1.0)
-        st.warning(
-            "Enter Kovats RI, not raw retention time. RI-assisted scoring is valid only when the experimental and reference chromatographic systems are reasonably comparable."
-        )
-
-    if st.button("Analyze spectrum", type="primary"):
-        if peaks is None or len(peaks) == 0:
-            st.error("No valid spectrum was provided.")
-        else:
-            try:
-                r = engine.analyze(peaks, kovats_ri=query_ri if use_ri else None, risk_target=risk_target)
-                if (r.accepted if use_v2 else r.confidence >= r.risk_threshold):
-                    st.info(r.decision)
-                    st.caption("The score passes a historical threshold, not a confirmed chemical identity or error-rate guarantee.")
-                else:
-                    st.warning(r.decision)
-
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("Top candidate", str(r.top1.get("display_name", r.top1.get("name", ""))))
-                c2.metric("Similarity", f"{r.top1.get('similarity', 0):.4f}")
-                c3.metric("Historical model score", f"{100*r.confidence:.1f}%", help="Source-dependent model estimate, not an authenticated compound identity probability.")
-                if use_v2:
-                    c4.metric("Top1–top2 EI margin", f"{r.margin:.4f}")
-                else:
-                    c4.metric("Nominal 90% set size", f"{r.conformal90_size}", help="External coverage not established.")
-
-                if r.ri_delta_top1 is not None:
-                    st.write(f"**Top-candidate |ΔRI|:** {r.ri_delta_top1:.1f} RI units")
-                for warning in r.warnings:
-                    st.warning(warning)
-
-                st.subheader("Top 10 candidates")
-                st.dataframe(r.top10, use_container_width=True, hide_index=True)
-
-                if not use_v2:
-                    st.subheader("Legacy v1 nominal 90% candidate set")
-                    st.dataframe(r.conformal90.head(100), use_container_width=True, hide_index=True)
-                    st.caption("External 90% coverage not established; download full original set if needed.")
-                else:
-                    st.caption("v2 top 10 is a ranked list, NOT a conformal confidence set.")
-
-                summary = pd.DataFrame([{
-                    "mode": r.mode,
-                    "configuration": "research-v2" if use_v2 else "legacy-v1",
-                    "reference_index_sha256": V2_REFERENCE_SHA256 if use_v2 else "",
-                    "frozen_HGB_sha256": V2_HGB_SHA256 if use_v2 else "",
-                    "top1_top2_cosine_margin": r.margin if use_v2 else "",
-                    "historical_rule_met": r.accepted if use_v2 else r.confidence >= r.risk_threshold,
-                    "software_version": APP_VERSION,
-                    "reference_first14_count": V2_N_REFERENCE if use_v2 else REFERENCE_IDENTITY_COUNT,
-                    "source_msp_sha256": EXPECTED_SHA256,
-                    "source_independent_error_guarantee": False,
-                    "top1_name": r.top1.get("display_name", r.top1.get("name", "")),
-                    "top1_formula": r.top1.get("formula", ""),
-                    "top1_connectivity_id": r.top1.get("connectivity_id", ""),
-                    "top_similarity": r.top1.get("similarity", ""),
-                    "predicted_top1_correctness": r.confidence,
-                    "conformal90_set_size": "" if use_v2 else r.conformal90_size,
-                    "conformal90_external_coverage_certified": False,
-                    "risk_target": r.risk_target,
-                    "risk_threshold": r.risk_threshold,
-                    "ri_delta_top1": r.ri_delta_top1,
-                    "decision": r.decision,
-                }])
-                st.download_button(
-                    "Download result summary (CSV)",
-                    summary.to_csv(index=False).encode(),
-                    file_name="gcei_annotation_summary.csv",
-                    mime="text/csv",
+    if result.warnings or not use_v2:
+        with st.expander("Interpretation details"):
+            if not use_v2:
+                st.caption(
+                    "v1's nominal 90% candidate set has no independently demonstrated "
+                    "coverage for new instruments or laboratories."
                 )
-                st.download_button("Download top-10 candidates (CSV)",
-                    r.top10.to_csv(index=False).encode(), file_name="gcei_top10_candidates.csv", mime="text/csv")
-                if not use_v2:
-                    st.download_button("Download complete nominal 90% legacy v1 set (CSV)",
-                        r.conformal90.to_csv(index=False).encode(), file_name="gcei_legacy_nominal_set.csv", mime="text/csv")
-            except ValueError as exc:
-                st.error(str(exc))
-            except Exception:
-                st.error("Spectrum analysis failed. Check the input and try again.")
+                st.dataframe(small_candidates(result.conformal90.head(30)),
+                             hide_index=True, use_container_width=True)
+            if result.ri_delta_top1 is not None:
+                st.write(f"Top-candidate |ΔRI|: {result.ri_delta_top1:.1f}")
+            for note in result.warnings:
+                st.write("• " + note)
 
-else:
-    st.write("Upload a long-format CSV with `spectrum_id`, `mz`, and `intensity`. The optional `ri` column contains Kovats RI.")
-    uploaded = st.file_uploader("Batch CSV", type=["csv"], key="batch")
-    if uploaded is not None:
-        try:
-            df = pd.read_csv(uploaded)
-            st.dataframe(df.head(30), use_container_width=True, hide_index=True)
-            if st.button("Analyze batch", type="primary"):
-                out = engine.analyze_batch(df, risk_target=risk_target)
-                st.info(f"Analyzed {len(out)} spectra; all reported identities are tentative.")
-                out.insert(0, "software_version", APP_VERSION)
-                out["reference_first14_count"] = V2_N_REFERENCE if use_v2 else REFERENCE_IDENTITY_COUNT
-                out["configuration"] = "research-v2" if use_v2 else "legacy-v1"
-                out["source_msp_sha256"] = EXPECTED_SHA256
-                out["source_independent_error_guarantee"] = False
-                st.dataframe(out, use_container_width=True, hide_index=True)
-                st.download_button(
-                    "Download batch results (CSV)",
-                    out.to_csv(index=False).encode(),
-                    file_name="gcei_batch_results.csv",
-                    mime="text/csv",
-                )
-        except ValueError as exc:
-            st.error(str(exc))
-        except Exception:
-            st.error("Batch analysis failed. Check the CSV structure and values.")
 
-st.divider()
-st.markdown(
-    f"**Reference library:** [MS-DIAL public EI/Kovats-RI dataset on Zenodo]({SOURCE_RECORD}). "
-    "The source MSP is obtained from the original publisher record (or its byte-identical historical copy), checked against the frozen SHA-256 and never redistributed here."
-)
+st.title("GC–EI–MS Annotation")
+st.caption("Spectral library search · connectivity-level candidate ranking")
 
-st.markdown("**Citation and source provenance**")
-if use_v2:
-    st.markdown(
-        "For frozen research v2 output, cite the "
-        "[GC–EI–MS Annotation Tool source repository]"
-        "(https://github.com/jameshztta-stack/gc-ei-annotation-reliability), "
-        "the underlying original MS-DIAL EI source and the future associated v2 "
-        "research manuscript once published. "
-        "The archived [v1.0.0 software DOI](https://doi.org/10.5281/zenodo.23143113) "
-        "refers to the **older 8,543-reference software**, not the frozen v2 HGB model."
+a, b = st.columns([1.2, 1])
+with a:
+    model_name = st.selectbox(
+        "Reference model",
+        [V2_MODE, V1_MODE],
+        help="Frozen research v2 and historical v1 use different reference libraries and confidence models.",
     )
-else:
-    st.markdown(
-        "For legacy v1 output: Zothantluanga JH. *GC–EI Annotation Reliability Tool*, "
-        "v1.0.0, Zenodo (2026), "
-        "[DOI 10.5281/zenodo.23143113](https://doi.org/10.5281/zenodo.23143113). "
-        "Cite the original MS-DIAL EI dataset when relevant."
-    )
+with b:
+    analysis_mode = st.radio("Analysis", ["Single spectrum", "Batch"], horizontal=True)
 
+use_v2 = model_name == V2_MODE
 st.caption(
-    "Developed and maintained by Dr. James H. Zothantluanga, Research Director, Jazer Research Lab, "
-    "Aizawl, Mizoram 796005, India."
+    "8,455 reference identities · EI-only" if use_v2
+    else "8,543 reference identities · optional Kovats RI"
 )
-st.caption(f"Interface v{APP_VERSION} | {selection} | No independent source-wide identity or risk certification.")
+left, right = st.columns([1, 1])
+with left:
+    threshold_label = st.selectbox(
+        "Historical decision rule",
+        ["10% target", "5% target"],
+        help="Original research threshold, not a certified future-error guarantee.",
+    )
+risk_target = .10 if threshold_label.startswith("10%") else .05
+
+if analysis_mode == "Single spectrum":
+    method = st.radio("Provide spectrum", ["Paste peaks", "Upload CSV"], horizontal=True)
+    with st.form("single_annotation_form"):
+        raw_text = None
+        raw_file = None
+        if method == "Paste peaks":
+            raw_text = st.text_area(
+                "m/z, intensity",
+                placeholder=SINGLE_EXAMPLE,
+                value="",
+                height=160,
+                help="One pair per line, separated by commas or spaces. Header optional.",
+            )
+        else:
+            raw_file = st.file_uploader(
+                "Spectrum CSV", type=["csv"],
+                help="Two columns: mz,intensity.",
+            )
+        use_ri = False
+        supplied_ri = None
+        if not use_v2:
+            use_ri = st.checkbox("Use Kovats RI", value=False,
+                                 help="Only when the experimental and reference chromatographic conditions are comparable.")
+            if use_ri:
+                supplied_ri = st.number_input("Kovats RI", min_value=1., value=1000., step=1.)
+        submitted = st.form_submit_button("Analyze spectrum", type="primary", use_container_width=True)
+
+    payload = raw_text if method == "Paste peaks" else (raw_file.getvalue() if raw_file else b"")
+    signature = request_fingerprint(model_name, analysis_mode, method, payload,
+                                    risk_target, supplied_ri)
+    if submitted:
+        try:
+            if method == "Paste peaks":
+                peaks = parse_single_spectrum_text(raw_text or "")
+            else:
+                if not raw_file:
+                    raise ValueError("Choose a spectrum CSV before analyzing.")
+                peaks = read_spectrum_csv(raw_file.getvalue())
+            with st.spinner("Analyzing spectrum…"):
+                result = load_engine(model_name).analyze(
+                    peaks, kovats_ri=supplied_ri if use_ri else None,
+                    risk_target=risk_target,
+                )
+            st.session_state["single_result"] = (signature, result)
+        except (ValueError, RuntimeError, OSError) as exc:
+            st.session_state.pop("single_result", None)
+            st.error(str(exc))
+        except Exception:
+            st.session_state.pop("single_result", None)
+            st.error("The analysis could not be completed. Check the input and reference availability.")
+
+    stored = st.session_state.get("single_result")
+    if stored and stored[0] == signature:
+        render_single(stored[1], use_v2)
+
+else:
+    with st.form("batch_annotation_form"):
+        file = st.file_uploader(
+            "Batch CSV", type=["csv"],
+            help="One row per ion peak: spectrum_id,mz,intensity. RI is available only in legacy v1.",
+        )
+        submitted = st.form_submit_button("Analyze batch", type="primary", use_container_width=True)
+
+    contents = file.getvalue() if file else b""
+    signature = request_fingerprint(model_name, analysis_mode, contents, risk_target)
+    if submitted:
+        try:
+            if not file:
+                raise ValueError("Choose a batch CSV before analyzing.")
+            import io
+            df = pd.read_csv(io.BytesIO(contents))
+            with st.spinner("Analyzing spectra…"):
+                out = load_engine(model_name).analyze_batch(df, risk_target=risk_target)
+            out.insert(0, "software_version", APP_VERSION)
+            out["configuration"] = "frozen-v2" if use_v2 else "legacy-v1"
+            out["reference_first14_count"] = V2_N_REFERENCE if use_v2 else 8543
+            out["original_source_sha256"] = EXPECTED_SHA256
+            out["selected_error_rate_certified"] = False
+            st.session_state["batch_result"] = (signature, out)
+        except (ValueError, RuntimeError, OSError) as exc:
+            st.session_state.pop("batch_result", None)
+            st.error(str(exc))
+        except Exception:
+            st.session_state.pop("batch_result", None)
+            st.error("Batch analysis could not be completed. Check the CSV format.")
+
+    stored = st.session_state.get("batch_result")
+    if stored and stored[0] == signature:
+        df = stored[1]
+        st.divider()
+        st.subheader("Batch results")
+        st.caption(f"{len(df)} spectra · tentative library annotations")
+        primary = [
+            "spectrum_id", "top1_name", "top1_formula", "top1_connectivity_id",
+            "top_similarity", "historical_HGB_score", "predicted_top1_correctness",
+            "historical_acceptance_rule_met", "passes_empirical_operating_point",
+        ]
+        shown = df[[z for z in primary if z in df.columns]]
+        st.dataframe(shown, use_container_width=True, hide_index=True)
+        st.download_button("Download full batch results (CSV)",
+                           df.to_csv(index=False).encode(),
+                           file_name="gcei_batch_annotations.csv", mime="text/csv")
+
+with st.expander("Input examples"):
+    x, y = st.columns(2)
+    with x:
+        st.caption("Single spectrum")
+        st.code(SINGLE_EXAMPLE, language="text")
+        st.download_button("Single CSV template", SINGLE_EXAMPLE.encode(),
+                           file_name="gcei_single_template.csv", mime="text/csv")
+    with y:
+        st.caption("Batch spectra")
+        example = V2_BATCH_EXAMPLE if use_v2 else V1_BATCH_EXAMPLE
+        st.code(example, language="text")
+        st.download_button("Batch CSV template", example.encode(),
+                           file_name="gcei_batch_template.csv", mime="text/csv")
+
+with st.expander("Methods, limitations & provenance"):
+    st.markdown(
+        "**Interpretation:** All annotations represent source-reported InChIKey-first14 "
+        "connectivity hypotheses, not independently verified chemical identities. "
+        "The 5% and 10% historical acceptance targets are **not certified future-error guarantees**. "
+        "Authentic standards or orthogonal evidence are required for confirmed identification."
+    )
+    if use_v2:
+        st.write(
+            "**Research v2:** 8,455 frozen source-indexed reference identities; "
+            "m/z¹ × √intensity EI cosine; 12-feature development-fitted HGB. "
+            "In the original within-MS-DIAL closed-library 609-query evaluation, "
+            "394/609 source-label top-one matches were observed. Source acquisition "
+            "independence, open-world identification and full molecular-form truth "
+            "were not established. The 609 cases are already spent as an untouched test."
+        )
+        st.write(
+            "Original 10%-target rule: HGB ≥0.87; 198/609 accepted, 12 source-label "
+            "mismatches. Original 5%-target rule: HGB ≥0.94 and top-two margin ≥0.20; "
+            "38/609 accepted, zero observed mismatches. Neither is formally certified. "
+            "RI fusion and conformal candidate sets were not calibrated for v2."
+        )
+        st.caption(f"v2 reference index SHA-256: {V2_REFERENCE_SHA256}")
+        st.caption(f"v2 frozen HGB SHA-256: {V2_HGB_SHA256}")
+    else:
+        st.write(
+            "**Legacy v1:** 8,543 source-indexed reference identities. "
+            "Optional RI-assisted ranking and a nominal 90% candidate set use "
+            "the original v1 calibration only; external-laboratory coverage "
+            "has not been established."
+        )
+    st.caption(f"Original MS-DIAL MSP SHA-256: {EXPECTED_SHA256}")
+    st.markdown(
+        f"[Original MS-DIAL source]({SOURCE_RECORD}) · "
+        "[Software source](https://github.com/jameshztta-stack/gc-ei-annotation-reliability) · "
+        "[Previous v1.0.0 archive](https://doi.org/10.5281/zenodo.23143113)"
+    )
+    st.caption(
+        "The v1.0.0 DOI refers to the previous software release, not to this v2.0.1 version."
+    )
+
+st.caption(f"v{APP_VERSION} · Jazer Research Lab · Research use; tentative annotations only")
