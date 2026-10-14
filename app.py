@@ -334,7 +334,7 @@ with st.expander("How to cite"):
     st.markdown(
         "**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*. "
         "Jazer Research Lab. Version 2.0.2, 2026. "
-        "The version-specific Zenodo DOI will be linked here after the archive is published."
+        "[Zenodo DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447)."
     )
     st.markdown(
         "**Research article:** A related research manuscript has not yet been "
