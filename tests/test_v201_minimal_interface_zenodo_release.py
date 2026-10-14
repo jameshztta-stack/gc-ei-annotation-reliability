@@ -69,4 +69,7 @@ def test_publication_metadata_represents_v202_only_not_old_doi():
     assert "not" in meta["description"].lower()
     assert "version: 2.0.2" in cff
     assert "value: \"10.5281/zenodo.23372495\"" not in cff
+    assert 'value: "10.5281/zenodo.23373447"' in cff
+    assert "10.5281/zenodo.23373447" in (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "10.5281/zenodo.23373447" in (ROOT / "app.py").read_text(encoding="utf-8")
     assert 'APP_VERSION = "2.0.2"' in (ROOT / "app.py").read_text(encoding="utf-8")
