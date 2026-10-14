@@ -80,6 +80,6 @@ def main():
      "v1_legacy_expected_results_not_reused":True,
      "accuracy_denominator_not_defined_without_authenticated_truth":True,
     }
-    (out/"12_case_v2_software_provenance_manifest.json").write_text(json.dumps(manifest,indent=2)+"\\n")
+    (out/"12_case_v2_software_provenance_manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")
     print(json.dumps(manifest,indent=2))
 if __name__=="__main__":main()
