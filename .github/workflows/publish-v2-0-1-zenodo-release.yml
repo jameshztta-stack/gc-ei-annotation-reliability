@@ -49,7 +49,7 @@ jobs:
           python scripts/check_reproducibility.py
       - name: Create GitHub v2.0.1 release for existing Zenodo integration
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if gh release view v2.0.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
