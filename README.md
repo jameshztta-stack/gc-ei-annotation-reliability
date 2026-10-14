@@ -1,154 +1,70 @@
-# GC–EI Annotation Reliability Tool
+# GC–EI–MS Annotation Tool
 
-**Software version 2.0.1** — streamlined Streamlit interface, frozen research v2 (8,455 identities and HGB model), with separate legacy v1 (8,543 identities).
+**Version 2.0.2 — researcher-facing EI mass-spectrum library annotation**
 
-[![Zenodo v2.0.1 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23372495.svg)](https://doi.org/10.5281/zenodo.23372495)
+[Open the app](https://gc-ei-annotation.streamlit.app/) · [Zenodo version history](https://doi.org/10.5281/zenodo.23143112)
 
-**Current archived software:** [v2.0.1 · DOI 10.5281/zenodo.23372495](https://doi.org/10.5281/zenodo.23372495) · [Previous v1.0.0 archive](https://doi.org/10.5281/zenodo.23143113) · [All-version concept DOI](https://doi.org/10.5281/zenodo.23143112).
+## What this tool does
 
-Research implementation of a source-specific GC–EI–MS library-annotation workflow. **Outputs are tentative and model scores are not independently certified identification probabilities or conditional error guarantees.**
+The **GC–EI–MS Annotation Tool** compares electron-ionization mass spectra with a reference library of **8,455 chemical-connectivity identities**, ranks the ten nearest spectral candidates, and reports similarity and a model-derived confidence score. Analyze one spectrum or multiple spectra from CSV, then download candidate annotations and source provenance.
 
-**Clean app:** The main screen now contains model selection, single/batch spectrum input, a single analysis action, ranked hits, and downloads. Long methodology, source hashes and uncertainty qualifications remain in the collapsed **Methods, limitations & provenance** panel. The original EI/HGB model and both decision thresholds are unchanged.
+**Interpretation:** Outputs are tentative InChIKey-first14 chemical-connectivity database matches. They do not establish authentic-standard molecular identity, stereochemistry, independent experimental source provenance or validated future error guarantees. Confirm compound identities with authentic standards or appropriate independent evidence.
 
-**v2 deployment:** The default application uses the exact original 8,455-entry first14 connectivity reference, float64 m/z¹×√intensity cosine and 1,410-development-trained HGB confidence model, with immutable checksums. **RI-assisted scoring and nominal conformal sets are not available for v2**; select legacy v1 for its separate study-derived RI/conformal configuration. Neither 5% nor 10% future selected-error target is certified. The original 609 within-source research comparison achieved 394/609 (64.70%) source-label top-1 agreement, **not independently authenticated experimental identification**. See [v2 release notes](docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md).
+## Input templates
 
-## Scope
+Single spectrum: **mz,intensity**, one ion peak per line:
 
-For a user-supplied EI spectrum, the software returns:
+    mz,intensity
+    41,82.1
+    43,44.6
+    69,71.5
+    93,100
 
-- the highest-ranked connectivity-level library candidate;
-- the top 10 ranked candidates;
-- `m/z^1 × intensity^0.5` weighted-cosine similarity;
-- a historical model estimate for the top-1 hit (not authenticated identification probability);
-- a nominal 90% split-conformal candidate set **only in legacy v1** (external coverage not established);
-- empirical 10%/5% **target**-error thresholds (not certified guarantees);
-- optional Kovats-RI-assisted scoring **only in legacy v1**;
-- downloadable single-spectrum and batch results.
+Batch spectra: **spectrum_id,mz,intensity**, repeating the same spectrum ID for all peaks within a spectrum:
 
-Outputs are tentative spectral-library annotations. Definitive identification requires an authentic standard or suitable orthogonal confirmation. Low confidence or a broad candidate set is not evidence that a compound is absent from the reference library.
+    spectrum_id,mz,intensity
+    Sample_1,41,82.1
+    Sample_1,93,100
+    Sample_2,43,65.2
+    Sample_2,71,100
 
-## Frozen v1 scientific configuration and limitations
+Template downloads and input descriptions appear **above** the upload/paste fields in the Streamlit app. Kovats RI is not supported by the current research model. The original v1 remains available as an archived software version, not a selectable model on the live website.
 
-The interface v1.0.1 retains the original v1.0.0 algorithm, panel and fixed v1.1 study settings:
+## Current computational configuration
 
-- connectivity identity = first 14 characters of InChIKey;
-- exact-spectrum duplicates removed before benchmark development;
-- EI score = `m/z^1 × intensity^0.5` weighted cosine;
-- nominal conformal margins derived from the original internal calibration identities, without verified coverage on independent instrument sources;
-- historical source-dependent correctness models from the original development split;
-- empirical selective-prediction thresholds derived from the original risk-calibration analysis, **not externally certified**;
-- RI fusion = `0.8 × EI + 0.2 × exp[-0.5 × (ΔRI/10)^2]`.
+- **Reference:** 8,455 original MS-DIAL EI first14 connectivity identities; exact source data SHA verified at runtime.
+- **Spectral ranking:** nominal EI m/z¹ × sqrt(intensity), float64 weighted L2 cosine.
+- **Confidence:** the already developed 12-feature HistGradientBoosting classifier, trained on the original 1,410 development spectra. No refitting or update from the 609 case outcomes.
+- **Optional confidence screening:** original 10%-target rule (HGB probability ≥0.87), and strict 5%-target rule (HGB probability ≥0.94 AND top-two score margin ≥0.20). **Neither is a certified future error bound.**
+- **Results:** top ten ranked library candidates, similarity, confidence estimate, screening decision and CSV files with study provenance.
+- **Not offered by this model:** RI fusion, calibrated future conformal coverage, chemical detection outside the search library, exact molecular-form or authentic-standard confirmation.
 
-No model fitting or recalibration occurs when a user submits a spectrum.
+### Evaluation and its limits
 
-## Input format
+The original one-time 609-query closed-reference within-MS-DIAL test produced **394/609 (64.70%)** top-one publisher-reported first14 label agreement; top-five **489/609** and top-ten **509/609**. This is not an experimentally independent authentic-standard accuracy estimate. The original historical 10%-target rule accepted **198/609** (12 source-label mismatches); the stricter 5%-target rule accepted **38/609** (zero observed source-label mismatches). Neither passed valid independent risk certification.
 
-### Single spectrum
+The 609 evaluation is permanently spent as an untouched test and may only be replayed to check software parity, not to tune and advertise a newly independent evaluation. See [research method/limitations](docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md) and [version 2.0.2 release notes](docs/RELEASE_V2_0_2.md).
 
-Use two columns, one ion peak per row:
+## Source, code and reproducibility
 
-```csv
-mz,intensity
-41,82.1
-43,44.6
-69,71.5
-93,100
-121,18.3
-136,14.2
-```
+- Original MS-DIAL publisher source SHA-256: a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70
+- v2 reference index SHA-256: 2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01
+- Original HGB model SHA-256: a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13
+- Source: Tsugawa H., MS-DIAL public GC–EI–MS/Kovats-RI database, [Zenodo DOI 10.5281/zenodo.21910638](https://doi.org/10.5281/zenodo.21910638).
 
-Template: [`examples/template_single_spectrum.csv`](examples/template_single_spectrum.csv)
+Upstream EI source spectra are not redistributed. The MIT software license does not supersede upstream database rights. See [data provenance](docs/DATA_PROVENANCE.md).
 
-### Batch spectra
+Local installation:
 
-Use one row per ion peak. Repeat `spectrum_id` for all peaks belonging to the same spectrum. **The active v2 model expects `spectrum_id,mz,intensity` without RI; the optional RI column below applies only when selecting legacy v1.**
+    python -m pip install -r requirements.txt
+    streamlit run app.py
 
-```csv
-spectrum_id,mz,intensity,ri
-Peak_1,41,82.1,
-Peak_1,93,100,
-Peak_2,43,65.2,939
-Peak_2,71,100,939
-```
+## How to cite
 
-The `ri` column is optional. When RI is available, enter the Kovats RI and repeat the same value for all rows belonging to that spectrum. Do not enter raw retention time.
+**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*, version 2.0.2. Jazer Research Lab, 2026. Use the **v2.0.2 version-specific Zenodo DOI when published**; do not cite [v2.0.1](https://doi.org/10.5281/zenodo.23372495) as a replacement. [All-version concept DOI](https://doi.org/10.5281/zenodo.23143112).
 
-Template: [`examples/template_batch_spectra.csv`](examples/template_batch_spectra.csv)
+**Research article:** The related evaluation manuscript is not yet a published paper. Cite it separately only after publication.
 
-The Streamlit interface also provides direct CSV-template downloads.
+**Original spectral library:** Cite the [MS-DIAL EI source](https://doi.org/10.5281/zenodo.21910638) if you used the associated reference spectra.
 
-## Reference library
-
-The study used the public MS-DIAL EI/Kovats-RI spectral library deposited by Hiroshi Tsugawa:
-
-**Tsugawa H. `msdial_eimslib_kovatsri`. Zenodo. DOI: 10.5281/zenodo.21910638.**
-
-Source file: `GCMS DB-Public-KovatsRI-VS3.msp`.
-
-The upstream MSP and derived reference matrix are not redistributed in this repository. At runtime, the software obtains the exact source file from the Zenodo record, verifies its SHA-256 checksum, and reconstructs the original frozen v1 reference assets locally. The app rejects a source whose SHA-256 differs from the pinned source; it may use only a byte-identical publisher archive copy if the main URL is unavailable. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
-
-## Independent botanical challenge data
-
-Botanical spectra were kept separate from model development and calibration.
-
-The public regression set contains 12 spectra from coriander, cumin and fennel. Historical annotations were used only for descriptive comparison, not as authenticated ground truth. A separate *Ilex umbellulata* case set was used to examine annotation ambiguity and abstention behavior rather than to calculate accuracy.
-
-See [`docs/BOTANICAL_CHALLENGE_SETS.md`](docs/BOTANICAL_CHALLENGE_SETS.md) for the full interpretation.
-
-## Reproducibility
-
-Run:
-
-```bash
-python scripts/check_reproducibility.py
-```
-
-The validation rebuilds the reference assets, verifies the reference SHA-256 fingerprints of the spectral matrix, RI vector and metadata, and reruns the 12 separate botanical challenge spectra against the frozen v1 outputs. These are not authenticated physical chemical identifications.
-
-To use a local copy of the exact MSP:
-
-```bash
-python scripts/check_reproducibility.py --msp "/path/GCMS DB-Public-KovatsRI-VS3.msp"
-```
-
-The complete reproducibility workflow runs automatically on pull requests and `main`.
-
-## Local use
-
-```bash
-python -m venv .venv
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-To use an existing local MSP instead of downloading it at runtime, define `GCEI_MSP_PATH` before launch.
-
-## Validation limits and separate v2 research
-
-The Streamlit v2.0.1 default uses **8,455 source-locked connectivity identities** and the original research-trained HGB. Users may choose **legacy v1 with 8,543 connectivity identities** and unchanged v1 inference/calibration artifacts. The research v2 HGB reference is separately versioned and may be selected in the live v2 app, but the original v1 outcomes and thresholds **cannot be represented as performance of the deployed v2 research model**. The original v2 one-time 609 within-source closed-library evaluation is spent and cannot be reused as an untouched test. On the 609 research queries, the v2 m¹ retriever agreed with 394/609 first14 publisher labels; the 10% and 5% conditional-risk guarantees were **not statistically certified**. Source acquisition and physical standards were not independently authenticated. The later 609 set is permanently spent for new model selection.
-
-Candidate sets and confidence estimates can shift with instrument, sample, reference library and data preprocessing. A 5%/10% target is not a guarantee; a nominal 90% set is not confirmed future coverage. Exact stereoisomer, unknown/out-of-library substances and material authenticity are outside this benchmark.
-
-**Versioning and reproducibility:** see [`docs/RELEASE_V2_0_1_ZENODO_NOTES.md`](docs/RELEASE_V2_0_1_ZENODO_NOTES.md) and [`docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md`](docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md) for precise v2 numerical configuration, frozen software parity and deployment controls. The prior v1.0.1 disclosure update remains documented separately. The original v1.0.0 archival software DOI remains the citation below; v1.0.1 is an interface/transport quality and safety update, not a newly validated model.
-
-## Use with another EI library
-
-The supplied conformal margins, confidence models and empirical thresholds are specific to the reference distribution used in the study. They must not be transferred directly to another library. A different reference library requires independent duplicate screening, query/reference construction, calibration, model fitting and validation.
-
-## Citation
-
-If results from this software contribute to a publication, cite both the associated research article and the archived software release.
-
-**Associated article:** citation to be inserted after publication.
-
-**Software release:** Zothantluanga JH. *GC–EI Annotation Reliability Tool*, version 1.0.0. Zenodo. 2026. DOI: [10.5281/zenodo.23143113](https://doi.org/10.5281/zenodo.23143113).
-
-## Developer and maintainer
-
-**Dr. James H. Zothantluanga**  
-Research Director, Jazer Research Lab  
-Aizawl, Mizoram 796005, India
-
-## License
-
-Software: MIT License. Third-party spectral data are not covered by the software license. See [`NOTICE`](NOTICE) and [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
+**Developed and maintained by Dr. James H. Zothantluanga**, Research Director, Jazer Research Lab, Aizawl, Mizoram, India.
