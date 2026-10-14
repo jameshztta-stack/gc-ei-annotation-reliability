@@ -29,7 +29,7 @@ class AnalysisResult:
 
 
 class GCEIEngine:
-    """Inference engine implementing the validated v1.1 workflow."""
+    """Historical v1 EI annotation inference; external risk/coverage unverified."""
 
     @staticmethod
     def _display_name(name: str) -> str:
@@ -209,13 +209,14 @@ class GCEIEngine:
 
         if prob >= threshold:
             decision = (
-                f"Meets the empirical {int(risk_target*100)}% target-error operating point for {mode}. "
-                "Report as a tentative library annotation; definitive identification requires orthogonal confirmation."
+                f"Passes the historical {int(risk_target*100)}%-target empirical threshold for {mode}; "
+                "this is NOT certified future error control. Treat the match as tentative and confirm independently."
             )
         else:
             decision = (
-                f"Does not meet the empirical {int(risk_target*100)}% target-error operating point. "
-                "Do not assign a single candidate; retain the calibrated candidate set or obtain additional evidence."
+                f"Below the historical {int(risk_target*100)}%-target empirical threshold. "
+                "Do not assign a single compound; report an ambiguous candidate list or obtain orthogonal evidence. "
+                "Nominal candidate-set coverage is not independently verified."
             )
 
         return AnalysisResult(
@@ -241,8 +242,23 @@ class GCEIEngine:
         for sid, g in df.groupby("spectrum_id", sort=False):
             ri = None
             if "ri" in g.columns:
-                vals = pd.to_numeric(g["ri"], errors="coerce").dropna()
-                if len(vals):
+                supplied = g["ri"].dropna()
+                supplied = supplied[supplied.astype(str).str.strip().ne("")]
+                if len(supplied):
+                    vals = pd.to_numeric(supplied, errors="coerce")
+                    if vals.isna().any() or not np.isfinite(vals.to_numpy(dtype=float)).all():
+                        raise ValueError(
+                            f"Spectrum {sid!r}: supplied retention indices must be finite numbers."
+                        )
+                    if (vals <= 0).any():
+                        raise ValueError(
+                            f"Spectrum {sid!r}: Kovats RI must be positive."
+                        )
+                    if not np.allclose(vals.to_numpy(dtype=float), float(vals.iloc[0]), rtol=0, atol=1e-8):
+                        raise ValueError(
+                            f"Spectrum {sid!r}: conflicting retention indices within one spectrum. "
+                            "Provide one consistent RI per spectrum."
+                        )
                     ri = float(vals.iloc[0])
             r = self.analyze(zip(g["mz"], g["intensity"]), kovats_ri=ri, risk_target=risk_target)
             out.append({

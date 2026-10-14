@@ -6,9 +6,12 @@ import pandas as pd
 import streamlit as st
 
 from gcei.bootstrap import SOURCE_RECORD, ensure_runtime_assets
+from gcei.reference_builder import EXPECTED_SHA256
 from gcei.engine import GCEIEngine, parse_single_spectrum_text, read_spectrum_csv
 
 ROOT = Path(__file__).resolve().parent
+APP_VERSION = '1.0.1'
+REFERENCE_IDENTITY_COUNT = 8543
 
 SINGLE_TEMPLATE = """mz,intensity
 41,82.1
@@ -46,17 +49,44 @@ def load_engine():
 
 
 st.title("GC–EI Annotation Reliability Tool")
-st.caption("Uncertainty-aware GC–EI–MS library annotation with calibrated uncertainty estimates")
+st.caption("Tentative GC–EI–MS connectivity-level library annotations and source-dependent uncertainty estimates")
+st.info(
+    "**Scientific status:** Library matches are tentative. Model confidence is not an "
+    "authenticated compound-identity probability. The 5%/10% target-error settings are "
+    "**not certified error guarantees**, and nominal 90% candidate sets do not have "
+    "verified coverage for spectra from independent laboratories or instruments."
+)
+with st.sidebar:
+    st.markdown("### Software and data provenance")
+    st.write(f"**App version:** {APP_VERSION}")
+    st.write(f"**Reference library:** {REFERENCE_IDENTITY_COUNT:,} connectivity-level candidates")
+    st.caption("Original frozen MS-DIAL MSP SHA-256:")
+    st.code(EXPECTED_SHA256, language="text")
+    st.warning(
+        "Separate v2 research used an 8,455-identity reference and another confidence model. "
+        "Its results do not validate this v1.0.1 application."
+    )
 
 with st.expander("Scope and interpretation", expanded=False):
     st.markdown(
         """
-The tool ranks connectivity-level library candidates from EI spectra, returns a calibrated 90% candidate set,
-estimates top-1 correctness, and applies fixed empirical 10% or 5% target-error operating points.
-Kovats RI can be included when the experimental chromatographic system is comparable with the reference RI system.
+The tool ranks library compounds by **first14 InChIKey connectivity** using nominal electron-ionization
+spectra. Its top-hit correctness score and **nominal 90%** candidate set are estimates derived from
+the historical source distribution, not verified real-world chemical identification probabilities.
 
-Results are **tentative library annotations**. Definitive identification requires an authentic standard or suitable
-orthogonal confirmation. Low confidence or a broad candidate set is not evidence that a compound is absent from the reference library.
+The 5% and 10% target-error thresholds were selected empirically and **are not independent
+statistical certificates**. The candidate-set coverage and model calibration have not been
+verified on independently acquired laboratory samples, other instruments, other reference
+libraries, or compounds missing from the reference. This tool does not resolve exact
+stereoisomers or authenticate the measured chemical material.
+
+Optional Kovats RI should only be supplied when chromatographic systems are comparable;
+its benefit is not independently established for other instruments.
+
+All matches are **tentative annotations**. Confirm compound identity with an authentic
+standard or orthogonal evidence. Low confidence or a large set does not prove
+that a compound is absent from the library. The newer 8,455-identity v2 research
+evaluation does not describe performance of this separate 8,543-identity app.
         """
     )
 
@@ -88,19 +118,19 @@ The `ri` column is optional; leave it blank when Kovats RI is unavailable. If RI
         )
 
 try:
-    with st.spinner("Preparing the validated reference library..."):
+    with st.spinner("Preparing the checksum-verified reference library..."):
         engine = load_engine()
 except Exception:
-    st.error("Reference-library initialization failed. Reload the app and try again.")
+    st.error("Reference-library initialization failed. The app will not accept a source MSP with the wrong SHA-256. See the original publisher record below and retry when its source is accessible.")
     st.stop()
 
 mode = st.radio("Analysis mode", ["Single spectrum", "Batch spectra"], horizontal=True)
 risk_label = st.selectbox(
-    "Empirical operating point",
+    "Historical decision threshold (not certified error control)",
     ["10% target error (more coverage)", "5% target error (stricter)"],
 )
 risk_target = 0.10 if risk_label.startswith("10%") else 0.05
-st.caption("Calibration-derived empirical operating points; they are not formal future-error guarantees.")
+st.caption("Historical empirical thresholds only. **Neither target error level is independently certified** for future samples.")
 
 if mode == "Single spectrum":
     source = st.radio("Spectrum input", ["Paste peaks", "Upload CSV"], horizontal=True)
@@ -142,15 +172,16 @@ if mode == "Single spectrum":
             try:
                 r = engine.analyze(peaks, kovats_ri=query_ri if use_ri else None, risk_target=risk_target)
                 if r.confidence >= r.risk_threshold:
-                    st.success(r.decision)
+                    st.info(r.decision)
+                    st.caption("The score passes a historical threshold, not a confirmed chemical identity or error-rate guarantee.")
                 else:
                     st.warning(r.decision)
 
                 c1, c2, c3, c4 = st.columns(4)
                 c1.metric("Top candidate", str(r.top1.get("display_name", r.top1.get("name", ""))))
                 c2.metric("Similarity", f"{r.top1.get('similarity', 0):.4f}")
-                c3.metric("Predicted top-1 correctness", f"{100*r.confidence:.1f}%")
-                c4.metric("90% candidate-set size", f"{r.conformal90_size}")
+                c3.metric("Historical model score", f"{100*r.confidence:.1f}%", help="Source-dependent model estimate, not an authenticated compound identity probability.")
+                c4.metric("Nominal 90% set size", f"{r.conformal90_size}", help="90% prospective coverage is not independently established for new laboratories.")
 
                 if r.ri_delta_top1 is not None:
                     st.write(f"**Top-candidate |ΔRI|:** {r.ri_delta_top1:.1f} RI units")
@@ -160,18 +191,23 @@ if mode == "Single spectrum":
                 st.subheader("Top 10 candidates")
                 st.dataframe(r.top10, use_container_width=True, hide_index=True)
 
-                st.subheader("90% conformal candidate set")
+                st.subheader("Research-derived candidate set (nominal 90%)")
                 st.dataframe(r.conformal90.head(100), use_container_width=True, hide_index=True)
-                st.caption("The complete candidate set is included in the CSV download when more than 100 rows are retained.")
+                st.caption("Nominal calibration is source-dependent; no general 90% coverage guarantee. The full set is in the CSV download if more than 100 candidates are returned.")
 
                 summary = pd.DataFrame([{
                     "mode": r.mode,
+                    "software_version": APP_VERSION,
+                    "reference_first14_count": REFERENCE_IDENTITY_COUNT,
+                    "source_msp_sha256": EXPECTED_SHA256,
+                    "source_independent_error_guarantee": False,
                     "top1_name": r.top1.get("display_name", r.top1.get("name", "")),
                     "top1_formula": r.top1.get("formula", ""),
                     "top1_connectivity_id": r.top1.get("connectivity_id", ""),
                     "top_similarity": r.top1.get("similarity", ""),
                     "predicted_top1_correctness": r.confidence,
                     "conformal90_set_size": r.conformal90_size,
+                    "conformal90_external_coverage_certified": False,
                     "risk_target": r.risk_target,
                     "risk_threshold": r.risk_threshold,
                     "ri_delta_top1": r.ri_delta_top1,
@@ -184,7 +220,7 @@ if mode == "Single spectrum":
                     mime="text/csv",
                 )
                 st.download_button(
-                    "Download complete 90% candidate set (CSV)",
+                    "Download full research candidate set (CSV)",
                     r.conformal90.to_csv(index=False).encode(),
                     file_name="gcei_candidate_set_90.csv",
                     mime="text/csv",
@@ -203,7 +239,11 @@ else:
             st.dataframe(df.head(30), use_container_width=True, hide_index=True)
             if st.button("Analyze batch", type="primary"):
                 out = engine.analyze_batch(df, risk_target=risk_target)
-                st.success(f"Analyzed {len(out)} spectra.")
+                st.info(f"Analyzed {len(out)} spectra; all reported identities are tentative.")
+                out.insert(0, "software_version", APP_VERSION)
+                out["reference_first14_count"] = REFERENCE_IDENTITY_COUNT
+                out["source_msp_sha256"] = EXPECTED_SHA256
+                out["source_independent_error_guarantee"] = False
                 st.dataframe(out, use_container_width=True, hide_index=True)
                 st.download_button(
                     "Download batch results (CSV)",
@@ -219,7 +259,7 @@ else:
 st.divider()
 st.markdown(
     f"**Reference library:** [MS-DIAL public EI/Kovats-RI dataset on Zenodo]({SOURCE_RECORD}). "
-    "The source MSP is obtained from the original record at runtime and is not redistributed in this repository."
+    "The source MSP is obtained from the original publisher record (or its byte-identical historical copy), checked against the frozen SHA-256 and never redistributed here."
 )
 
 st.markdown("**Citation**")
@@ -234,4 +274,4 @@ st.caption(
     "Developed and maintained by Dr. James H. Zothantluanga, Research Director, Jazer Research Lab, "
     "Aizawl, Mizoram 796005, India."
 )
-st.caption("Version 1.0.0")
+st.caption(f"Interface v{APP_VERSION} | Frozen v1 model/reference; historical score and set coverage are not independent chemical validation.")
