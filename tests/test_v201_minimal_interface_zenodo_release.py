@@ -61,7 +61,11 @@ def test_zenodo_metadata_matches_source_version_and_is_not_old_v1_doi():
     assert "5%/10%" in m["description"] and "not" in m["description"].lower()
     assert "version: 2.0.1" in cff
     assert "10.5281/zenodo.23143113" in cff
-    assert "identifiers:" not in cff  # do not misassign old v1 version DOI
+    assert "identifiers:" in cff
+    assert 'value: "10.5281/zenodo.23372495"' in cff
+    assert 'value: "10.5281/zenodo.23143113"' not in cff  # old v1 version stays separate
+    assert "10.5281/zenodo.23372495" in (ROOT/"README.md").read_text(encoding="utf-8")
+    assert "10.5281/zenodo.23372495" in (ROOT/"app.py").read_text(encoding="utf-8")
     release=(ROOT/"docs/RELEASE_V2_0_1_ZENODO_NOTES.md").read_text(encoding="utf-8")
     assert "v2.0.1" in release
     assert "394/609" in release

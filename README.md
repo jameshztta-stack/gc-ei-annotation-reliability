@@ -2,7 +2,9 @@
 
 **Software version 2.0.1** — streamlined Streamlit interface, frozen research v2 (8,455 identities and HGB model), with separate legacy v1 (8,543 identities).
 
-[Previous v1.0.0 Zenodo archive](https://doi.org/10.5281/zenodo.23143113) · **v2.0.1 Zenodo DOI will be added only after the new version is published.**
+[![Zenodo v2.0.1 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23372495.svg)](https://doi.org/10.5281/zenodo.23372495)
+
+**Current archived software:** [v2.0.1 · DOI 10.5281/zenodo.23372495](https://doi.org/10.5281/zenodo.23372495) · [Previous v1.0.0 archive](https://doi.org/10.5281/zenodo.23143113) · [All-version concept DOI](https://doi.org/10.5281/zenodo.23143112).
 
 Research implementation of a source-specific GC–EI–MS library-annotation workflow. **Outputs are tentative and model scores are not independently certified identification probabilities or conditional error guarantees.**
 
