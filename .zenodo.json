@@ -1,7 +1,7 @@
 {
-  "title": "GC–EI Annotation Reliability Tool",
-  "version": "2.0.1",
-  "description": "Version 2.0.1 of the GC–EI–MS spectral annotation software. Provides a streamlined Streamlit interface with two separate, source-locked configurations: frozen research v2 (8,455 first14 connectivity reference identities, m/z-weighted cosine and an HGB confidence model trained on 1,410 development records) and retained legacy v1 (8,543 identities, optional RI-based search and source-dependent nominal conformal sets). Reports tentative database-connectivity candidates, original historical decision rules and complete version/provenance exports. The 609-case v2 within-MS-DIAL closed-library test observed 394/609 top-one publisher-label matches. No independent experimental authentication, prospective 5%/10% selected-error guarantee or cross-laboratory 90% set-coverage guarantee is claimed. Original publisher EI source spectra are not redistributed.",
+  "title": "GC–EI–MS Annotation Tool",
+  "version": "2.0.2",
+  "description": "Software for tentative electron-ionization gas chromatography–mass spectrometry (GC–EI–MS) library annotation. The latest interface provides one source-verified model, searching 8,455 reference chemical-connectivity identities using weighted EI spectral similarity and a previously developed 12-feature HistGradientBoosting confidence model. Supports single-spectrum and batch CSV annotation, ranked top-ten library candidates, downloadable results, input templates, citation guidance and developer information. Publisher-first14 labels are not independently authenticated chemical identities. Original historical confidence-screening targets are not certified future-error bounds. This release changes the user interface and documentation only; the model, source/index SHA-256, original numerical scoring and thresholds remain unchanged.",
   "creators": [
     {
       "name": "Zothantluanga, James H.",
@@ -10,14 +10,13 @@
   ],
   "license": "MIT",
   "keywords": [
-    "GC–EI–MS",
+    "GC-EI-MS",
+    "gas chromatography-mass spectrometry",
     "electron ionization",
-    "spectral annotation",
-    "library search",
-    "HistGradientBoosting",
+    "mass spectral annotation",
+    "spectral library search",
     "cheminformatics",
-    "software reproducibility",
-    "uncertainty quantification"
+    "uncertainty estimation"
   ],
   "upload_type": "software",
   "access_right": "open"
