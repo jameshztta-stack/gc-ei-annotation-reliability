@@ -1,0 +1,95 @@
+name: Phase 5 GC–EI v2 predeclared software utility and review routing
+on:
+  push:
+    branches:
+      - analysis/phase3-fair-confidence-benchmarks-20261014
+    paths:
+      - scripts/phase5_quantitative_software_utility.py
+      - .github/workflows/phase5-quantitative-software-utility.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-routing-and-live-frozen-software:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: .
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact frozen reproducible numerical environment, no training
+        run: |
+          set -euo pipefail
+          python -m pip install numpy==2.3.5 scipy==1.17.0 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.2
+      - name: Recover original already-SPENT source-labelled ledgers with exact independent SHA
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/phase5_input
+          git fetch --no-tags origin research/v2-methodology-redesign-20261013
+          COMMIT=9d5c57a44e57d3eed94c82930c2868e451573676
+          git show "$COMMIT":audits/v2_609_one_shot_within_msdial_20261014/v2_609_single_use_within_msdial_per_query.csv > .cache/phase5_input/609.csv
+          git show "$COMMIT":audits/v2_retrospective_cross_library_20261014/v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv > .cache/phase5_input/466.csv
+          echo '62899a9be61118299e730558fe097e61e7423411d6ea33ea678245f282b41dd7  .cache/phase5_input/609.csv' | sha256sum --check
+          echo '09a228acbf93fb307b9150ff47024c253e4e94ea4223f8cc309fc8083afdc11b  .cache/phase5_input/466.csv' | sha256sum --check
+      - name: Recompute complete 609 and 466 cross-tabulations, before retrieving live source
+        run: |
+          set -euo pipefail
+          python scripts/phase5_quantitative_software_utility.py \
+            --source-609 .cache/phase5_input/609.csv \
+            --source-466 .cache/phase5_input/466.csv \
+            --out .cache/phase5_retrospective_only \
+            --skip-live-demo > .cache/phase5_retrospective_only.log
+      - name: Verify full original frozen v2 example and reproducibility workflow
+        run: |
+          set -euo pipefail
+          python scripts/phase5_quantitative_software_utility.py \
+            --source-609 .cache/phase5_input/609.csv \
+            --source-466 .cache/phase5_input/466.csv \
+            --out .cache/phase5_full > .cache/phase5_full.log
+      - name: Independent negative-claims and report-schema gate
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json, pandas as pd
+          short=json.loads(Path('.cache/phase5_retrospective_only/summary.json').read_text())
+          full=json.loads(Path('.cache/phase5_full/summary.json').read_text())
+          assert short['routing']==full['routing']
+          assert not full['risk5_risk10_certified']
+          assert not full['source_acquisition_independence_proven']
+          assert 'AUTHOR-CONSTRUCTED' in full['top1_only_baseline']
+          e=full['existing_example_software_checks']
+          assert (e['n_preexisting_unlabelled_examples'],e['n_ranked_candidates'])==(12,120)
+          assert e['not_a_human_usability_study'] and e['not_a_prospective_identity_accuracy_study']
+          x=pd.read_csv('.cache/phase5_full/12_preexisting_cases_full_vs_top1_mock.csv')
+          y=pd.read_csv('.cache/phase5_full/120_ranked_existing_demo_candidates.csv')
+          assert len(x)==12 and x.spectrum_id.nunique()==12
+          assert len(y)==120 and y.groupby('spectrum_id')['rank'].nunique().eq(10).all()
+          assert (x.future_risk_guaranteed==False).all()
+          assert (x.chemical_identity_independently_confirmed==False).all()
+          assert x.has_plain_language_uncertainty_warnings.all()
+          d=pd.read_csv('.cache/phase5_full/retrospective_review_routing.csv')
+          assert len(d)==4
+          for row in d.itertuples():
+              assert row.accepted_n+row.sent_to_review_n==row.n
+              assert row.accepted_correct_n+row.sent_to_review_but_label_correct_n==row.original_top1_label_correct
+              assert row.accepted_wrong_n+row.sent_to_review_and_label_wrong_n==row.original_top1_label_wrong
+              assert not row.certified_prospective_risk and not row.source_independent_chemical_truth
+          print('PASS: retrospective counts independently reconstructed, live 12-case freeze respected, safety qualifiers complete')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase5-source-pinned-v2-software-utility-and-retrospective-review-routing
+          path: |
+            .cache/phase5_retrospective_only/
+            .cache/phase5_full/
+            .cache/phase5_retrospective_only.log
+            .cache/phase5_full.log
