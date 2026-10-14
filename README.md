@@ -1,10 +1,10 @@
 # GC–EI Annotation Reliability Tool
 
-**Version 1.0.0**
+**Streamlit interface version 1.0.1** — preserves the original v1.0.0 reference and inference models.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23143113.svg)](https://doi.org/10.5281/zenodo.23143113)
 
-Reference implementation of the validated v1.1 uncertainty-aware GC–EI–MS library-annotation workflow.
+Research implementation of a source-specific GC–EI–MS library-annotation workflow. **Outputs are tentative and model scores are not independently certified identification probabilities or conditional error guarantees.**
 
 ## Scope
 
@@ -13,24 +13,24 @@ For a user-supplied EI spectrum, the software returns:
 - the highest-ranked connectivity-level library candidate;
 - the top 10 ranked candidates;
 - `m/z^1 × intensity^0.5` weighted-cosine similarity;
-- predicted top-1 correctness;
-- a 90% split-conformal candidate set;
-- an empirical 10% or 5% target-error decision;
+- a historical model estimate for the top-1 hit (not authenticated identification probability);
+- a nominal 90% split-conformal candidate set (external coverage not established);
+- empirical 10%/5% **target**-error thresholds (not certified guarantees);
 - optional Kovats-RI-assisted scoring;
 - downloadable single-spectrum and batch results.
 
 Outputs are tentative spectral-library annotations. Definitive identification requires an authentic standard or suitable orthogonal confirmation. Low confidence or a broad candidate set is not evidence that a compound is absent from the reference library.
 
-## Validated scientific workflow
+## Frozen v1 scientific configuration and limitations
 
-Version 1.0.0 implements the validated v1.1 scientific settings:
+The interface v1.0.1 retains the original v1.0.0 algorithm, panel and fixed v1.1 study settings:
 
 - connectivity identity = first 14 characters of InChIKey;
 - exact-spectrum duplicates removed before benchmark development;
 - EI score = `m/z^1 × intensity^0.5` weighted cosine;
-- conformal margins derived from the publication calibration identities;
-- confidence models derived from the publication calibration split;
-- empirical selective-prediction thresholds derived from the publication risk-calibration analysis;
+- nominal conformal margins derived from the original internal calibration identities, without verified coverage on independent instrument sources;
+- historical source-dependent correctness models from the original development split;
+- empirical selective-prediction thresholds derived from the original risk-calibration analysis, **not externally certified**;
 - RI fusion = `0.8 × EI + 0.2 × exp[-0.5 × (ΔRI/10)^2]`.
 
 No model fitting or recalibration occurs when a user submits a spectrum.
@@ -79,7 +79,7 @@ The study used the public MS-DIAL EI/Kovats-RI spectral library deposited by Hir
 
 Source file: `GCMS DB-Public-KovatsRI-VS3.msp`.
 
-The upstream MSP and derived reference matrix are not redistributed in this repository. At runtime, the software obtains the exact source file from the Zenodo record, verifies its SHA-256 checksum, and reconstructs the validated v1.1 reference assets locally. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
+The upstream MSP and derived reference matrix are not redistributed in this repository. At runtime, the software obtains the exact source file from the Zenodo record, verifies its SHA-256 checksum, and reconstructs the original frozen v1 reference assets locally. The app rejects a source whose SHA-256 differs from the pinned source; it may use only a byte-identical publisher archive copy if the main URL is unavailable. See [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
 
 ## Independent botanical challenge data
 
@@ -97,7 +97,7 @@ Run:
 python scripts/check_reproducibility.py
 ```
 
-The validation rebuilds the reference assets, verifies the reference SHA-256 fingerprints of the spectral matrix, RI vector and metadata, and reruns the 12 independent botanical challenge spectra against the validated v1.1 outputs.
+The validation rebuilds the reference assets, verifies the reference SHA-256 fingerprints of the spectral matrix, RI vector and metadata, and reruns the 12 separate botanical challenge spectra against the frozen v1 outputs. These are not authenticated physical chemical identifications.
 
 To use a local copy of the exact MSP:
 
@@ -116,6 +116,14 @@ streamlit run app.py
 ```
 
 To use an existing local MSP instead of downloading it at runtime, define `GCEI_MSP_PATH` before launch.
+
+## Validation limits and separate v2 research
+
+The active Streamlit v1.0.1 app contains **8,543 connectivity identities** and uses the unchanged v1 inference/calibration artifacts. The later research v2 branch used a different frozen **8,455-identity** search panel, a different HGB confidence model and a one-time **609-query within-source closed-library evaluation**. Its performance and thresholds **cannot be represented as the live v1 application's externally validated accuracy**. On the 609 research queries, the v2 m¹ retriever agreed with 394/609 first14 publisher labels; the 10% and 5% conditional-risk guarantees were **not statistically certified**. Source acquisition and physical standards were not independently authenticated. The later 609 set is permanently spent for new model selection.
+
+Candidate sets and confidence estimates can shift with instrument, sample, reference library and data preprocessing. A 5%/10% target is not a guarantee; a nominal 90% set is not confirmed future coverage. Exact stereoisomer, unknown/out-of-library substances and material authenticity are outside this benchmark.
+
+**Versioning and reproducibility:** see [`docs/STREAMLIT_V101_SCIENTIFIC_RELEASE.md`](docs/STREAMLIT_V101_SCIENTIFIC_RELEASE.md) for user-facing change log and deployment checks. The original v1.0.0 archival software DOI remains the citation below; v1.0.1 is an interface/transport quality and safety update, not a newly validated model.
 
 ## Use with another EI library
 
