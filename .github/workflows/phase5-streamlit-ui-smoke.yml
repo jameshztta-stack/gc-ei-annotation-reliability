@@ -1,0 +1,32 @@
+name: Phase 5 actual v2.0.2 Streamlit headless interface QA
+on:
+  push:
+    branches:
+      - analysis/phase3-fair-confidence-benchmarks-20261014
+    paths:
+      - tests/test_phase5_app_ui_smoke.py
+      - .github/workflows/phase5-streamlit-ui-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect_researcher_facing_UI_without_source_retrieval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: '.'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact deployed UI and model numerical package versions
+        run: |
+          set -euo pipefail
+          python -m pip install -r requirements.txt
+      - name: Verify actual Streamlit app single/batch UI, limits and disclosures
+        run: |
+          set -euo pipefail
+          pytest -q tests/test_phase5_app_ui_smoke.py
