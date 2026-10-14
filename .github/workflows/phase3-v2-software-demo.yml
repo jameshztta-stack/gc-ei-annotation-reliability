@@ -1,0 +1,55 @@
+name: Phase 3 frozen v2 botanical software output reproducibility
+on:
+  push:
+    branches:
+      - analysis/phase3-fair-confidence-benchmarks-20261014
+    paths:
+      - scripts/phase3_v2_existing_example_demo.py
+      - .github/workflows/phase3-v2-software-demo.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  v2-end-to-end-existing-botanical-examples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: '.'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact frozen numerical environment, no model training
+        run: |
+          set -euo pipefail
+          python -m pip install numpy==2.3.5 scipy==1.17.0 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.2
+      - name: Retrieve upstream original MSP exact source SHA and replay published example input peaks
+        run: |
+          set -euo pipefail
+          python scripts/phase3_v2_existing_example_demo.py > .cache/phase3_v2_botanical_demo_stdout.json
+      - name: Independently guard provenance/denominators and reject risk guarantees
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pandas as pd
+          from pathlib import Path
+          path=Path('.cache/phase3_v2_example_demo')
+          manifest=json.loads((path/'12_case_v2_software_provenance_manifest.json').read_text())
+          rows=pd.read_csv(path/'12_case_v2_demo_summary.csv')
+          candidate=pd.read_csv(path/'12_case_v2_top10_ranked_candidates.csv')
+          assert len(rows)==12 and rows.spectrum_id.nunique()==12
+          assert len(candidate)==120 and candidate.groupby('spectrum_id')['rank'].nunique().eq(10).all()
+          assert not manifest['10pct_and_5pct_certified']
+          assert not manifest['confidence_model_fitted'] and not manifest['RI_fusion_used']
+          assert manifest['frozen_reference_size']==8455
+          assert manifest['single_batch_exact_case_parity']
+          assert rows.top1_TENTATIVE_only.eq(True).all()
+          print('PASS: frozen 12-case end-to-end software demo; provenance, 120 candidates and no scientific truth inflation')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase3-frozen-v2-twelve-botanical-software-demo
+          path: .cache/phase3_v2_example_demo/
