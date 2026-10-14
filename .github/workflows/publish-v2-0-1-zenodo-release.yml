@@ -1,0 +1,66 @@
+name: Publish clean v2.0.1 GitHub release for Zenodo
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - docs/RELEASE_V2_0_1_ZENODO_NOTES.md
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  source_locked_release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned runtime and test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install -r requirements.txt
+      - name: Re-run UI, research model and source integrity unit tests
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python -m pytest -q
+          python -m py_compile app.py
+      - name: Require exact frozen v2 reference and HGB and matching citation version
+        run: |
+          set -euo pipefail
+          echo '2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01  models/v2/reference_index.csv' | sha256sum --check
+          echo 'a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13  models/v2/hgb_model.joblib' | sha256sum --check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          metadata=json.loads(Path(".zenodo.json").read_text(encoding="utf-8"))
+          cite=Path("CITATION.cff").read_text(encoding="utf-8")
+          app=Path("app.py").read_text(encoding="utf-8")
+          assert metadata["version"]=="2.0.1"
+          assert "version: 2.0.1" in cite
+          assert 'APP_VERSION = "2.0.1"' in app
+          assert "identifiers:" not in cite
+          print("Original model SHA and v2.0.1 publication metadata verified.")
+          PY
+      - name: Re-run original legacy v1 source reproducibility
+        run: |
+          set -euo pipefail
+          python scripts/check_reproducibility.py
+      - name: Create GitHub v2.0.1 release for existing Zenodo integration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v2.0.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "v2.0.1 release already exists; refuse to change its archived files."
+            gh release view v2.0.1 --repo "$GITHUB_REPOSITORY" --json url,tagName,targetCommitish
+          else
+            gh release create v2.0.1 \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "GC–EI Annotation Reliability Tool v2.0.1" \
+              --notes-file docs/RELEASE_V2_0_1_ZENODO_NOTES.md \
+              --latest
+          fi
+          echo "Zenodo is a separate service: check the new version-specific DOI and GitHub integration."
