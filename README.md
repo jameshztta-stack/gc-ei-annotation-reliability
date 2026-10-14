@@ -1,10 +1,12 @@
 # GC–EI Annotation Reliability Tool
 
-**Streamlit interface version 1.0.1** — preserves the original v1.0.0 reference and inference models.
+**Streamlit interface version 2.0.0** — default frozen EI-only research v2 (8,455 identities + HGB), with unchanged legacy v1 available (8,543 identities).
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23143113.svg)](https://doi.org/10.5281/zenodo.23143113)
 
 Research implementation of a source-specific GC–EI–MS library-annotation workflow. **Outputs are tentative and model scores are not independently certified identification probabilities or conditional error guarantees.**
+
+**v2 deployment:** The default application uses the exact original 8,455-entry first14 connectivity reference, float64 m/z¹×√intensity cosine and 1,410-development-trained HGB confidence model, with immutable checksums. **RI-assisted scoring and nominal conformal sets are not available for v2**; select legacy v1 for its separate study-derived RI/conformal configuration. Neither 5% nor 10% future selected-error target is certified. The original 609 within-source research comparison achieved 394/609 (64.70%) source-label top-1 agreement, **not independently authenticated experimental identification**. See [v2 release notes](docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md).
 
 ## Scope
 
@@ -119,11 +121,11 @@ To use an existing local MSP instead of downloading it at runtime, define `GCEI_
 
 ## Validation limits and separate v2 research
 
-The active Streamlit v1.0.1 app contains **8,543 connectivity identities** and uses the unchanged v1 inference/calibration artifacts. The later research v2 branch used a different frozen **8,455-identity** search panel, a different HGB confidence model and a one-time **609-query within-source closed-library evaluation**. Its performance and thresholds **cannot be represented as the live v1 application's externally validated accuracy**. On the 609 research queries, the v2 m¹ retriever agreed with 394/609 first14 publisher labels; the 10% and 5% conditional-risk guarantees were **not statistically certified**. Source acquisition and physical standards were not independently authenticated. The later 609 set is permanently spent for new model selection.
+The Streamlit v2.0.0 default uses **8,455 source-locked connectivity identities** and the original research-trained HGB. Users may choose **legacy v1 with 8,543 connectivity identities** and unchanged v1 inference/calibration artifacts. The research v2 HGB reference is separately versioned and may be selected in the live v2 app, but the original v1 outcomes and thresholds **cannot be represented as performance of the deployed v2 research model**. The original v2 one-time 609 within-source closed-library evaluation is spent and cannot be reused as an untouched test. On the 609 research queries, the v2 m¹ retriever agreed with 394/609 first14 publisher labels; the 10% and 5% conditional-risk guarantees were **not statistically certified**. Source acquisition and physical standards were not independently authenticated. The later 609 set is permanently spent for new model selection.
 
 Candidate sets and confidence estimates can shift with instrument, sample, reference library and data preprocessing. A 5%/10% target is not a guarantee; a nominal 90% set is not confirmed future coverage. Exact stereoisomer, unknown/out-of-library substances and material authenticity are outside this benchmark.
 
-**Versioning and reproducibility:** see [`docs/STREAMLIT_V101_SCIENTIFIC_RELEASE.md`](docs/STREAMLIT_V101_SCIENTIFIC_RELEASE.md) for user-facing change log and deployment checks. The original v1.0.0 archival software DOI remains the citation below; v1.0.1 is an interface/transport quality and safety update, not a newly validated model.
+**Versioning and reproducibility:** see [`docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md`](docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md) for precise v2 numerical configuration, frozen software parity and deployment controls. The prior v1.0.1 disclosure update remains documented separately. The original v1.0.0 archival software DOI remains the citation below; v1.0.1 is an interface/transport quality and safety update, not a newly validated model.
 
 ## Use with another EI library
 

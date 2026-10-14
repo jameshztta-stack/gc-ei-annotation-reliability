@@ -59,17 +59,20 @@ def test_batch_repeated_consistent_ri_is_accepted():
 def test_app_source_and_version_claims_do_not_overpromise():
     source=(ROOT/"app.py").read_text(encoding="utf-8")
     ast.parse(source)
-    assert "APP_VERSION = '1.0.1'" in source
+    assert "APP_VERSION = '2.0.0'" in source
     assert "REFERENCE_IDENTITY_COUNT = 8543" in source
-    assert "EXPECTED_SHA256" in source
-    assert "not certified error guarantees" in source
-    assert "nominal 90%" in source
-    assert "Historical model score" in source
-    assert "conformal90_external_coverage_certified" in source
-    assert "source_independent_error_guarantee" in source
-    assert "8,455-identity reference" in source
+    assert "V2_N_REFERENCE" in source
+    assert "V2_REFERENCE_SHA256" in source
+    assert "V2_HGB_SHA256" in source
+    assert "GCEIV2Engine" in source
+    assert "GCEIEngine" in source
+    assert "5% and 10% target-error rules are not certified" in source
+    assert "not independently certified" in source or "not certified" in source
+    assert "Legacy v1 nominal 90% candidate set" in source
+    assert "if not use_v2:" in source
+    assert "Top1–top2 EI margin" in source
+    assert "historical_rule_met" in source
     assert "st.success(r.decision)" not in source
-
 
 def test_engine_threshold_math_and_scoring_untouched():
     source=(ROOT/"gcei/engine.py").read_text(encoding="utf-8")
