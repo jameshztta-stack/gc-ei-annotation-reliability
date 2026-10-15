@@ -1,8 +1,8 @@
 # Third-party data notice
 
-This repository contains the software for the GC–EI Annotation Reliability Tool.
+This repository contains the software for the GC–EI–MS Annotation Tool.
 
-The public EI/Kovats-RI spectral library used for method development and validation is not redistributed here.
+The public EI/Kovats-RI spectral library used for constructing the reference library is not redistributed here.
 
 Source dataset:
 
