@@ -1,0 +1,36 @@
+name: Rebuild original chemical selection
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'reproducibility/chemical_selection.py'
+      - 'reproducibility/chemical_policy.py'
+      - 'reproducibility/rebuild_source_selection.py'
+      - 'models/v2/reference_index.csv'
+      - '.github/workflows/reference-reproducibility.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-chemistry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: .
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install numerical and chemistry dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install rdkit==2026.9.1
+      - name: Reconstruct chemical eligibility, spectral deduplication and 8455-reference set from publisher source
+        run: python reproducibility/rebuild_source_selection.py --output reconstructed_reference.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reference-reconstruction
+          path: reconstructed_reference.json
+          if-no-files-found: error
