@@ -56,7 +56,7 @@ Full original retained MSP field inventory `audits/v2_13111_acquisition_provenan
 - Original 609 HGB correctness discrimination AUROC **0.863304**; margin-only **0.812679**, cosine-only **0.706682**. HGB Brier **0.140645**, 10-bin ECE **0.044938** on descriptive source labels. AUROC neither changes top1 ranks nor certifies chemical authenticity.
 - Original 1,410 exposed dev OOF: 12f HGB Brier **0.14416** vs 12f logistic **0.14675**; modest difference without convincing architecture superiority. Original 609 K=198 HGB-selected wrong **12**, margin-selected wrong **11**. Disclose the unfavorable cases.
 - Fixed original 10%-target `p>=0.87`: 609 **198 accepted / 12 wrong**; 466 **185 accepted / 12 wrong**. Fixed 5%-target `p>=0.94 AND margin>=0.20`: 609 **38 accepted / 0 wrong**; 466 **25 accepted / 0 wrong**. **Neither is prospectively certified**; no 5%/10% *actual future error* guarantee.
-- All 609 labels deliberately in current reference; out-of-library or novel-chemical rejection not tested. v2 is **EI-only** with **no RI fusion and no valid v1 conformal carryover**.
+- All 609 labels deliberately in current reference; out-of-library or novel-chemical rejection not tested. v2 is **EI-only** with **no RI fusion and no conformal candidate-set coverage assessment**.
 
 ## SI-5 — Current software and independent computational checks
 
