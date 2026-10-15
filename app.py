@@ -1,8 +1,7 @@
-"""Researcher-facing GC–EI–MS annotation with one current EI reference/model.
+"""GC–EI–MS Annotation Tool, version 2.0.2.
 
-Software version 2.0.2 is a UI/documentation release. The underlying
-v2 8,455-identity EI cosine and HGB model, feature order, acceptance rules
-and original SHA requirements remain identical to the validated v2.0.1 engine.
+The app uses a defined 8,455-entry EI reference library, weighted cosine
+similarity, and a twelve-feature model for scoring the first-ranked candidate.
 """
 from __future__ import annotations
 
@@ -194,13 +193,13 @@ st.subheader("2. Analyze")
 with st.expander("Confidence screening (optional)"):
     screening = st.selectbox(
         "Selection rule",
-        ["Standard (historical 10% target)", "Strict (historical 5% target)"],
-        help="These settings change when a top candidate passes the screening rule; "
-             "they do not change the candidate ranking. Neither target is a certified future-error guarantee.",
+        ["Standard (score ≥0.87)", "Strict (score ≥0.94 and margin ≥0.20)"],
+        help="These settings affect which results are flagged for further review, "
+             "not the ranking of compounds. They do not guarantee an error rate for new samples.",
     )
     st.caption(
-        "These are original research decision settings, not guaranteed 10% or 5% "
-        "error rates for new samples."
+        "The two screening criteria were evaluated retrospectively. "
+        "Neither provides a validated error-rate guarantee for new samples."
     )
 risk_target = .10 if screening.startswith("Standard") else .05
 
@@ -312,7 +311,7 @@ with st.expander("About the method and its limitations"):
         "In a within-library evaluation of 609 spectra, the highest-ranked candidate "
         "agreed with 394 publisher-provided connectivity labels (64.70%). "
         "These data did not independently verify chemical identity. The optional "
-        "confidence-screening targets of 5% and 10% are not certified error guarantees "
+        "confidence-screening criteria do not provide validated error-rate guarantees "
         "for future experimental samples."
     )
     st.write(
