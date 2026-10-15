@@ -135,8 +135,8 @@ def render_results(result) -> None:
 
     with st.expander("Result interpretation"):
         st.write(
-            ""The library-label agreement score estimates whether the first-ranked match agrees with a publisher-reported "
-            ""connectivity label. It does not change the ranking and is not a validated probability of confirming "
+            "The library-label agreement score estimates whether the first-ranked match agrees with a publisher-reported "
+            "connectivity label. It does not change the ranking and is not a validated probability of confirming "
             "the chemical identity of an unknown experimental sample."
         )
         if result.accepted:
