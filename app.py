@@ -106,10 +106,11 @@ def render_results(result) -> None:
     m1, m2, m3 = st.columns(3)
     m1.metric("Spectral similarity", f"{result.top1['similarity']:.3f}")
     m2.metric(
-        "Confidence score", f"{result.confidence:.1%}",
-        help="Estimated agreement with the library connectivity label based on the original study; not independently verified identification probability.",
+        "Library-label agreement score", f"{result.confidence:.3f}",
+        help="Model output from previously evaluated spectra: agreement with a publisher-provided InChIKey connectivity label. The value is not a probability that an unknown sample has been chemically identified.",
     )
     m3.metric("Top-two difference", f"{result.margin:.3f}")
+    st.caption("The agreement score describes a database-label prediction, not the probability of an experimentally confirmed compound identification.")
 
     st.markdown("**Top 10 candidate matches**")
     st.dataframe(top_candidates(result.top10), use_container_width=True, hide_index=True)
@@ -134,8 +135,8 @@ def render_results(result) -> None:
 
     with st.expander("Result interpretation"):
         st.write(
-            "The confidence score estimates agreement with the reference-library "
-            "connectivity label. It is not a validated probability of confirming "
+            ""The library-label agreement score estimates whether the first-ranked match agrees with a publisher-reported "
+            ""connectivity label. It does not change the ranking and is not a validated probability of confirming "
             "the chemical identity of an unknown experimental sample."
         )
         if result.accepted:
@@ -151,7 +152,7 @@ st.write(
     "Identify **possible compound matches** from electron-ionization (EI) mass spectra. "
     f"The tool compares your peaks with a library of **{V2_N_REFERENCE:,} chemical-connectivity "
     "references**, ranks the 10 closest candidates, and provides spectral similarity and "
-    "confidence scores. You can analyze one spectrum or multiple spectra in a batch."
+    "a database-label agreement score. You can analyze one spectrum or multiple spectra in a batch."
 )
 st.caption(
     "For research use. Results are tentative library annotations; confirm important "
@@ -301,8 +302,7 @@ else:
 
 with st.expander("About the method and its limitations"):
     st.write(
-        "The software uses electron-ionization spectral similarity and a machine-learning "
-        "confidence score to rank matches from a library of 8,455 reference connectivity "
+        "The software uses electron-ionization spectral similarity to rank matches from a library of 8,455 reference connectivity "
         "identities (first 14 characters of InChIKey). It does not establish exact "
         "stereochemical identity, laboratory source independence, or the identity "
         "of an analyte absent from the library."
