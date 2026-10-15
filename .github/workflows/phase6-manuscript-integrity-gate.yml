@@ -1,0 +1,60 @@
+name: Phase 6 original-source-pinned manuscript integrity gate
+on:
+  push:
+    branches:
+      - analysis/phase3-fair-confidence-benchmarks-20261014
+    paths:
+      - docs/PHASE6_COMPLETE_MANUSCRIPT_WORKING_DRAFT_20261015.md
+      - docs/PHASE6_SUPPLEMENTARY_DATA_AND_EXCEPTION_EVIDENCE_20261015.md
+      - scripts/phase6_manuscript_evidence_integrity_gate.py
+      - .github/workflows/phase6-manuscript-integrity-gate.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  documented_claims_vs_original_evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Retrieve original independent source chemistry and provenance audits without modification
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/phase6_sources
+          git fetch --no-tags origin research/v2-methodology-redesign-20261013
+          COMMIT=9d5c57a44e57d3eed94c82930c2868e451573676
+          git show "$COMMIT":audits/v2_full13111_chemical_exceptions_20261014/v2_13111_chemical_exceptions_and_name_provenance_review.json > .cache/phase6_sources/chemical.json
+          git show "$COMMIT":audits/v2_13111_acquisition_provenance_20261014/v2_13111_source_provenance_field_inventory.json > .cache/phase6_sources/provenance.json
+          git show "$COMMIT":audits/v2_original_reference_four_advanced_keys_20261014/v2_frozen8455_four_advanced_inchikey_exceptions_independent_reaudit.json > .cache/phase6_sources/reference_keys.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('.cache/phase6_sources')
+          a=json.loads((p/'chemical.json').read_text())
+          b=json.loads((p/'provenance.json').read_text())
+          c=json.loads((p/'reference_keys.json').read_text())
+          assert a['within_14char_connectivity_full_advanced_identity_diversity_groups']==294
+          assert a['retained_advanced_molecular_identifier_mismatch_count']==6
+          assert b['retained_spectra']==13111 and b['reference_connectivities']==8455
+          assert c['rechecked_reference_source_index_count']==4
+          print('PASS: original chemistry/provenance exception JSON retained at fixed source commit')
+          PY
+      - name: Independently audit article and SI against frozen original-source evidence
+        run: |
+          set -euo pipefail
+          python scripts/phase6_manuscript_evidence_integrity_gate.py \
+            --audit-source .cache/phase6_sources/chemical.json \
+            --provenance-source .cache/phase6_sources/provenance.json \
+            --out .cache/phase6_sources/phase6_document_audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase6-manuscript-evidence-gate
+          path: .cache/phase6_sources/phase6_document_audit.json
