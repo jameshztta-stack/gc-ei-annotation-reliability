@@ -1,0 +1,278 @@
+{
+  "status": "RETAINED_13111_MSDIAL_SOURCE_PROVENANCE_FIELD_AVAILABILITY_NOT_AUTHENTICATION",
+  "original_SHA256": "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70",
+  "input_exact_13111_ledger_SHA256": "2be2f3814ce2a8a0d5d48d9b5f715c568e0238f83d234da072423c3c4b6e22c0",
+  "retained_spectra": 13111,
+  "reference_connectivities": 8455,
+  "field_coverage": {
+    "COLLISIONENERGY": {
+      "nonempty": 12900,
+      "fraction": 0.983907
+    },
+    "COMMENT": {
+      "nonempty": 211,
+      "fraction": 0.016093
+    },
+    "EXACTMASS": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "FORMULA": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "INCHIKEY": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "INSTRUMENTTYPE": {
+      "nonempty": 211,
+      "fraction": 0.016093
+    },
+    "IONMODE": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "LICENSE": {
+      "nonempty": 11992,
+      "fraction": 0.914652
+    },
+    "NAME": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "NUM PEAKS": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "ONTOLOGY": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "QUANTMASS": {
+      "nonempty": 12900,
+      "fraction": 0.983907
+    },
+    "RETENTIONINDEX": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    },
+    "RETENTIONTIME": {
+      "nonempty": 12900,
+      "fraction": 0.983907
+    },
+    "SMILES": {
+      "nonempty": 13111,
+      "fraction": 1.0
+    }
+  },
+  "source_provenance_hint_counts": {
+    "any_instrumenttype": 211,
+    "any_collisionenergy": 12900,
+    "any_ionmode": 13111,
+    "any_license": 11992,
+    "any_candidate_provenance_field": 211,
+    "potential_raw_file_or_instrument_serial_hint": 0,
+    "potential_standard_lot_hint": 0,
+    "potential_link_hint": 0,
+    "potential_external_accession_hint": 0,
+    "provenance_text_key_INSTRUMENTTYPE": 211,
+    "provenance_text_key_COMMENT": 211
+  },
+  "source_method_metadata_value_examples": {
+    "IONMODE": {
+      "nonempty": 13111,
+      "unique_values": 1,
+      "top_20": [
+        {
+          "value": "Positive",
+          "count": 13111
+        }
+      ]
+    },
+    "COLLISIONENERGY": {
+      "nonempty": 12900,
+      "unique_values": 1,
+      "top_20": [
+        {
+          "value": "70eV",
+          "count": 12900
+        }
+      ]
+    },
+    "LICENSE": {
+      "nonempty": 11992,
+      "unique_values": 2,
+      "top_20": [
+        {
+          "value": "CC BY-SA",
+          "count": 11536
+        },
+        {
+          "value": "CC-BY SA",
+          "count": 456
+        }
+      ]
+    },
+    "INSTRUMENTTYPE": {
+      "nonempty": 211,
+      "unique_values": 1,
+      "top_20": [
+        {
+          "value": "GC-EI-TOF",
+          "count": 211
+        }
+      ]
+    },
+    "COMMENT": {
+      "nonempty": 211,
+      "unique_values": 211,
+      "top_20": [
+        {
+          "value": "DB#=FiehnLibVolatile0001; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0002; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0003; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0004; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0005; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0006; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0007; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0008; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0009; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0010; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0011; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0012; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0013; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0014; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0015; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0016; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0017; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0018; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0019; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "value": "DB#=FiehnLibVolatile0020; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "source_fields_with_provenance_names": [
+    "COMMENT",
+    "INSTRUMENTTYPE"
+  ],
+  "source_provenance_field_examples": {
+    "COMMENT": {
+      "nonempty_value_types": 211,
+      "most_common_value_summaries": [
+        {
+          "example": "DB#=FiehnLibVolatile0001; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "example": "DB#=FiehnLibVolatile0002; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "example": "DB#=FiehnLibVolatile0003; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "example": "DB#=FiehnLibVolatile0004; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "example": "DB#=FiehnLibVolatile0005; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "example": "DB#=FiehnLibVolatile0006; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        },
+        {
+          "example": "DB#=FiehnLibVolatile0007; origin=Volatile Fiehn Library for Metabolic Profiling",
+          "count": 1
+        }
+      ]
+    },
+    "INSTRUMENTTYPE": {
+      "nonempty_value_types": 1,
+      "most_common_value_summaries": [
+        {
+          "example": "GC-EI-TOF",
+          "count": 211
+        }
+      ]
+    }
+  },
+  "within_connectivity_distinct_instrumenttype_collisionenergy_ionmode_triplets": {
+    "exactly_one_triplet": 8299,
+    "more_than_one_triplet": 156
+  },
+  "source_rows_sha256": "5fe861f0defa4fd6fac81032eaab35aac01a3678783e558e4d4edcf809b411da",
+  "verified_individual_EI_reference_standards": 0,
+  "verified_disjoint_original_acquisitions": 0,
+  "new_independent_risk_conformal_or_test_examples": 0,
+  "original_609_prediction_correctness_read": 0,
+  "scientific_boundary": [
+    "Field coverage alone cannot prove a 70 eV source spectrum, EI instrument, authentic standard, or independent acquisition.",
+    "Sample name, collision-energy and license metadata are not trustworthy acquisition grouping keys unless accession/experiment lineage is documented.",
+    "The underlying old MS-DIAL 28,220 spectra aggregate public libraries and exact duplicates; independence needs publisher-level origin and true instrument run identifiers.",
+    "All retained EI query and reference spectral *inputs* were already accessed in source forensics; sealed model correctness and ranking outcomes were not.",
+    "This provenance field inventory does not claim 5% or 10% selective risk, conformal coverage or production fitness."
+  ]
+}

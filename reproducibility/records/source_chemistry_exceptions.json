@@ -1,0 +1,158 @@
+{
+  "status": "TARGETED COMPLETE 13111 DATA CHEMICAL LABEL EXCEPTION SOURCE FORENSICS WITHOUT TEST OUTCOMES",
+  "input_13111_ledger_SHA256": "2be2f3814ce2a8a0d5d48d9b5f715c568e0238f83d234da072423c3c4b6e22c0",
+  "input_8455_group_ledger_SHA256": "ae0ab357f89485c9497e2e3fef03ee9d649858f62ec13ff36a24eedcbc18edc4",
+  "original_source_MSDIAL_SHA256": "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70",
+  "exact_retained_original_source_identifier_conflict_group_count": 1,
+  "exact_spectral_fingerprint_conflicting_source_labels": "b66723066c1b1615315a0e441932e30a43121f4e6ff309c1f1fd119987645c3e",
+  "exact_spectral_group_source_rows": [
+    {
+      "original_source_index": 1073,
+      "raw_name": "PARA-TERT-BUTYLBENZOIC ACID TRIMETHYLSILYLESTER; EI-B; MS",
+      "raw_original_InChIKey": "MOSFIJXAXDLOML-UHFFFAOYSA-N",
+      "raw_molecular_formula": "",
+      "structure_SMILES_standard_connectivity": "",
+      "source_label_vs_structure_14_match": 0,
+      "was_retained_in_corrected_13111": 0,
+      "raw_peaks_shared_exactly_after_nominal_binning": true
+    },
+    {
+      "original_source_index": 1799,
+      "raw_name": "4-TERT-BUTYLBENZOIC ACID TRIMETHYLSILYL ESTER; EI-B; MS",
+      "raw_original_InChIKey": "PLYFZJPAUGYADQ-UHFFFAOYSA-N",
+      "raw_molecular_formula": "C14H22O2Si",
+      "structure_SMILES_standard_connectivity": "PLYFZJPAUGYADQ",
+      "source_label_vs_structure_14_match": 1,
+      "was_retained_in_corrected_13111": 1,
+      "raw_peaks_shared_exactly_after_nominal_binning": true
+    },
+    {
+      "original_source_index": 15077,
+      "raw_name": "PARA-TERT-BUTYLBENZOIC ACID TRIMETHYLSILYLESTER; EI-B; MS",
+      "raw_original_InChIKey": "MOSFIJXAXDLOML-UHFFFAOYSA-N",
+      "raw_molecular_formula": "",
+      "structure_SMILES_standard_connectivity": "",
+      "source_label_vs_structure_14_match": 0,
+      "was_retained_in_corrected_13111": 0,
+      "raw_peaks_shared_exactly_after_nominal_binning": true
+    },
+    {
+      "original_source_index": 15803,
+      "raw_name": "4-TERT-BUTYLBENZOIC ACID TRIMETHYLSILYL ESTER; EI-B; MS",
+      "raw_original_InChIKey": "PLYFZJPAUGYADQ-UHFFFAOYSA-N",
+      "raw_molecular_formula": "C14H22O2Si",
+      "structure_SMILES_standard_connectivity": "PLYFZJPAUGYADQ",
+      "source_label_vs_structure_14_match": 1,
+      "was_retained_in_corrected_13111": 0,
+      "raw_peaks_shared_exactly_after_nominal_binning": true
+    }
+  ],
+  "retained_representative_in_collision": 1799,
+  "six_advanced_molecular_identifier_exception_cases": [
+    {
+      "source_index": 3196,
+      "connectivity": "ZBBLRPRYYSJUCZ",
+      "name": "DIBUTYL TIN MALEATE; EI-B; MS",
+      "original_source_InChIKey": "ZBBLRPRYYSJUCZ-GRHBHMESSA-L",
+      "regenerated_SMILES_standard_InChIKey": "ZBBLRPRYYSJUCZ-UHFFFAOYSA-L",
+      "original_source_SMILES": "CCCC[Sn](CCCC)(O1)OC(=O)C=CC(=O)1",
+      "formula": "C12H20O4Sn",
+      "recorded_nominal_peak_rows": 26,
+      "first14_concordance": 1,
+      "formula_concordance": 1,
+      "molecular_explanation": "NOT_ADJUDICATED_DO_NOT_GUESS_ADVANCED_LAYER",
+      "frozen_case_removed_or_changed": 0
+    },
+    {
+      "source_index": 3426,
+      "connectivity": "ZBBLRPRYYSJUCZ",
+      "name": "DIBUTYLTIN MALEATE; EI-B; MS",
+      "original_source_InChIKey": "ZBBLRPRYYSJUCZ-GRHBHMESSA-L",
+      "regenerated_SMILES_standard_InChIKey": "ZBBLRPRYYSJUCZ-UHFFFAOYSA-L",
+      "original_source_SMILES": "CCCC[Sn](CCCC)(O1)OC(=O)C=CC(=O)1",
+      "formula": "C12H20O4Sn",
+      "recorded_nominal_peak_rows": 17,
+      "first14_concordance": 1,
+      "formula_concordance": 1,
+      "molecular_explanation": "NOT_ADJUDICATED_DO_NOT_GUESS_ADVANCED_LAYER",
+      "frozen_case_removed_or_changed": 0
+    },
+    {
+      "source_index": 5384,
+      "connectivity": "LNHURPJLTHSVMU",
+      "name": "P-BENZOQUINONE DIOXIME; EI-B; MS",
+      "original_source_InChIKey": "LNHURPJLTHSVMU-CGXWXWIYSA-N",
+      "regenerated_SMILES_standard_InChIKey": "LNHURPJLTHSVMU-UHFFFAOYSA-N",
+      "original_source_SMILES": "ON=c(c1)ccc(=NO)c1",
+      "formula": "C6H6N2O2",
+      "recorded_nominal_peak_rows": 61,
+      "first14_concordance": 1,
+      "formula_concordance": 1,
+      "molecular_explanation": "NOT_ADJUDICATED_DO_NOT_GUESS_ADVANCED_LAYER",
+      "frozen_case_removed_or_changed": 0
+    },
+    {
+      "source_index": 7781,
+      "connectivity": "ZBBLRPRYYSJUCZ",
+      "name": "DIBUTYLTIN MALEATE; EI-B; MS",
+      "original_source_InChIKey": "ZBBLRPRYYSJUCZ-GRHBHMESSA-L",
+      "regenerated_SMILES_standard_InChIKey": "ZBBLRPRYYSJUCZ-UHFFFAOYSA-L",
+      "original_source_SMILES": "CCCC[Sn](CCCC)(O1)OC(=O)C=CC(=O)1",
+      "formula": "C12H20O4Sn",
+      "recorded_nominal_peak_rows": 37,
+      "first14_concordance": 1,
+      "formula_concordance": 1,
+      "molecular_explanation": "NOT_ADJUDICATED_DO_NOT_GUESS_ADVANCED_LAYER",
+      "frozen_case_removed_or_changed": 0
+    },
+    {
+      "source_index": 11277,
+      "connectivity": "ZXJAGBZHYUDHNH",
+      "name": "5-TERT-BUTYL-2,3-DIMETHOXYCARBONYL-5,6-DIHYDROPYRROLO(1,2-D)(1,2,4)TRIAZOCIN-6-ONE; EI-B; MS",
+      "original_source_InChIKey": "ZXJAGBZHYUDHNH-KAZNXQFFSA-N",
+      "regenerated_SMILES_standard_InChIKey": "ZXJAGBZHYUDHNH-UHFFFAOYSA-N",
+      "original_source_SMILES": "COC(=O)c(c1)c(C(=O)OC)nn(C(C)(C)C)c(=O)n(c2)c(cc2)1",
+      "formula": "C16H19N3O5",
+      "recorded_nominal_peak_rows": 137,
+      "first14_concordance": 1,
+      "formula_concordance": 1,
+      "molecular_explanation": "NOT_ADJUDICATED_DO_NOT_GUESS_ADVANCED_LAYER",
+      "frozen_case_removed_or_changed": 0
+    },
+    {
+      "source_index": 11278,
+      "connectivity": "ZSTBUXXHIKVPIZ",
+      "name": "5-METHYL-2,3-DIMETHOXYCARBONYL-5,6-DIHYDROPYRROLO(1,2-D)(1,2,4)TRIAZOCIN-6-ONE; EI-B; MS",
+      "original_source_InChIKey": "ZSTBUXXHIKVPIZ-IESVIYHPSA-N",
+      "regenerated_SMILES_standard_InChIKey": "ZSTBUXXHIKVPIZ-UHFFFAOYSA-N",
+      "original_source_SMILES": "COC(=O)c(c1)c(C(=O)OC)nn(C)c(=O)n(c2)c(cc2)1",
+      "formula": "C13H13N3O5",
+      "recorded_nominal_peak_rows": 137,
+      "first14_concordance": 1,
+      "formula_concordance": 1,
+      "molecular_explanation": "NOT_ADJUDICATED_DO_NOT_GUESS_ADVANCED_LAYER",
+      "frozen_case_removed_or_changed": 0
+    }
+  ],
+  "retained_advanced_molecular_identifier_mismatch_count": 6,
+  "within_14char_connectivity_full_advanced_identity_diversity_groups": 294,
+  "group_294_summary_SHA256": "b53416f6939a5433b88f2e328349f668225324e49a4e97a3436f265401e56794",
+  "group_294_with_no_other_retained_spectrum_of_exact_reference_fullkey": 119,
+  "retained_name_review_only_rows": 373,
+  "qualifier_category_counts_nonexclusive": {
+    "derivative_keyword": 313,
+    "minor_component_qualifier": 57,
+    "isomer_qualifier": 1,
+    "tentative_or_similarity_language": 2
+  },
+  "source_membership_or_partition_edited": false,
+  "original_609_final_test_accuracy_examined": 0,
+  "independently_verified_external_lab_standards": 0,
+  "scientific_limits": [
+    "A raw exact-spectrum group with conflicting source connectivity labels is a potential ground-truth ambiguity: clarify the original record and isotope/derivative structural claims; do not resolve by looking at prediction successes",
+    "A different full InChIKey of another retained spectrum under same first14 is expected for multiple stereoisomers or differently represented chemical forms; cannot claim exact stereoisomer retrieval",
+    "Retained name-review warnings indicate uncertain name semantics but not necessarily false source structure keys",
+    "Non-equivalent EI acquisitions can have similar or identical m/z-intensity vectors; exact numerical de-duplication is necessary but not complete acquisition-provenance screening",
+    "All unchanged, original 609 held-out outcome results remain sealed"
+  ]
+}

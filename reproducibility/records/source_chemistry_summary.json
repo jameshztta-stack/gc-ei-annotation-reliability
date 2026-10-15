@@ -1,0 +1,53 @@
+{
+  "status": "COMPLETE 13111 CORRECTED ORIGINAL RETAINED SPECTRA SOURCE-ONLY CHEMISTRY AND EXACT DUPLICATE REPLAY",
+  "original_MSDIAL_SHA256": "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70",
+  "frozen_phase16_source_selection_code": "scripts/phase1_6_chemical_lock_candidate.py and scripts/phase1_4_adjudication_and_splits.py",
+  "original_reference_8455_membership_SHA256": "736a8e4c8509fd7ebc9bb65dfc5e3faa2a169aaf0efc465351b5dcdad6033cc8",
+  "RDKit_version": "2026.09.1",
+  "raw_original_source_spectra": 28220,
+  "raw_unique_original_spectral_patterns": 14146,
+  "retained_distinct_original_spectra": 13111,
+  "retained_candidate_connectivity_labels": 8455,
+  "multi_spectrum_connectivity_groups": 2019,
+  "original_sealed_test_query_identity_count_without_outcome_access": 609,
+  "exact_duplicates_rejected_after_chemical_structure_qc": {
+    "spectra_without_strict_structure_supported_record": 1035
+  },
+  "strict_hard_derivative_excluded_raw_records": 150,
+  "soft_review_raw_source_rows": 772,
+  "retained_source_chemical_flags": {
+    "EXACT_FULL_STANDARD_KEY": 9727,
+    "STANDARD_NONSTANDARD_FLAG_ONLY_DIFFERENCE": 3378,
+    "ADVANCED_INCHIKEY_LAYER_DIFFERENCE": 6
+  },
+  "retained_source_QC_counts": {
+    "strict_derived_connectivity_matches": 13111,
+    "strict_source_vs_rdkit_formula_matches": 13111,
+    "retained_exact_spectra_seen_in_repeated_raw_records": 12900,
+    "retained_mixed_raw_source_connectivity_labels": 1,
+    "retained_source_name_review_flags": 373,
+    "source_declared_NUMPEAKS_mismatch": 0,
+    "positive_finite_mass_peaks_or_content_warning": 0,
+    "source_INSTRUMENTTYPE_recorded": 211,
+    "source_COLLISIONENERGY_recorded": 12900,
+    "source_IONMODE_recorded": 13111,
+    "source_LICENSE_recorded": 11992
+  },
+  "within_connectivity_full_identifier_flags": {
+    "multiple_derived_full_InChIKeys_under_same_connectivity": 294,
+    "any_advanced_source_InChIKey_disagreement_under_connectivity": 4
+  },
+  "source_13k_ledger_SHA256": "2be2f3814ce2a8a0d5d48d9b5f715c568e0238f83d234da072423c3c4b6e22c0",
+  "source_group_8455_SHA256": "ae0ab357f89485c9497e2e3fef03ee9d649858f62ec13ff36a24eedcbc18edc4",
+  "model_accuracy_or_final_609_outcomes_scored": 0,
+  "frozen_reference_or_partition_roles_changed": false,
+  "new_validated_external_acquisition_samples": 0,
+  "important_scope": [
+    "Complete original 13111 spectrum metadata and chemical-encoding QA only, NOT a measured-standard authenticity test",
+    "Any 609 held-out test identity reference/query source spectra are compared only for source-data/label forensics, not predicted correctness",
+    "Exact original source spectral duplicates are grouped; different spectra of the same chemical might still reflect shared instrumental or source lineage",
+    "Full InChIKey diversity under the 14-character connectivity target is not automatically chemical-label error, but requires scope-aware stratified validation",
+    "The earlier public software 8543 panel must not be substituted for this corrected 8455-identity research cohort",
+    "Do not delete any original held-out identities/records after discovering a chemical exception; version changes require fresh statistical revalidation"
+  ]
+}
