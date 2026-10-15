@@ -105,7 +105,7 @@ def main():
           and ch["retained_name_review_only_rows"]==373
           and ch["retained_advanced_molecular_identifier_mismatch_count"]==6
           and len({x["connectivity"] for x in ch["six_advanced_molecular_identifier_exception_cases"]})==4
-          and all(z in si for z in ["**294**","**373**","**six**","**four**"]))
+          and all(z in si for z in ["**294**","**373**","**6 source-spectrum rows**","**4 unique first14 connectivity groups**"]))
     pass_("raw-source fingerprint collision exact 4 original rows",
           ch["exact_retained_original_source_identifier_conflict_group_count"]==1
           and len(ch["exact_spectral_group_source_rows"])==4
