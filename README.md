@@ -75,6 +75,6 @@ streamlit run app.py
 
 **Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*. Version 2.0.2. Jazer Research Lab (2026). [DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447).
 
-**Data:** Cite the [MS-DIAL GC–EI–MS source](https://doi.org/10.5281/zenodo.21910638) in studies using the associated reference spectra. A related research manuscript should be cited only after publication.
+**Data:** Cite the [MS-DIAL GC–EI–MS source](https://doi.org/10.5281/zenodo.21910638) in studies using the associated reference spectra.
 
 **Developed and maintained by Dr. James H. Zothantluanga**, Research Director, Jazer Research Lab, Aizawl, Mizoram, India.
