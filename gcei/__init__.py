@@ -1,3 +1,3 @@
-"""GC–EI annotation reliability tool."""
+"""GC–EI–MS library annotation software."""
 
-__version__ = "0.2.0-rc1"
+__version__ = "2.0.2"
