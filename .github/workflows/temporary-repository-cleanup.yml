@@ -27,8 +27,8 @@ jobs:
             audits/v2_13111_acquisition_provenance_20261014/v2_13111_source_provenance_field_inventory.json \
             audits/v2_m1_development/v2_m1_development_only_nested_cv_predictions.csv | gzip -9 > recovery/reproducibility-evidence.tar.gz
           test -s recovery/reproducibility-evidence.tar.gz
-          tar tzf recovery/reproducibility-evidence.tar.gz | grep -q 'v2_609_single_use_within_msdial_per_query.csv'
-          tar tzf recovery/reproducibility-evidence.tar.gz | grep -q 'v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv'
+          tar tzf recovery/reproducibility-evidence.tar.gz | grep 'v2_609_single_use_within_msdial_per_query.csv'
+          tar tzf recovery/reproducibility-evidence.tar.gz | grep 'v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv'
           sha256sum recovery/reproducibility-evidence.tar.gz > recovery/archive-sha256.txt
       - uses: actions/upload-artifact@v4
         with:
