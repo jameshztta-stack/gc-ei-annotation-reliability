@@ -25,7 +25,7 @@ def test_actual_app_single_input_with_scientific_disclosures():
     assert at.title and at.title[0].value == "GC–EI–MS Annotation Tool"
     assert at.radio[0].value == "Single spectrum"
     assert at.radio[1].value == "Paste peaks"
-    assert at.selectbox[0].value == "Standard (historical 10% target)"
+    assert at.selectbox[0].value == "Standard (score ≥0.87)"
     assert at.text_area
     text=_render_text(at)
     assert "8,455" in text
