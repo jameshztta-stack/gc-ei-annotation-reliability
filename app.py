@@ -311,7 +311,7 @@ with st.expander("About the method and its limitations"):
         "In a within-library evaluation of 609 spectra, the highest-ranked candidate "
         "agreed with 394 publisher-provided connectivity labels (64.70%). "
         "These data did not independently verify chemical identity. The optional "
-        "confidence-screening criteria do not provide validated error-rate guarantees "
+        "confidence-screening criteria are not certified error guarantees "
         "for future experimental samples."
     )
     st.write(
