@@ -81,10 +81,10 @@ def summary_row(result) -> pd.DataFrame:
         "top1_formula": result.top1.get("formula", ""),
         "top1_connectivity_id": result.top1.get("connectivity_id", ""),
         "top1_similarity": result.top1.get("similarity"),
-        "historical_model_score": result.confidence,
+        "top_hit_reliability_score": result.confidence,
         "top1_top2_margin": result.margin,
-        "historical_rule_target": result.risk_target,
-        "historical_rule_met": result.accepted,
+        "screening_setting": result.risk_target,
+        "screening_criterion_met": result.accepted,
         "target_error_rate_certified": False,
         "chemical_identity_independently_confirmed": False,
         "interpretation": "Tentative first14-connectivity library annotation",
@@ -286,7 +286,7 @@ else:
         columns = [
             "spectrum_id", "top1_name", "top1_formula",
             "top1_connectivity_id", "top_similarity",
-            "historical_HGB_score", "historical_acceptance_rule_met",
+            "top_hit_reliability_score", "screening_criterion_met",
         ]
         st.dataframe(
             results[[x for x in columns if x in results.columns]],
@@ -334,11 +334,6 @@ with st.expander("How to cite"):
         "**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*. "
         "Jazer Research Lab. Version 2.0.2, 2026. "
         "[Zenodo DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447)."
-    )
-    st.markdown(
-        "**Research article:** A related research manuscript has not yet been "
-        "published. Cite it separately when bibliographic details become available; "
-        "do not cite an unpublished article as an existing publication."
     )
     st.markdown(
         f"**Original spectral library:** Cite the [MS-DIAL source record]({SOURCE_RECORD}) "
