@@ -1,5 +1,5 @@
 {
-  "research_model_status": "source-locked development fitted HGB; 5/10 targets not certified",
+  "research_model_status": "Specified classifier fitted using development data; screening criteria do not guarantee future error rates",
   "original_MS_DIAL_SHA256": "a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70",
   "research_v2_reference_index_SHA256": "2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01",
   "reference_first14_n": 8455,
@@ -35,10 +35,11 @@
     "top1_minus_top2_min": 0.2,
     "certified": false
   },
-  "v1_conformal_or_RI_reused": false,
   "609_final_test_data_used_for_training": false,
   "466_external_source_used_for_training": false,
   "model_fitted_from_original_1410_exposed_development_only": true,
-  "research_609_test_status": "permanently spent as heldout; within-source 394/609",
-  "deployment_scope": "experimental source-dependent connectivity library annotation only"
+  "research_609_test_status": "Within-source source-label agreement: 394 of 609 top-ranked matches",
+  "deployment_scope": "experimental source-dependent connectivity library annotation only",
+  "ri_fusion_supported": false,
+  "conformal_candidate_sets_supported": false
 }
