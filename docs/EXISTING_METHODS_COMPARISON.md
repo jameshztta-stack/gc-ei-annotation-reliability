@@ -1,0 +1,25 @@
+# Relationship to existing GC–EI–MS software and research
+
+This comparison concerns **implemented functions and scientific objectives** rather than a numeric head-to-head accuracy competition. It does not suggest that GC–EI–MS spectral similarity, first-hit confidence, spectral uniqueness, score-margin analysis, machine learning or a graphical interface were introduced by this software.
+
+| Work or software | Established contribution | Current GC–EI–MS Annotation Tool: actual distinction |
+|---|---|---|
+| Stein & Scott, *JASMS* 1994, [DOI 10.1016/1044-0305(94)87009-8](https://doi.org/10.1016/1044-0305(94)87009-8) | Optimization and testing of spectral-library matching algorithms. | Uses conventional m/z-weighted sqrt-intensity cosine for a specified 8,455-entry search; the rank is unchanged by its reliability model. No claim to new cosine search. |
+| Stein, *JASMS* 1994, [DOI 10.1016/1044-0305(94)85022-4](https://doi.org/10.1016/1044-0305(94)85022-4) | Probabilities of correct library matching, dependent on library inclusion and other conditions. | A 12-feature HGB output estimates **publisher-provided first14 connectivity-label agreement** for a selected in-reference task. It is not authenticated chemical-ID probability or out-of-library detection. |
+| Kim & Zhang, *J Chemom* 2015, [DOI 10.1002/cem.2665](https://doi.org/10.1002/cem.2665) | Evaluation of the difference between the best and second-best GC–MS similarity scores to reduce false matches. | Retains the margin as an explicit comparator and HGB input; uses additional retrieval-distribution and ion-overlap descriptors. Margin alone occasionally performs better at matched acceptance counts; no uniform superiority claim. |
+| McGlynn et al., *JASMS* 2025, [DOI 10.1021/jasms.4c00451](https://doi.org/10.1021/jasms.4c00451) | Spectral uniqueness, compound ubiquity, reverse/noise-aware identification, retention-index comparison, and hybrid matching of missing-library compounds in real GC–EI sample analysis. | Presents simpler EI-only matching, separately scored first-hit label agreement, structured source chemical checks, and a browser application. Lacks RI incorporation, absence recognition and tested coelution. |
+| NIST26 EI library and MS Search program, [NIST data sheet](https://www.nist.gov/srd/nist-standard-reference-database-1a) | Evaluated large commercial reference database: 382,180 compounds / 431,277 EI spectra with RI data and numerous identification tools. | Much smaller designated publisher-derived library, no competing library breadth or validated external identification superiority. Free browser interface and machine-readable model/source hashes are features of this implementation, not unique identification advances. |
+| AMDIS (NIST), [NIST overview](https://www.nist.gov/programs-projects/electron-ionization-library-component-nistepanih-mass-spectral-library-and-nist-gc) | Deconvolution of coeluting GC–MS signal components and library identification support. | Starts from already extracted EI ion spectra and **does not deconvolute chromatograms**. Different processing stage. |
+| FastEI (Yang et al.), *Nature Communications* 2023, [DOI 10.1038/s41467-023-39279-7](https://doi.org/10.1038/s41467-023-39279-7) | Word2Vec EI spectral embeddings, HNSW speedups and million-scale in-silico libraries; released standalone software. | Conventional experimental-library weighted cosine; HGB estimates top-hit label agreement rather than generating embeddings or expanding chemical space. Different algorithmic purpose, no retrieval speed advantage demonstrated. |
+
+## Specific and restrained scientific contribution
+
+The present work makes a practical software contribution by **combining source-level molecular representation checks, specified library ranking, an explicitly separate label-agreement estimator, transparent screening criteria, numerical reproducibility tests and accessible single/batch reporting**. Each ingredient has prior precedent. The existence of a particular combination in other platforms was **not exhaustively excluded**, so this implementation must not be described as the first or the only such system.
+
+### What the evidence actually demonstrates
+
+- Within MS-DIAL, previously evaluated in-library first14 outcomes: **394/609 (64.7%)** at rank 1; HGB AUROC **approximately 0.8633**.
+- Previously selected SWGDRUG/RECETOX cases: **334/466 (71.7%)** first14 rank-one agreement. Acquisition-level independence unverified.
+- Score-based review selection has tradeoffs: 609-case standard criterion accepts 198, of which 12 disagree with publisher labels; strict criterion accepts 38 with no observed mismatch. **No certified future error bound**.
+- Automated user-interface and twelve-spectrum software regression support functional consistency, not measured usability, identification of authentic standards, time savings or outperforming NIST/FastEI.
+- This is a **documentation-based comparison**, not a direct common-dataset benchmark of competitor applications; direct numerical superiority is not asserted.
