@@ -143,11 +143,11 @@ The original MS-DIAL public source is available from DOI **10.5281/zenodo.219106
 
 [4] McGlynn DF et al. New Library-Based Methods for Nontargeted Compound Identification by GC-EI-MS. *J Am Soc Mass Spectrom.* 2025;36:389–399. https://doi.org/10.1021/jasms.4c00451
 
-[5] Huber F et al. matchms – processing and similarity evaluation of mass spectrometry data. *J Open Source Softw.* 2020. https://doi.org/10.21105/joss.02411
+[5] Huber F, Verhoeven S, Meijer C, et al. matchms – processing and similarity evaluation of mass spectrometry data. *J Open Source Softw.* 2020;5(52):2411. https://doi.org/10.21105/joss.02411
 
-[6] Yang et al. FastEI: an EI spectral library and spectral matching approach. *Nat Commun.* 2023. https://doi.org/10.1038/s41467-023-39279-7 **(Verify exact complete title/authors before final submission.)**
+[6] Yang Q, Ji H, Xu Z, et al. Ultra-fast and accurate electron ionization mass spectrum matching for compound identification with million-scale in-silico library. *Nat Commun.* 2023;14:3722. https://doi.org/10.1038/s41467-023-39279-7
 
-[7] Xu et al. LLM4MS: deep representation of EI spectra. *Commun Chem.* 2025. https://doi.org/10.1038/s42004-025-01708-7 **(Verify exact complete title/authors before final submission.)**
+[7] Xu Y, Ma Y, Xu W, et al. A large language model for deriving spectral embeddings for accurate compound identification in mass spectrometry. *Commun Chem.* 2025;8:326. https://doi.org/10.1038/s42004-025-01708-7
 
 **Further contextual EI studies identified but not exhaustively integrated:** https://doi.org/10.1038/s42004-025-01706-9; https://doi.org/10.1016/j.aca.2025.343858; https://doi.org/10.1002/cem.70174. Must verify metadata/full-text before using to establish a first-or-only novelty claim. The final reference list will require journal-specific formatting and primary verification.
 
