@@ -72,7 +72,7 @@ def test_v2_specified_hgb_probability_is_not_sufficient_without_m1_margin_for_5p
 
 def test_v2_rejects_unsupported_ri_and_batch_instead_of_improperly_reusing_other():
     e=toy_engine()
-    with pytest.raises(ValueError,match="RI fusion"):
+    with pytest.raises(ValueError,match="Retention-index integration"):
         e.analyze([(41,100.)],kovats_ri=927.)
     frame=pd.DataFrame({"spectrum_id":["X"],"mz":[41],"intensity":[10],"ri":[923.]})
     with pytest.raises(ValueError,match="Kovats RI cannot be integrated"):
