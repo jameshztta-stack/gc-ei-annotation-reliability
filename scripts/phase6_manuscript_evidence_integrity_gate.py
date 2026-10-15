@@ -145,7 +145,7 @@ def main():
     pass_("unresolved final author and rights approval are not fabricated",
           "AUTHOR APPROVAL REQUIRED" in art and
           "licensing" in si.lower() and
-          "not yet" in art.lower())
+          "have not been fabricated" in art.lower())
 
     out={"status":"PASS","checks":checks,"checks_n":len(checks),
          "scope":"MANUSCRIPT-CHECK, NOT PEER REVIEW / PHYSICAL ID TRUTH",
