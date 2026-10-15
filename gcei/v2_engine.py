@@ -150,17 +150,17 @@ class GCEIV2Engine:
         asset_dir = Path(asset_dir)
         model_path = Path(model_path)
         if sha256(model_path) != V2_HGB_SHA256:
-            raise RuntimeError("Frozen v2 HGB SHA-256 mismatch: refusing unverified model.")
+            raise RuntimeError("Reliability model SHA-256 mismatch: model integrity verification failed.")
         self.meta = pd.read_csv(asset_dir / "reference_metadata.csv").fillna("")
         self.R = sparse.load_npz(asset_dir / "reference_matrix.npz").tocsr()
         if self.R.shape != (V2_N_REFERENCE, V2_MAX_MZ + 1):
-            raise ValueError("Frozen v2 reference matrix has the wrong dimensions.")
+            raise ValueError("Reference matrix has incorrect dimensions.")
         if len(self.meta) != V2_N_REFERENCE:
-            raise ValueError("Frozen v2 reference metadata row mismatch.")
+            raise ValueError("Reference metadata does not match the expected library size.")
         if self.meta["connectivity_id"].nunique() != V2_N_REFERENCE:
-            raise ValueError("Frozen v2 reference IDs are not unique.")
+            raise ValueError("Reference connectivity IDs are not unique.")
         if str(self.R.dtype) != "float64":
-            raise ValueError("Frozen v2 numerical matrix must be float64.")
+            raise ValueError("Reference matrix has an incompatible numeric format.")
         # This is a trusted release-owned pickle-like object, never a user upload.
         self.model = joblib.load(model_path)
         if type(self.model).__name__ != "HistGradientBoostingClassifier":
@@ -209,7 +209,7 @@ class GCEIV2Engine:
         warnings = [
             "Experimental authentic-standard identity, source acquisition independence and out-of-library "
             "performance are not established.",
-            "The v2 HGB score is a historical classifier output; neither 5% nor 10% risk target is certified.",
+            "The reliability score is based on publisher-reported library labels. The screening criteria do not guarantee future error rates.",
             "Only database connectivity (InChIKey first14) is represented; stereochemistry and exact analyte "
             "identity require additional evidence.",
         ]
@@ -217,11 +217,11 @@ class GCEIV2Engine:
             warnings.append(f"{ignored} peak(s) outside original m/z 0–6420 were excluded.")
 
         decision = (
-            f"Passes the historical {risk_target:.0%}-target acceptance rule "
+            "Passes the selected screening criterion "
             "(NOT a certified error guarantee)."
             if accepted else
-            f"Does not pass the historical {risk_target:.0%}-target rule; "
-            "report candidates as ambiguous, not as a confirmed identification."
+            "Does not pass the selected screening criterion; "
+            "report candidates as tentative, not as a confirmed identification."
         )
         return V2Result(
             mode="v2 EI-only",top1=top,top10=make_frame(order[:max(1,int(top_n))]),
@@ -234,11 +234,11 @@ class GCEIV2Engine:
         self.raw_reference = sparse.load_npz(
             Path(asset_dir) / "raw_reference_bins.npz").tocsr()
         if self.raw_reference.shape != (V2_N_REFERENCE, V2_MAX_MZ + 1):
-            raise ValueError("v2 raw reference bin matrix dimensions mismatch.")
+            raise ValueError("Raw reference peak matrix dimensions mismatch.")
         if str(self.raw_reference.dtype) != "float64":
             raise ValueError("v2 raw reference bins must retain float64 intensities.")
         if (self.raw_reference.data <= 0).any():
-            raise ValueError("v2 reference contains nonpositive original raw source intensities.")
+            raise ValueError("The reference contains nonpositive intensity values.")
 
     def analyze_batch(self, df: pd.DataFrame, risk_target=0.10):
         required={"spectrum_id","mz","intensity"}
