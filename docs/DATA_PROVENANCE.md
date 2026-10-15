@@ -1,6 +1,6 @@
 # Data provenance and chemical reference preparation
 
-This document describes the spectral data and reference selection used by the **GC–EI–MS Annotation Tool, version 2.0.2**.
+This document describes the spectral data and reference selection used by the **GC–EI–MS Annotation Tool, version 2.1.0**.
 
 ## Original EI spectral source
 
@@ -19,7 +19,7 @@ The study's predefined inclusion and chemical-representation rules produced **13
 
 The numerical preprocessing applies the corresponding specified procedures: positive-intensity ion peaks, nominal mass binning by Python's rounding convention, summation of repeated nominal ions, `m/z × √intensity` weighting and unit-vector normalization before cosine comparison. Reference eligibility also uses the predefined molecular identifier, formula and duplicate-spectrum quality rules. See `gcei/v2_bootstrap.py`, `gcei/v2_engine.py` and `models/v2/reference_index.csv` for the executable specification.
 
-The fixed reliability model was developed using 1,410 designated development observations. The reference search and classifier have different roles: EI cosine determines the candidates' ranks, while the 12-feature classifier estimates whether the first candidate agrees with the publisher-provided connectivity label. The model SHA-256 is `a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13`.
+The specified reliability model was developed using 1,410 designated development observations. The reference search and classifier have different roles: EI cosine determines the candidates' ranks, while the 12-feature classifier estimates whether the first candidate agrees with the publisher-provided connectivity label. The model SHA-256 is `a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13`.
 
 ## Chemical identity and source limitations
 
@@ -34,6 +34,6 @@ The fixed reliability model was developed using 1,410 designated development obs
 
 The repository does **not** include the original publisher MSP or redistribute the reference peak arrays constructed from it. Reference files are generated locally from the publisher-hosted source after checking the source checksum, and their generated runtime files are excluded from the repository. Source availability and use remain subject to the original rights holders' conditions.
 
-The repository's MIT software licence governs software source code; it does **not** supersede or expand third-party spectral database rights. Researchers should consult the original source record before redistributing or commercially exploiting its spectra.
+The repository's MIT software licence governs software source code. The original CompMS MSP spectral-library files are labelled **CC BY 4.0** on the [official CompMS licence page](https://systemsomicslab.github.io/compms/license/main.html); proper attribution, licence notice and consideration of any applicable separately contributed rights remain required. SWGDRUG and RECETOX comparison-data conditions are distinct; see [data use and attribution](DATA_USE_AND_ATTRIBUTION.md).
 
-For the supported public application and its outputs, see the [project overview](../README.md) and [Streamlit application](https://gc-ei-annotation.streamlit.app/). The software archive is [DOI 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447).
+For the supported public application and its outputs, see the [project overview](../README.md) and [Streamlit application](https://gc-ei-annotation.streamlit.app/). The source-controlled software release is [GC–EI–MS Annotation Tool v2.1.0](https://github.com/jameshztta-stack/gc-ei-annotation-reliability/releases/tag/v2.1.0). Its separate Zenodo version DOI should be cited only when confirmed.
