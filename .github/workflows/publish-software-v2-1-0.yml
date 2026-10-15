@@ -1,0 +1,76 @@
+name: Publish verified scientific software v2.1.0
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-software-v2-1-0.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: .
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact computational and chemical dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install rdkit==2026.9.1
+      - name: Check publication source and version consistency
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast,json
+          from pathlib import Path
+          a=Path("app.py").read_text()
+          assert 'APP_VERSION = "2.1.0"' in a
+          assert json.loads(Path(".zenodo.json").read_text())["version"]=="2.1.0"
+          assert json.loads(Path("models/v2/release_manifest.json").read_text())["software_version"]=="2.1.0"
+          assert "version: 2.1.0" in Path("CITATION.cff").read_text()
+          assert not any(x.exists() for x in [Path("manuscript"),Path("drafts")])
+          ast.parse(a)
+          print("Software version and syntax: PASS")
+          PY
+      - name: Check current single-model Streamlit software
+        run: |
+          python scripts/verify_software.py
+          python -m pytest -q tests/
+      - name: Recreate source-chemistry reference and verify identity selection
+        run: python reproducibility/rebuild_source_selection.py --output verified_reference.json
+      - name: Refit published HGB classifier and check all source-label study records
+        run: python reproducibility/reproduce_results.py --output verified_evaluation.json
+      - name: Verify 12 supplied EI software examples
+        run: python scripts/verify_software.py --examples
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gc-ei-2-1-0-reproducibility-results
+          path: |
+            verified_reference.json
+            verified_evaluation.json
+          if-no-files-found: error
+      - name: Publish immutable GitHub version for Zenodo archiving
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v2.1.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release view v2.1.0 --repo "$GITHUB_REPOSITORY" --json url,tagName,targetCommitish
+          else
+            gh release create v2.1.0 \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "GC–EI–MS Annotation Tool v2.1.0" \
+              --notes "GC–EI–MS Annotation Tool 2.1.0. Current single-model browser implementation; executable original chemical-data selection, classifier refitting, 609-case and 466-case retrospective source-label evaluation; clear library-label agreement scoring; explicit source rights and methods comparison. Publisher source spectra are not redistributed. No authentic-standard identification or prospective error-rate guarantee is claimed. Software is MIT licensed; third-party spectral data have separate rights. See README.md for reproduction commands and original data attribution." \
+              --latest
+          fi
+          echo "An independent Zenodo version DOI exists only if Zenodo confirms archiving of this GitHub release."
