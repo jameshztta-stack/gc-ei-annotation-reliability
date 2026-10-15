@@ -1,0 +1,68 @@
+name: Remove outdated working branches
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/temporary-repository-cleanup.yml]
+permissions:
+  contents: write
+jobs:
+  preserve-scientific-records:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare source-data backup (no draft manuscripts)
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin research/v2-methodology-redesign-20261013
+          mkdir -p recovery
+          git archive --format=tar 9d5c57a44e57d3eed94c82930c2868e451573676 \
+            audits/v2_609_one_shot_within_msdial_20261014/v2_609_single_use_within_msdial_per_query.csv \
+            audits/v2_609_one_shot_within_msdial_20261014/v2_609_single_use_within_msdial_summary.json \
+            audits/v2_retrospective_cross_library_20261014/v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv \
+            audits/v2_retrospective_cross_library_20261014/v2_466_retrospective_cross_library_comparison_report.json \
+            audits/v2_full13111_source_chemistry_20261014/v2_all13111_retained_spectra_chemical_identity_source_integrity_report.json \
+            audits/v2_full13111_chemical_exceptions_20261014/v2_13111_chemical_exceptions_and_name_provenance_review.json \
+            audits/v2_13111_acquisition_provenance_20261014/v2_13111_source_provenance_field_inventory.json \
+            audits/v2_m1_development/v2_m1_development_only_nested_cv_predictions.csv | gzip -9 > recovery/reproducibility-evidence.tar.gz
+          test -s recovery/reproducibility-evidence.tar.gz
+          tar tzf recovery/reproducibility-evidence.tar.gz | grep -q 'v2_609_single_use_within_msdial_per_query.csv'
+          tar tzf recovery/reproducibility-evidence.tar.gz | grep -q 'v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv'
+          sha256sum recovery/reproducibility-evidence.tar.gz > recovery/archive-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-results-recovery-copy-30-days
+          path: recovery/
+          retention-days: 30
+          if-no-files-found: error
+  remove-obsolete-branch-references:
+    needs: preserve-scientific-records
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove superseded public working branches (preserve main and release tags)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          while IFS= read -r branch; do
+            test -n "$branch" || continue
+            test "$branch" != main
+            gh api --method DELETE "/repos/$GITHUB_REPOSITORY/git/refs/heads/$branch"
+            echo "Removed branch: $branch"
+          done <<'BRANCHES'
+analysis/phase3-fair-confidence-benchmarks-20261014
+audit/phase1-source-integrity-20261013
+fix/scientific-reproducibility-v11
+maintenance/v201-link-verified-zenodo-doi-20261014
+maintenance/v202-confirmed-zenodo-citation
+release/streamlit-v1.0.1-scientific-disclosure-20261014
+release/streamlit-v2-frozen-m1-hgb-20261014
+release/streamlit-v2.0.1-clean-interface-zenodo
+release/streamlit-v2.0.2-single-model-clear-ui
+release/v1.0.0-final
+release/v1.0.0-finalized
+release/v1.0.0-prep
+release/v1.0.0-prep-2
+research/v2-methodology-redesign-20261013
+          BRANCHES
