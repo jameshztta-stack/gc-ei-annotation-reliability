@@ -1,6 +1,5 @@
 __pycache__/
 *.py[cod]
-*.pyo
 .venv/
 venv/
 .env
@@ -8,14 +7,9 @@ venv/
 .pytest_cache/
 .streamlit/secrets.toml
 
-# Runtime-generated third-party reference assets
-.runtime_assets/
-.runtime_assets_v11/
+# Generated runtime data and downloaded publisher material
+.runtime_assets_v2/
 runtime_assets/
-reference_assets/
-assets/
-
-# Upstream MSP is obtained from the original Zenodo record and is not redistributed
 *.msp
 *.MSP
 GCMS DB-Public-KovatsRI-VS3.msp
