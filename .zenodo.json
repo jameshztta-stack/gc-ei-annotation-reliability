@@ -1,6 +1,6 @@
 {
   "title": "GC–EI–MS Annotation Tool",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "GC–EI–MS software for tentative annotation of electron-ionization mass spectra. The current application uses an 8,455-connectivity reference library and a twelve-feature reliability model, supporting single-spectrum and batch input, ranked candidate review, confidence screening and CSV output. Publisher-reported database labels are not independently confirmed chemical identities, and screening criteria do not guarantee future error rates. Retention-index integration is not provided.",
   "creators": [
     {

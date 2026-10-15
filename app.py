@@ -19,7 +19,7 @@ from gcei.v2_engine import (
     GCEIV2Engine, V2_HGB_SHA256, V2_N_REFERENCE, V2_REFERENCE_SHA256,
 )
 
-APP_VERSION = "2.0.2"
+APP_VERSION = "2.1.0"
 SINGLE_EXAMPLE = "mz,intensity\n41,82.1\n43,44.6\n69,71.5\n93,100\n"
 BATCH_EXAMPLE = (
     "spectrum_id,mz,intensity\n"
@@ -332,8 +332,8 @@ with st.expander("About the method and its limitations"):
 with st.expander("How to cite"):
     st.markdown(
         "**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*. "
-        "Jazer Research Lab. Version 2.0.2, 2026. "
-        "[Zenodo DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447)."
+        "Jazer Research Lab. Version 2.1.0, 2026. "
+        "[Software release](https://github.com/jameshztta-stack/gc-ei-annotation-reliability/releases/tag/v2.1.0)."
     )
     st.markdown(
         f"**Original spectral library:** Cite the [MS-DIAL source record]({SOURCE_RECORD}) "

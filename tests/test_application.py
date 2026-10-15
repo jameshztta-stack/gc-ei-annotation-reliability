@@ -21,7 +21,7 @@ def test_application_single_and_batch_screens():
 
 def test_current_model_and_version_files():
     text = (ROOT / "app.py").read_text(encoding="utf-8")
-    assert 'APP_VERSION = "2.0.2"' in text
+    assert 'APP_VERSION = "2.1.0"' in text
     assert "GCEIV2Engine(ensure_v2_assets(), V2_HGB)" in text
     assert "not certified error guarantees" in text
     assert "GC–EI–MS Annotation Tool" in text

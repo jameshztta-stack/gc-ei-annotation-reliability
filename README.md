@@ -1,8 +1,8 @@
 # GC–EI–MS Annotation Tool
 
-**Current public software: version 2.0.2**
+**Current public software: version 2.1.0**
 
-[Open the web application](https://gc-ei-annotation.streamlit.app/) · [Software DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447)
+[Open the web application](https://gc-ei-annotation.streamlit.app/) · [Version 2.1.0 software release](https://github.com/jameshztta-stack/gc-ei-annotation-reliability/releases/tag/v2.1.0)
 
 ## Overview
 
@@ -73,8 +73,24 @@ streamlit run app.py
 
 ## Citation
 
-**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*. Version 2.0.2. Jazer Research Lab (2026). [DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447).
+**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*. Version 2.1.0. Jazer Research Lab (2026). [Versioned software release](https://github.com/jameshztta-stack/gc-ei-annotation-reliability/releases/tag/v2.1.0). Cite the corresponding Zenodo version DOI after the new deposit is confirmed.
 
 **Data:** Cite the [MS-DIAL GC–EI–MS source](https://doi.org/10.5281/zenodo.21910638) in studies using the associated reference spectra.
 
 **Developed and maintained by Dr. James H. Zothantluanga**, Research Director, Jazer Research Lab, Aizawl, Mizoram, India.
+
+## Reproducing the results
+
+To reconstruct the **specified chemical reference** from the original MS-DIAL MSP and repeat the numerical study with previously recorded source labels:
+
+```bash
+python -m pip install -r requirements.txt
+python -m pip install rdkit==2026.9.1
+python reproducibility/rebuild_source_selection.py
+python reproducibility/reproduce_results.py
+python scripts/verify_software.py --examples
+```
+
+The first step checks the source SHA-256, RDKit-derived molecular identifiers, chemical-name eligibility, spectral deduplication, identity partition and exact 8,455-reference selection. The second step reproduces the 1,410-development-example classifier and the reported **609 within-source / 466 selected cross-collection** evaluation results without new model tuning. The last step verifies the software using twelve existing, **unlabelled** example EI spectra. These checks can also be reproduced through [GitHub Actions](.github/workflows/).
+
+The reproducibility records contain derived source-label outputs and search features, **not the original third-party MSP arrays**. They are not independent experiments and should not be represented as externally authenticated chemical identities. See [spectral-source rights](docs/DATA_USE_AND_ATTRIBUTION.md) and the [comparison with existing methods](docs/EXISTING_METHODS_COMPARISON.md).

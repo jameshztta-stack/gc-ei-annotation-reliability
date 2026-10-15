@@ -1,21 +1,17 @@
 cff-version: 1.2.0
-message: "Cite the GC–EI–MS Annotation Tool v2.0.2 at DOI 10.5281/zenodo.23373447, plus the original MS-DIAL spectral library."
+message: "Cite the GC–EI–MS Annotation Tool v2.1.0 at the versioned GitHub release; add the Zenodo version DOI after its deposit is confirmed, plus the original MS-DIAL spectral library."
 title: "GC–EI–MS Annotation Tool"
 type: software
 authors:
   - family-names: Zothantluanga
     given-names: James H.
     affiliation: "Jazer Research Lab, Aizawl, Mizoram, India"
-version: 2.0.2
-date-released: 2026-10-14
+version: 2.1.0
+date-released: 2026-10-15
 license: MIT
 repository-code: "https://github.com/jameshztta-stack/gc-ei-annotation-reliability"
 url: "https://gc-ei-annotation.streamlit.app/"
 abstract: "Streamlit-based GC–EI–MS reference-library annotation: 8,455 connectivity identities and a previously developed HGB confidence model. Results are tentative, and original 5%/10% screening targets are not certified future-error bounds."
-identifiers:
-  - type: doi
-    value: "10.5281/zenodo.23373447"
-    description: "Zenodo archive of GC–EI–MS Annotation Tool software v2.0.2"
 keywords:
   - GC-EI-MS
   - electron ionization
