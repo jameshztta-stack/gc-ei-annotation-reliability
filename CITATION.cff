@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Cite the GC–EI–MS Annotation Tool v2.0.2 at DOI 10.5281/zenodo.23373447, plus the original MS-DIAL spectral library. Cite the associated research article separately once published."
+message: "Cite the GC–EI–MS Annotation Tool v2.0.2 at DOI 10.5281/zenodo.23373447, plus the original MS-DIAL spectral library."
 title: "GC–EI–MS Annotation Tool"
 type: software
 authors:
