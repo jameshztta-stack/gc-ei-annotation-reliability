@@ -53,10 +53,10 @@ def main():
 
     pass_("main manuscript and SI contain appropriately scoped EI software article",
           "GC–EI–MS" in art and "Streamlit" in art and "source" in si)
-    pass_("frozen 8455 not mislabeled as old v1 8543",
+    pass_("only the current 8455-reference software is described",
           frozen["reference_first14_n"]==8455
-          and "**8,455**" in art and "**8,543**" in si
-          and "older v1" in si)
+          and "**8,455**" in art and "**8,455**" in si
+          and "8,543" not in art and "8,543" not in si)
     pass_("current v2 model and original source/index exact hashes",
           all(z in art and z in si for z in [
            frozen["original_MS_DIAL_SHA256"],frozen["research_v2_reference_index_SHA256"],
@@ -68,8 +68,9 @@ def main():
           n["n"]["dev1410"]==1410 and n["n"]["test609"]==609
           and n["n"]["retrospective466"]==466
           and "1,410" in art and "609" in art and "466" in art)
-    pass_("all original 609 marked spent & in-library",
-          "permanently" in art.lower() and "in reference" in art.lower()
+    pass_("609 prior outcomes disclosed as retrospective and source-included",
+          "609 test outcomes were already examined" in art
+          and "in reference" in art.lower()
           and "within-MS-DIAL" in art)
     pass_("466 origins and first14 unique numbers correct",
           n["n"]["distinct_466_first14"]==419 and n["n"]["prior466overlap_in_609"]==69
@@ -121,9 +122,9 @@ def main():
           prov["verified_disjoint_original_acquisitions"]==0
           and "independent" in si.lower() and
           "not" in art.lower() and "authentic" in art.lower())
-    pass_("same current EI-only v2 feature no-RI/no conformal mixing",
+    pass_("current EI-only method and no implied RI fusion",
           frozen["v1_conformal_or_RI_reused"]==False
-          and "absent RI fusion" in art
+          and "uses EI spectra alone" in art
           and "no RI" in si
           and "RI fusion" in engine)
     pass_("current batch UI exports only top1 per input, single top10",
@@ -142,10 +143,16 @@ def main():
           all(z in art for z in ["10.1016/1044-0305(94)87009-8",
           "10.1016/1044-0305(94)85022-4", "10.1002/cem.2665",
           "10.1021/jasms.4c00451"]))
-    pass_("unresolved final author and rights approval are not fabricated",
-          "AUTHOR APPROVAL REQUIRED" in art and
-          "licensing" in si.lower() and
-          "have not been fabricated" in art.lower())
+    pass_("responsible author approval and data rights are deferred accurately",
+          "approved by the responsible authors before submission" in art
+          and "licensing" in si.lower())
+
+    pass_("submission-facing text excludes internal workflow terms and previous software versions",
+          all(not __import__("re").search(r"\\b(?:auditable|frozen)\\b|\\bphase\\s*[0-9]+\\b|\\bv1\\b|v2\\.0\\.1",s,__import__("re").IGNORECASE)
+              for s in (art,si)))
+    pass_("closest EI research predecessors acknowledged explicitly",
+          all(z in art for z in ["Stein and Scott [1]", "Stein [2]",
+                                 "Kim and Zhang [3]", "McGlynn and colleagues [4]"]))
 
     out={"status":"PASS","checks":checks,"checks_n":len(checks),
          "scope":"MANUSCRIPT-CHECK, NOT PEER REVIEW / PHYSICAL ID TRUTH",
