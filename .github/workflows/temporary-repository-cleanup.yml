@@ -51,18 +51,18 @@ jobs:
             gh api --method DELETE "/repos/$GITHUB_REPOSITORY/git/refs/heads/$branch"
             echo "Removed branch: $branch"
           done <<'BRANCHES'
-analysis/phase3-fair-confidence-benchmarks-20261014
-audit/phase1-source-integrity-20261013
-fix/scientific-reproducibility-v11
-maintenance/v201-link-verified-zenodo-doi-20261014
-maintenance/v202-confirmed-zenodo-citation
-release/streamlit-v1.0.1-scientific-disclosure-20261014
-release/streamlit-v2-frozen-m1-hgb-20261014
-release/streamlit-v2.0.1-clean-interface-zenodo
-release/streamlit-v2.0.2-single-model-clear-ui
-release/v1.0.0-final
-release/v1.0.0-finalized
-release/v1.0.0-prep
-release/v1.0.0-prep-2
-research/v2-methodology-redesign-20261013
+          analysis/phase3-fair-confidence-benchmarks-20261014
+          audit/phase1-source-integrity-20261013
+          fix/scientific-reproducibility-v11
+          maintenance/v201-link-verified-zenodo-doi-20261014
+          maintenance/v202-confirmed-zenodo-citation
+          release/streamlit-v1.0.1-scientific-disclosure-20261014
+          release/streamlit-v2-frozen-m1-hgb-20261014
+          release/streamlit-v2.0.1-clean-interface-zenodo
+          release/streamlit-v2.0.2-single-model-clear-ui
+          release/v1.0.0-final
+          release/v1.0.0-finalized
+          release/v1.0.0-prep
+          release/v1.0.0-prep-2
+          research/v2-methodology-redesign-20261013
           BRANCHES
