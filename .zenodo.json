@@ -1,7 +1,7 @@
 {
   "title": "GC–EI–MS Annotation Tool",
   "version": "2.0.2",
-  "description": "Software for tentative electron-ionization gas chromatography–mass spectrometry (GC–EI–MS) library annotation. The latest interface provides one source-verified model, searching 8,455 reference chemical-connectivity identities using weighted EI spectral similarity and a previously developed 12-feature HistGradientBoosting confidence model. Supports single-spectrum and batch CSV annotation, ranked top-ten library candidates, downloadable results, input templates, citation guidance and developer information. Publisher-first14 labels are not independently authenticated chemical identities. Original historical confidence-screening targets are not certified future-error bounds. This release changes the user interface and documentation only; the model, source/index SHA-256, original numerical scoring and thresholds remain unchanged.",
+  "description": "GC–EI–MS software for tentative annotation of electron-ionization mass spectra. The current application uses an 8,455-connectivity reference library and a twelve-feature reliability model, supporting single-spectrum and batch input, ranked candidate review, confidence screening and CSV output. Publisher-reported database labels are not independently confirmed chemical identities, and screening criteria do not guarantee future error rates. Retention-index integration is not provided.",
   "creators": [
     {
       "name": "Zothantluanga, James H.",
