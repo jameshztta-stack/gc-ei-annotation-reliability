@@ -1,70 +1,80 @@
 # GC–EI–MS Annotation Tool
 
-**Version 2.0.2 — researcher-facing EI mass-spectrum library annotation**
+**Current public software: version 2.0.2**
 
-[Open the app](https://gc-ei-annotation.streamlit.app/) · [Current Zenodo software DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447) · [Previous software versions](https://doi.org/10.5281/zenodo.23143112)
+[Open the web application](https://gc-ei-annotation.streamlit.app/) · [Software DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447)
 
-## What this tool does
+## Overview
 
-The **GC–EI–MS Annotation Tool** compares electron-ionization mass spectra with a reference library of **8,455 chemical-connectivity identities**, ranks the ten nearest spectral candidates, and reports similarity and a model-derived confidence score. Analyze one spectrum or multiple spectra from CSV, then download candidate annotations and source provenance.
+The GC–EI–MS Annotation Tool assists with **tentative compound annotation** from gas chromatography–electron ionization mass spectra. It searches a defined reference library of **8,455 chemical-connectivity entries**, reports up to ten ranked candidates for a single spectrum, and provides spectral similarity, the difference between the two highest similarity scores, and a machine-learning estimate of **agreement with the publisher-reported connectivity label**.
 
-**Interpretation:** Outputs are tentative InChIKey-first14 chemical-connectivity database matches. They do not establish authentic-standard molecular identity, stereochemistry, independent experimental source provenance or validated future error guarantees. Confirm compound identities with authentic standards or appropriate independent evidence.
+The application works in a web browser. Researchers can enter or upload one EI mass spectrum, or upload a CSV containing multiple spectra. Single-spectrum results include a downloadable list of ten ranked candidates; batch results provide a downloadable summary containing the leading annotation for each spectrum.
 
-## Input templates
+**Scientific interpretation:** Reported candidates are tentative library matches at the level of the **first 14 characters of the InChIKey**. The confidence score does not represent an experimentally confirmed identification probability for an unknown sample. Results do not establish stereochemistry, identification of a compound absent from the reference library, or transferability to all instruments and laboratories. Confirm important chemical assignments using suitable independent evidence.
 
-Single spectrum: **mz,intensity**, one ion peak per line:
+## Data input
 
-    mz,intensity
-    41,82.1
-    43,44.6
-    69,71.5
-    93,100
+**Single spectrum:** CSV columns `mz,intensity`, with one ion peak per row:
 
-Batch spectra: **spectrum_id,mz,intensity**, repeating the same spectrum ID for all peaks within a spectrum:
+```csv
+mz,intensity
+41,82.1
+43,44.6
+69,71.5
+93,100
+```
 
-    spectrum_id,mz,intensity
-    Sample_1,41,82.1
-    Sample_1,93,100
-    Sample_2,43,65.2
-    Sample_2,71,100
+**Batch spectra:** CSV columns `spectrum_id,mz,intensity`, with one spectrum ID repeated for all its peaks:
 
-Template downloads and input descriptions appear **above** the upload/paste fields in the Streamlit app. Kovats RI is not supported by the current research model. The original v1 remains available as an archived software version, not a selectable model on the live website.
+```csv
+spectrum_id,mz,intensity
+Sample_1,41,82.1
+Sample_1,93,100
+Sample_2,43,65.2
+Sample_2,71,100
+```
 
-## Current computational configuration
+The application provides downloadable templates. Retention-index information is not combined with EI similarity in this implementation.
 
-- **Reference:** 8,455 original MS-DIAL EI first14 connectivity identities; exact source data SHA verified at runtime.
-- **Spectral ranking:** nominal EI m/z¹ × sqrt(intensity), float64 weighted L2 cosine.
-- **Confidence:** the already developed 12-feature HistGradientBoosting classifier, trained on the original 1,410 development spectra. No refitting or update from the 609 case outcomes.
-- **Optional confidence screening:** original 10%-target rule (HGB probability ≥0.87), and strict 5%-target rule (HGB probability ≥0.94 AND top-two score margin ≥0.20). **Neither is a certified future error bound.**
-- **Results:** top ten ranked library candidates, similarity, confidence estimate, screening decision and CSV files with study provenance.
-- **Not offered by this model:** RI fusion, calibrated future conformal coverage, chemical detection outside the search library, exact molecular-form or authentic-standard confirmation.
+## Computational method
 
-### Evaluation and its limits
+- **Reference data:** 8,455 InChIKey-first14 identities selected from the published MS-DIAL GC–EI library.
+- **Candidate ranking:** conventional cosine similarity after nominal-mass binning and `m/z × √intensity` weighting.
+- **Reliability assessment:** a 12-feature histogram gradient boosting classifier estimates whether the already highest-ranked candidate agrees with its publisher-reported first14 connectivity label. The classifier **does not reorder the candidates**.
+- **Optional screening:** a standard criterion (model score ≥0.87) and a strict criterion (model score ≥0.94 and top-two score difference ≥0.20). These criteria **do not provide certified error rates** for new spectra.
+- **Output:** single-spectrum top-ten candidate table and annotation summary; batch top-hit summary; confidence-related fields; source/library/model identifiers, where applicable.
 
-The original one-time 609-query closed-reference within-MS-DIAL test produced **394/609 (64.70%)** top-one publisher-reported first14 label agreement; top-five **489/609** and top-ten **509/609**. This is not an experimentally independent authentic-standard accuracy estimate. The original historical 10%-target rule accepted **198/609** (12 source-label mismatches); the stricter 5%-target rule accepted **38/609** (zero observed source-label mismatches). Neither passed valid independent risk certification.
+### Evaluation
 
-The 609 evaluation is permanently spent as an untouched test and may only be replayed to check software parity, not to tune and advertise a newly independent evaluation. See [research method/limitations](docs/STREAMLIT_V20_FROZEN_RESEARCH_HGB_RELEASE.md) and [version 2.0.2 release notes](docs/RELEASE_V2_0_2.md).
+In an **in-reference, within-MS-DIAL evaluation involving 609 source-labelled query spectra**, the top-ranked connectivity agreed with the published label for **394/609 (64.70%)** cases; the top-five and top-ten counts were **489/609** and **509/609**, respectively. The standard screening criterion selected **198/609** cases, including **12 source-label disagreements**; the strict criterion selected **38/609**, with **zero observed disagreements**. These results are **retrospective observations**, not experimentally independent chemical-identification accuracy or guaranteed future error rates.
 
-## Source, code and reproducibility
+A separate analysis of selected spectra from published SWGDRUG and RECETOX collections is described in the associated research materials. Original laboratory acquisition independence has not been established.
 
-- Original MS-DIAL publisher source SHA-256: a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70
-- v2 reference index SHA-256: 2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01
-- Original HGB model SHA-256: a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13
-- Source: Tsugawa H., MS-DIAL public GC–EI–MS/Kovats-RI database, [Zenodo DOI 10.5281/zenodo.21910638](https://doi.org/10.5281/zenodo.21910638).
+## Data provenance and reproducibility
 
-Upstream EI source spectra are not redistributed. The MIT software license does not supersede upstream database rights. See [data provenance](docs/DATA_PROVENANCE.md).
+The computational implementation verifies the following SHA-256 checksums before using the corresponding source or model files:
 
-Local installation:
+| Resource | SHA-256 |
+|---|---|
+| Original public MS-DIAL source | `a1035f8d6c4e717e5fe086f11baadb5f5d44bec3d98d68c7415a1295ae304a70` |
+| 8,455-reference index | `2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01` |
+| Reliability model | `a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13` |
 
-    python -m pip install -r requirements.txt
-    streamlit run app.py
+**Original spectral library:** Hiroshi Tsugawa, MS-DIAL public GC–EI–MS/Kovats-RI library, [Zenodo DOI 10.5281/zenodo.21910638](https://doi.org/10.5281/zenodo.21910638).
 
-## How to cite
+The original MSP spectra are downloaded from their publisher and are not included in this repository. The **MIT licence applies to software code only**, not automatically to spectra obtained from third-party sources. See [data provenance](docs/DATA_PROVENANCE.md).
 
-**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*, version 2.0.2. Jazer Research Lab, 2026. Cite the **verified v2.0.2 version-specific Zenodo DOI [10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447)**. The earlier [v2.0.1 DOI](https://doi.org/10.5281/zenodo.23372495) describes only the previous release. [All-version concept DOI](https://doi.org/10.5281/zenodo.23143112).
+For local execution:
 
-**Research article:** The related evaluation manuscript is not yet a published paper. Cite it separately only after publication.
+```bash
+python -m pip install -r requirements.txt
+streamlit run app.py
+```
 
-**Original spectral library:** Cite the [MS-DIAL EI source](https://doi.org/10.5281/zenodo.21910638) if you used the associated reference spectra.
+## Citation
+
+**Software:** Zothantluanga, J. H. *GC–EI–MS Annotation Tool*. Version 2.0.2. Jazer Research Lab (2026). [DOI: 10.5281/zenodo.23373447](https://doi.org/10.5281/zenodo.23373447).
+
+**Data:** Cite the [MS-DIAL GC–EI–MS source](https://doi.org/10.5281/zenodo.21910638) in studies using the associated reference spectra. A related research manuscript should be cited only after publication.
 
 **Developed and maintained by Dr. James H. Zothantluanga**, Research Director, Jazer Research Lab, Aizawl, Mizoram, India.
