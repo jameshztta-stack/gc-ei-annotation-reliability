@@ -1,6 +1,13 @@
 name: Reproduce example analyses
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'gcei/**'
+      - 'models/v2/**'
+      - 'scripts/verify_software.py'
+      - '.github/workflows/reproducibility.yml'
 permissions:
   contents: read
 jobs:
