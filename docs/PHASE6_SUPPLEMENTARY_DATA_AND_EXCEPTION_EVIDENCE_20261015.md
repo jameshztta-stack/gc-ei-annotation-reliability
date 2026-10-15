@@ -2,7 +2,7 @@
 
 These supplementary notes describe the spectral sources, chemical-data quality controls, model specification and software evaluation for the **GC–EI–MS Annotation Tool (version 2.0.2)**. Original third-party spectral peak arrays are not redistributed. The publisher-label evaluations are retrospective and must not be interpreted as independent experimental confirmation of chemical identity.
 
-## SI-1 — Version, source and immutable scientific design
+## SI-1 — Data sources and model specification
 
 | Resource / role | Exact value | Verifiable archival location |
 |---|---|---|
@@ -11,7 +11,7 @@ These supplementary notes describe the spectral sources, chemical-data quality c
 | Corrected research v2 retrieval reference | **8,455** first14 InChIKey connectivity identities, SHA `2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01` | `models/v2/reference_index.csv`, `models/v2/release_manifest.json` |
 | Original query-capable distinct first14 groups | **2,019** (1,410 developer + 609 once-reserved); all original 609 source labels are in the reference; query and reference from shared MS-DIAL archive | `docs/V2_609_ONE_SHOT_FINAL_WITHIN_SOURCE_RESULTS_INDEPENDENT_REVIEWER_AUDIT_20261014.md` |
 | Original development roles | **1,410** development observations organized into four previously defined subsets (201, 383, 403 and 423) | Original source and development-role records; no newly independent evaluation |
-| fixed HGB original fit | scikit-learn HistGradientBoostingClassifier; **12 exact ordered features**; SHA `a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13` | `models/v2/release_manifest.json` |
+| HGB reliability model | scikit-learn HistGradientBoostingClassifier; **12 exact ordered features**; SHA `a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13` | `models/v2/release_manifest.json` |
 | Original within-source one-use evaluation | **609** SHA `62899a9be61118299e730558fe097e61e7423411d6ea33ea678245f282b41dd7`; already evaluated; not a newly independent test | `audits/v2_609_one_shot_within_msdial_20261014/v2_609_single_use_within_msdial_per_query.csv`, archived commit |
 | Separate selected publisher source retrieval | **466** = 370 SWGDRUG v3.14 + 96 RECETOX; 419 unique source first14; SHA `09a228acbf93fb307b9150ff47024c253e4e94ea4223f8cc309fc8083afdc11b`; previously evaluated | `audits/v2_retrospective_cross_library_20261014/v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv` |
 | v2 public web software | Streamlit v2.0.2, GitHub MIT software licence, Zenodo software DOI `10.5281/zenodo.23373447` | `https://gc-ei-annotation.streamlit.app/`; `app.py` |
@@ -33,10 +33,9 @@ These supplementary notes describe the spectral sources, chemical-data quality c
 **Official existing machine-readable archival evidence:**
 - `audits/v2_full13111_chemical_exceptions_20261014/v2_13111_chemical_exceptions_and_name_provenance_review.json` (complete 6-case list, one 4-row collision, 294/373 flags).
 - `audits/v2_full13111_chemical_exceptions_20261014/v2_294_within_connectivity_advanced_structure_heterogeneity.csv`.
-- `audits/v2_original_reference_four_advanced_keys_20261014/v2_frozen8455_four_advanced_inchikey_exceptions_independent_reaudit.json`.
 - `docs/V2_COMPLETE_13111_RETAINED_SPECTRA_CHEMISTRY_AND_REVIEWER_ISSUES_20261014.md`.
 
-## SI-3 — Acquisition lineage and data licence *not* assumed resolved
+## SI-3 — Data provenance and reuse conditions
 
 Full original retained MSP field inventory `audits/v2_13111_acquisition_provenance_20261014/v2_13111_source_provenance_field_inventory.json`:
 
@@ -49,7 +48,7 @@ Full original retained MSP field inventory `audits/v2_13111_acquisition_provenan
 - The old 609 internal MS-DIAL query/reference spectra may differ as records or exact nominal fingerprints but **share published source archive**, a critical within-source interpretation restriction.
 - Source-licensing/access source reference: `https://zenodo.org/records/21910638`; SWGDRUG `https://swgdrug.org/ms.htm`; RECETOX `https://zenodo.org/records/14285896`. A licence audit of redistribution and monetization remains an external compliance gate.
 
-## SI-4 — Endpoints, numbers, and honest error controls
+## SI-4 — Evaluation endpoints and statistical findings
 
 - Correct label = matching **publisher-reported InChIKey first14** of the correct archived source reference, **not** authenticated whole-molecule, specimen identity, stereoisomer, derivative, mixed-feature deconvolution, or chromatographic peak assignment.
 - Original 609: top1 **394/609** (64.70%); top5 **489/609**, top10 **509/609**. Wrong first hits **215/609**; source label ranks: 1 **394**; 2–5 **95**; 6–10 **20**; >10 **100**.
@@ -63,20 +62,20 @@ Full original retained MSP field inventory `audits/v2_13111_acquisition_provenan
 
 - Source and model SHA checks at initialization and source rebuild; 12-feature fixed HGB only **scores correctness of existing top1**, does **not** re-rank candidates.
 - `app.py`: public browser-based Streamlit single and batch CSV, top10 *single-query* candidate display, HGB score, top-two margin, historical uncertified rules, source/version provenance CSV and disclaimer.
-- **Important nuance**: current batch summary export supplies **one top1 row per spectrum**, **not** a 10-per-spectrum batch candidate matrix. The 12×10 candidate matrix used for software verification was extracted through individual engine calls, **not a button labelled "batch top10 export"**. Do not assert the public UI has batch top10 export unless newly implemented and independently tested. (For each single spectrum, top10 candidate CSV download is present.)
+- The web application's batch CSV contains one leading-candidate summary row per spectrum; the software evaluation obtained a ten-candidate list for each example by calling the analysis engine individually. In single-spectrum mode, users can download the ten-candidate table.
 - Independent same-case numerical evaluation and figures completed: GitHub Actions `38606816850`, original historical ledgers and SHA checks.
 - Twelve existing botanical example EI input checks completed: GitHub Actions `38607229807`.
 - Synthetic software input and integrity tests (**13 passed**): GitHub Actions `38609096672`.
 - Review-routing and twelve-example software checks completed: GitHub Actions `38618746013`; output artefact `11920099614`. 12 existing **unlabelled** example spectra, 120 engine candidate records; not a biological result.
 - The current `app.py` passed **two** headless Streamlit interface tests: GitHub Actions `38619103980`. Headless tests not live browser accessibility/usability or server uptime proof.
 
-## SI-6 — Reproducible material, citation rights and known work still open
+## SI-6 — Data and code availability and study limitations
 
-- fixed public software and current v2 scientific model: `https://github.com/jameshztta-stack/gc-ei-annotation-reliability` and software DOI `https://doi.org/10.5281/zenodo.23373447` (software publication does not itself confirm analytical accuracy).
-- Original computational research commit `9d5c57a44e57d3eed94c82930c2868e451573676`; research code `https://github.com/jameshztta-stack/gc-ei-annotation-reliability/pull/8` unmerged as of writing.
+- Public software and associated reliability model: `https://github.com/jameshztta-stack/gc-ei-annotation-reliability` and software DOI `https://doi.org/10.5281/zenodo.23373447` (software publication does not itself confirm analytical accuracy).
+- Original computational analysis source and evidence records are retained in the version-controlled repository, with source code and data summaries traceable by the original research commit `9d5c57a44e57d3eed94c82930c2868e451573676`.
 - The manuscript should disclose that the source data must be fetched under original publisher rights, byte verified and processed locally; scripts cannot conjure inaccessible upstream records, and upstream licensing requires an independent compliance read.
 - Material supplements should include a data availability and code availability statement, **qualified role/split tables**, full chemical exceptions and handling logic, complete source metadata coverage, pre-fixed historical acceptance definitions, complete source outcome tables/uncertainty curves and Figure/SI registry.
 - **Citation before publication:** cite the existing open-source software DOI and upstream data provider correctly. Do not invent a published manuscript DOI.
 - **Remaining limitations and preparation requirements:** a complete independent human scientist code/data audit, original data licensing clearance and a clear substantive advance beyond previously published GC–EI reliability software if the intended journal requires major innovation. Independent experimental confirmation was not part of this computational study.
 
-**The supplementary results are derived from existing source records and verified computational analyses; they are not new laboratory measurements.**
+The supplementary analyses use existing published spectral records and were performed computationally. No new laboratory measurements are reported.
