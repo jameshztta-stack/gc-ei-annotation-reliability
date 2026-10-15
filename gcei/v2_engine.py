@@ -1,9 +1,9 @@
-"""Frozen v2 EI-only library inference. Research evaluation matched first14 source labels.
+"""GC–EI spectral similarity and connectivity-level reliability assessment.
 
-This is NOT the public v1 engine: separate 8455 reference, float64 m^1 sqrt(I),
-12 exact frozen search features and previously development-fit HGB classifier.
-No v1 conformal/RI calibration is applied. The 5/10% acceptance *targets*
-have FAILED independent certification; no future error guarantee is implied.
+A specified 8,455-entry reference is searched using weighted cosine.
+A twelve-feature classifier assesses agreement of the highest-ranked match
+with source-library connectivity labels; it does not rerank candidates.
+Screening rules do not guarantee future identification error rates.
 """
 from __future__ import annotations
 import csv
@@ -44,8 +44,6 @@ class V2Result:
     risk_threshold: float
     warnings: list[str]
     ri_delta_top1: None = None
-    conformal90_size: None = None
-    conformal90: None = None
 
 
 def bin_spectrum(peaks: Iterable[tuple[float, float]], max_mz: int = V2_MAX_MZ):
@@ -80,7 +78,7 @@ def weighted_matrix(raw_records, source_indices):
     for i, source_row in enumerate(source_indices):
         bins, ignored = bin_spectrum(raw_records[int(source_row)]["peaks"])
         if ignored:
-            raise ValueError(f"Frozen v2 source row {source_row} contains out-of-range m/z.")
+            raise ValueError(f"specified v2 source row {source_row} contains out-of-range m/z.")
         for mass, value in bins.items():
             rr.append(i)
             cc.append(mass)
@@ -93,7 +91,7 @@ def weighted_matrix(raw_records, source_indices):
     A.data = np.sqrt(A.data) * A.indices.astype(np.float64)
     norms = np.sqrt(np.asarray(A.multiply(A).sum(axis=1)).ravel())
     if np.any(norms == 0):
-        raise ValueError("A frozen reference source spectrum has zero weighted norm.")
+        raise ValueError("A specified reference source spectrum has zero weighted norm.")
     return (sparse.diags(1.0 / norms) @ A).tocsr()
 
 
@@ -103,7 +101,7 @@ def query_vector(bins: dict[int, float]):
     vals = np.sqrt(v) * mz.astype(np.float64)
     norm = float(np.linalg.norm(vals))
     if not np.isfinite(norm) or norm <= 0:
-        raise ValueError("The input became zero or nonfinite after frozen v2 EI weighting.")
+        raise ValueError("The input became zero or nonfinite after specified v2 EI weighting.")
     return sparse.csr_matrix(
         (vals / norm, (np.zeros(len(mz), dtype=np.int32), mz)),
         shape=(1, V2_MAX_MZ + 1),
@@ -111,8 +109,8 @@ def query_vector(bins: dict[int, float]):
     )
 
 
-def frozen_features(scores: np.ndarray, bins: dict[int, float], candidate_bins: dict[int, float]):
-    """Reconstruct frozen 12 features in the *exact* original fit order.
+def reliability_features(scores: np.ndarray, bins: dict[int, float], candidate_bins: dict[int, float]):
+    """Reconstruct specified 12 features in the *exact* original fit order.
 
     Should numerically agree to 1e-11 with source-baseline test vectors.
     Only scores and user-input ion bins are used; no target label is supplied.
@@ -139,12 +137,12 @@ def frozen_features(scores: np.ndarray, bins: dict[int, float], candidate_bins: 
         sum(bins[z] for z in overlap) / intensity_total,
     ], dtype=np.float64)
     if features.shape != (12,) or not np.isfinite(features).all():
-        raise ValueError("Invalid frozen 12-feature score vector.")
+        raise ValueError("Invalid specified 12-feature score vector.")
     return features
 
 
 class GCEIV2Engine:
-    """Separate research-v2 model, without borrowing public-v1 calibration."""
+    """Defined EI reference and connectivity-label reliability model."""
 
     def __init__(self, asset_dir: str | Path, model_path: str | Path):
         asset_dir = Path(asset_dir)
@@ -170,26 +168,25 @@ class GCEIV2Engine:
 
     def analyze(self, peaks, kovats_ri=None, risk_target=0.10, top_n=10):
         if risk_target not in (0.10, 0.05):
-            raise ValueError("Use the exact original historical 10% or 5% rule.")
+            raise ValueError("Select a supported screening criterion (0.10 or 0.05).")
         if kovats_ri is not None:
             raise ValueError(
-                "RI fusion was not evaluated/calibrated for frozen research v2. "
-                "Choose v1 legacy mode to explore RI with its separate historical model."
+                "Retention-index integration is not supported for this EI-only model."
             )
         bins, ignored = bin_spectrum(peaks)
         S = np.asarray((query_vector(bins) @ self.R.T).toarray(), dtype=np.float64).ravel()
         if S.shape != (V2_N_REFERENCE,) or not np.isfinite(S).all():
-            raise ValueError("Frozen v2 query score computation failed.")
+            raise ValueError("specified v2 query score computation failed.")
         order = np.argsort(-S, kind="stable")
         winner = int(order[0])
-        # Reconstruct the exact 12 frozen features from original unweighted
+        # Reconstruct the exact 12 specified features from original unweighted
         # source bins (including nominal m/z=0) and the weighted EI scores.
         refrow = self.raw_reference.getrow(winner)
         rawbin = {int(i):float(v) for i,v in zip(refrow.indices,refrow.data)}
-        features = frozen_features(S, bins, rawbin)
+        features = reliability_features(S, bins, rawbin)
         confidence = float(self.model.predict_proba(features.reshape(1,-1))[0,1])
         if not (0 <= confidence <= 1 and np.isfinite(confidence)):
-            raise ValueError("Invalid frozen-HGB confidence.")
+            raise ValueError("Invalid specified-HGB confidence.")
         margin = float(features[1])
         threshold = .87 if risk_target == .10 else .94
         accepted = confidence >= threshold and (risk_target == .10 or margin >= .20)
@@ -224,7 +221,7 @@ class GCEIV2Engine:
             "report candidates as tentative, not as a confirmed identification."
         )
         return V2Result(
-            mode="v2 EI-only",top1=top,top10=make_frame(order[:max(1,int(top_n))]),
+            mode="EI-only",top1=top,top10=make_frame(order[:max(1,int(top_n))]),
             confidence=confidence,margin=margin,accepted=bool(accepted),
             decision=decision,risk_target=risk_target,risk_threshold=threshold,
             warnings=warnings
@@ -250,8 +247,7 @@ class GCEIV2Engine:
             nonempty=df["ri"].dropna().astype(str).str.strip()
             if nonempty.ne("").any():
                 raise ValueError(
-                    "Kovats RI cannot be integrated with the frozen v2 EI-only model. "
-                    "Remove the supplied RI or select historical v1 mode."
+                    "Kovats RI cannot be integrated with this EI-only model. Remove the supplied RI."
                 )
         output=[]
         for sid, group in df.groupby("spectrum_id",sort=False):
