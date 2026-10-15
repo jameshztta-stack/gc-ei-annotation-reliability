@@ -1,6 +1,6 @@
-# Phase 6 Supplementary information and original-source evidentiary map (15 October 2026)
+# Supplementary Information — GC–EI–MS Annotation Tool
 
-**Scientific manuscript source:** GC–EI–MS annotation reliability and reproducible web software, frozen v2.0.2. The purpose of this file is a record-linked supplementary information (SI) index; **no raw third-party MS peak arrays have been republished**, and none of the source-labelled benchmarks has been recreated as a fresh test. All statements below are data-source and code provenance evidence, NOT external authenticated chemical or experimental-sample validation.
+These supplementary notes describe the spectral sources, chemical-data quality controls, model specification and software evaluation for the **GC–EI–MS Annotation Tool (version 2.0.2)**. Original third-party spectral peak arrays are not redistributed. The publisher-label evaluations are retrospective and must not be interpreted as independent experimental confirmation of chemical identity.
 
 ## SI-1 — Version, source and immutable scientific design
 
@@ -10,12 +10,11 @@
 | Original cleaned nominal EI fingerprints | **13,111**, one per retained fingerprint | `audits/v2_full13111_source_chemistry_20261014/v2_all13111_retained_spectra_chemical_identity_source_integrity_report.json` at source research commit `9d5c57a44e57d3eed94c82930c2868e451573676` |
 | Corrected research v2 retrieval reference | **8,455** first14 InChIKey connectivity identities, SHA `2d7e66be8ad2c93aa08eefc0cd54a25c1c1788502856a35fcedb49cb84759a01` | `models/v2/reference_index.csv`, `models/v2/release_manifest.json` |
 | Original query-capable distinct first14 groups | **2,019** (1,410 developer + 609 once-reserved); all original 609 source labels are in the reference; query and reference from shared MS-DIAL archive | `docs/V2_609_ONE_SHOT_FINAL_WITHIN_SOURCE_RESULTS_INDEPENDENT_REVIEWER_AUDIT_20261014.md` |
-| Original development roles | **1,410** exposed: 201 similarity exploration, 383 confidence fitting, 403 original risk exploration, 423 legacy conformal-development stage | Frozen old role manifests and Phase 4 manuscript; cannot claim completely independently tuned or freshly calibrated |
-| Frozen HGB original fit | scikit-learn HistGradientBoostingClassifier; **12 exact ordered features**; SHA `a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13` | `models/v2/release_manifest.json` |
-| Original within-source one-use evaluation | **609** SHA `62899a9be61118299e730558fe097e61e7423411d6ea33ea678245f282b41dd7`; **now permanently spent**, not prospectively reusable | `audits/v2_609_one_shot_within_msdial_20261014/v2_609_single_use_within_msdial_per_query.csv`, archived commit |
-| Separate selected publisher source retrieval | **466** = 370 SWGDRUG v3.14 + 96 RECETOX; 419 unique source first14; SHA `09a228acbf93fb307b9150ff47024c253e4e94ea4223f8cc309fc8083afdc11b`; historically exposed | `audits/v2_retrospective_cross_library_20261014/v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv` |
+| Original development roles | **1,410** development observations organized into four previously defined subsets (201, 383, 403 and 423) | Original source and development-role records; no newly independent evaluation |
+| fixed HGB original fit | scikit-learn HistGradientBoostingClassifier; **12 exact ordered features**; SHA `a9370828084881072307fe081f3ecc34e400d26c6710c8a542bbad0bad0ccf13` | `models/v2/release_manifest.json` |
+| Original within-source one-use evaluation | **609** SHA `62899a9be61118299e730558fe097e61e7423411d6ea33ea678245f282b41dd7`; already evaluated; not a newly independent test | `audits/v2_609_one_shot_within_msdial_20261014/v2_609_single_use_within_msdial_per_query.csv`, archived commit |
+| Separate selected publisher source retrieval | **466** = 370 SWGDRUG v3.14 + 96 RECETOX; 419 unique source first14; SHA `09a228acbf93fb307b9150ff47024c253e4e94ea4223f8cc309fc8083afdc11b`; previously evaluated | `audits/v2_retrospective_cross_library_20261014/v2_466_retrospective_cross_library_model_and_retrieval_predictions.csv` |
 | v2 public web software | Streamlit v2.0.2, GitHub MIT software licence, Zenodo software DOI `10.5281/zenodo.23373447` | `https://gc-ei-annotation.streamlit.app/`; `app.py` |
-| **Historical older v1 data handling (do not mix)** | **8,543** old first14 reference identities; historical RI/conformal-related v1 scripts not in current v2 | `docs/DATA_PROVENANCE.md`; clarified in Phase 6 working branch |
 
 ## SI-2 — Source chemistry exception matrix
 
@@ -24,7 +23,7 @@
 | Evidence class | Actual archival count | Handling and remaining limitation |
 |---|---:|---|
 | Retained unique nominal EI spectra | **13,111** | Full source membership replayed with original SHA; repeated raw spectra collapsed |
-| Retained first14 groups with >1 distinct recreated Standard full InChIKey | **294** | Connectivity agreement can conflate stereochemistry/chemical representation. **119** of these groups lack any other retained spectrum with exactly the frozen reference's Standard full key; full-key exact identification is OUT OF SCOPE |
+| Retained first14 groups with >1 distinct recreated Standard full InChIKey | **294** | Connectivity agreement can conflate stereochemistry/chemical representation. **119** of these groups lack any other retained spectrum with exactly the fixed reference's Standard full key; full-key exact identification is OUT OF SCOPE |
 | Retained original source-name soft semantic flags | **373** | Nonexclusive qualifiers: **313** derivative-keyword; **57** minor-component; **1** isomer; **2** tentative/similarity. Their presence does not itself prove wrong molecular structure |
 | Retained original versus recreated advanced InChIKey-layer discrepancy | **6 source-spectrum rows** spanning **4 unique first14 connectivity groups** | Original source rows **3196, 3426, 5384, 7781, 11277, 11278**; connectivity and formula agree but non-connectivity layer cannot be adjudicated; keep source flags |
 | Advanced-key discrepancies among 8,455 reference representatives | **4 unique reference identities** | All independently checked; no altered first14 label and no stereochemical proof |
@@ -64,20 +63,20 @@ Full original retained MSP field inventory `audits/v2_13111_acquisition_provenan
 
 - Source and model SHA checks at initialization and source rebuild; 12-feature fixed HGB only **scores correctness of existing top1**, does **not** re-rank candidates.
 - `app.py`: public browser-based Streamlit single and batch CSV, top10 *single-query* candidate display, HGB score, top-two margin, historical uncertified rules, source/version provenance CSV and disclaimer.
-- **Important nuance**: current batch summary export supplies **one top1 row per spectrum**, **not** a 10-per-spectrum batch candidate matrix. The 12×10 candidate matrix in the Phase 5 audit was extracted through individual engine calls, **not a button labelled "batch top10 export"**. Do not assert the public UI has batch top10 export unless newly implemented and independently tested. (For each single spectrum, top10 candidate CSV download is present.)
-- Phase 3 independent same-case Python reanalysis and figures PASSED: GitHub Actions `38606816850`, original historical ledgers and SHA checks.
-- Phase 3 same 12 existing botanical example EI input regression PASSED: GitHub Actions `38607229807`.
-- Phase 4 synthetic input integrity/fault tests **13 passed**: GitHub Actions `38609096672`.
-- Phase 5 609+466 original archival review-routing and 12-case engine output utility workflow PASSED: GitHub Actions `38618746013`; output artefact `11920099614`. 12 existing **unlabelled** example spectra, 120 engine candidate records; not a biological result.
-- Phase 5 current `app.py` headless Streamlit **2 tests passed**: GitHub Actions `38619103980`. Headless tests not live browser accessibility/usability or server uptime proof.
+- **Important nuance**: current batch summary export supplies **one top1 row per spectrum**, **not** a 10-per-spectrum batch candidate matrix. The 12×10 candidate matrix used for software verification was extracted through individual engine calls, **not a button labelled "batch top10 export"**. Do not assert the public UI has batch top10 export unless newly implemented and independently tested. (For each single spectrum, top10 candidate CSV download is present.)
+- Independent same-case numerical evaluation and figures completed: GitHub Actions `38606816850`, original historical ledgers and SHA checks.
+- Twelve existing botanical example EI input checks completed: GitHub Actions `38607229807`.
+- Synthetic software input and integrity tests (**13 passed**): GitHub Actions `38609096672`.
+- Review-routing and twelve-example software checks completed: GitHub Actions `38618746013`; output artefact `11920099614`. 12 existing **unlabelled** example spectra, 120 engine candidate records; not a biological result.
+- The current `app.py` passed **two** headless Streamlit interface tests: GitHub Actions `38619103980`. Headless tests not live browser accessibility/usability or server uptime proof.
 
 ## SI-6 — Reproducible material, citation rights and known work still open
 
-- Frozen public software and current v2 scientific model: `https://github.com/jameshztta-stack/gc-ei-annotation-reliability` and software DOI `https://doi.org/10.5281/zenodo.23373447` (**software archive ≠ peer-reviewed validation**).
-- Research audit original branch commit `9d5c57a44e57d3eed94c82930c2868e451573676`; current draft changes PR #8 `https://github.com/jameshztta-stack/gc-ei-annotation-reliability/pull/8` unmerged as of writing.
+- fixed public software and current v2 scientific model: `https://github.com/jameshztta-stack/gc-ei-annotation-reliability` and software DOI `https://doi.org/10.5281/zenodo.23373447` (software publication does not itself confirm analytical accuracy).
+- Original computational research commit `9d5c57a44e57d3eed94c82930c2868e451573676`; research code `https://github.com/jameshztta-stack/gc-ei-annotation-reliability/pull/8` unmerged as of writing.
 - The manuscript should disclose that the source data must be fetched under original publisher rights, byte verified and processed locally; scripts cannot conjure inaccessible upstream records, and upstream licensing requires an independent compliance read.
 - Material supplements should include a data availability and code availability statement, **qualified role/split tables**, full chemical exceptions and handling logic, complete source metadata coverage, pre-fixed historical acceptance definitions, complete source outcome tables/uncertainty curves and Figure/SI registry.
 - **Citation before publication:** cite the existing open-source software DOI and upstream data provider correctly. Do not invent a published manuscript DOI.
-- **Outstanding gates:** a complete independent human scientist code/data audit, original data licensing clearance and a clear substantive advance beyond previously published GC–EI reliability software if the intended journal requires major innovation. No experimental wet lab is in scope or promised.
+- **Remaining limitations and preparation requirements:** a complete independent human scientist code/data audit, original data licensing clearance and a clear substantive advance beyond previously published GC–EI reliability software if the intended journal requires major innovation. Independent experimental confirmation was not part of this computational study.
 
-**All SI assertions are anchored in existing source-audit files and prior verified GitHub Actions. The information is not newly acquired laboratory data.**
+**The supplementary results are derived from existing source records and verified computational analyses; they are not new laboratory measurements.**
