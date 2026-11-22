@@ -30,6 +30,11 @@ def reconstruct(source):
     plan=plan_partitions(chosen)
     refs=plan["candidate_reference_rows"]
     assert len(refs)==8455 and plan["query_eligible_groups"]==2019
+    # The original partition names are preserved to reproduce the
+# archived reference selection exactly.
+# The 609 "untouched_independent_test" identities were excluded
+# from final HGB fitting, but their outcomes had been examined
+# during earlier development. They are evaluated retrospectively.
     roles=plan["identities_in_partitions"]
     assert roles=={"similarity_development":201,"confidence_fit":383,
                    "risk_threshold_calibration":403,"conformal_calibration":423,
