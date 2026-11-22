@@ -36,6 +36,12 @@ SALT_NAME = re.compile(
 )
 ISOTOPE_NAME = re.compile(r"\b(?:13c|15n|d[0-9]+|deuterated|isotope.label|isotopic.label)\b",
                           flags=re.IGNORECASE)
+# Historical partition labels are retained for reproducibility.
+# "untouched_independent_test" refers to 609 query identities
+# excluded from final model fitting.
+# Their evaluation results were examined during earlier development.
+# Therefore, this is a retrospective evaluation partition,
+# not a completely untouched or experimentally independent test set.
 ALLOCATION = [("similarity_development", 0.10),
               ("confidence_fit", 0.19),
               ("risk_threshold_calibration", 0.20),
